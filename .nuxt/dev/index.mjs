@@ -1927,7 +1927,7 @@ const pdf_get = defineEventHandler(async (event) => {
         statusMessage: "Assessment not found"
       });
     }
-    const totalMark = assessment.preparationMark + assessment.lessonPlanningMark + assessment.environmentMark + assessment.documentsMark + assessment.introductionMark + assessment.developmentMark + assessment.conclusionMark + assessment.personalMark;
+    const totalMark = assessment.preparationMark + assessment.lessonPlanningMark + assessment.environmentMark + assessment.documentsMark + assessment.introductionMark + assessment.developmentMark + assessment.conclusionMark + assessment.personalDimensionsMark;
     const htmlContent = generateAssessmentHTML$1(assessment, totalMark);
     let browser;
     try {
@@ -2241,9 +2241,9 @@ function generateAssessmentHTML$1(assessment, totalMark) {
             </tr>
             <tr>
               <td>Personal Dimensions</td>
-              <td>${assessment.personalMark}</td>
+              <td>${assessment.personalDimensionsMark}</td>
               <td>4</td>
-              <td>${Math.round(assessment.personalMark / 4 * 100)}%</td>
+              <td>${Math.round(assessment.personalDimensionsMark / 4 * 100)}%</td>
             </tr>
           </tbody>
         </table>
@@ -2318,7 +2318,7 @@ const exportZip_post = defineEventHandler(async (event) => {
     });
     try {
       for (const assessment of assessments) {
-        const totalMark = assessment.preparationMark + assessment.lessonPlanningMark + assessment.environmentMark + assessment.documentsMark + assessment.introductionMark + assessment.developmentMark + assessment.conclusionMark + assessment.personalMark;
+        const totalMark = assessment.preparationMark + assessment.lessonPlanningMark + assessment.environmentMark + assessment.documentsMark + assessment.introductionMark + assessment.developmentMark + assessment.conclusionMark + assessment.personalDimensionsMark;
         const htmlContent = generateAssessmentHTML(assessment, totalMark);
         const page = await browser.newPage();
         await page.setContent(htmlContent, { waitUntil: "domcontentloaded" });
@@ -2619,9 +2619,9 @@ function generateAssessmentHTML(assessment, totalMark) {
             </tr>
             <tr>
               <td>Personal Dimensions</td>
-              <td>${assessment.personalMark}</td>
+              <td>${assessment.personalDimensionsMark}</td>
               <td>4</td>
-              <td>${Math.round(assessment.personalMark / 4 * 100)}%</td>
+              <td>${Math.round(assessment.personalDimensionsMark / 4 * 100)}%</td>
             </tr>
           </tbody>
         </table>
@@ -2670,7 +2670,7 @@ const index_get$4 = defineEventHandler(async (event) => {
     const averageScore = totalAssessments > 0 ? Math.round(assessments.reduce((sum, a) => sum + a.totalMark, 0) / totalAssessments) : 0;
     const assessmentsWithTotal = assessments.map((assessment) => ({
       ...assessment,
-      totalMark: assessment.preparationMark + assessment.lessonPlanningMark + assessment.environmentMark + assessment.documentsMark + assessment.introductionMark + assessment.developmentMark + assessment.conclusionMark + assessment.personalMark
+      totalMark: assessment.preparationMark + assessment.lessonPlanningMark + assessment.environmentMark + assessment.documentsMark + assessment.introductionMark + assessment.developmentMark + assessment.conclusionMark + assessment.personalDimensionsMark
     }));
     return {
       assessments: assessmentsWithTotal,
