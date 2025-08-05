@@ -1,0 +1,127 @@
+<template>
+  <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div class="max-w-md w-full">
+      <!-- Login Card -->
+      <div class="bg-white rounded-2xl shadow-xl p-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+          <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i class="pi pi-shield text-white text-2xl"></i>
+          </div>
+          <h1 class="text-2xl font-bold text-gray-900">Admin Login</h1>
+          <p class="text-gray-600 mt-2">Access the admin dashboard</p>
+        </div>
+
+        <!-- Login Form -->
+        <form @submit.prevent="handleLogin" class="space-y-6">
+          <div>
+            <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+              Username
+            </label>
+            <input
+              id="username"
+              v-model="form.username"
+              type="text"
+              required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+              placeholder="Enter your username"
+            />
+          </div>
+
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+              Password
+            </label>
+            <input
+              id="password"
+              v-model="form.password"
+              type="password"
+              required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+              placeholder="Enter your password"
+            />
+          </div>
+
+          <div v-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex items-center">
+              <i class="pi pi-exclamation-triangle text-red-600 mr-2"></i>
+              <p class="text-red-700 text-sm">{{ error }}</p>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            :disabled="loading"
+            class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span v-if="loading" class="flex items-center justify-center">
+              <i class="pi pi-spin pi-spinner mr-2"></i>
+              Signing in...
+            </span>
+            <span v-else>Sign In</span>
+          </button>
+        </form>
+
+        <!-- Back to Home -->
+        <div class="mt-6 text-center">
+          <NuxtLink 
+            to="/" 
+            class="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors duration-200"
+          >
+            <i class="pi pi-arrow-left mr-1"></i>
+            Back to Home
+          </NuxtLink>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="text-center mt-8">
+        <p class="text-gray-500 text-sm">
+          Madziwa College TP Assessment Platform
+        </p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+
+// Page meta
+definePageMeta({
+  layout: false
+})
+
+// Reactive data
+const loading = ref(false)
+const error = ref('')
+const form = ref({
+  username: '',
+  password: ''
+})
+
+// Methods
+const handleLogin = async () => {
+  loading.value = true
+  error.value = ''
+
+  try {
+    // Simple authentication for demo purposes
+    // In a real application, you would make an API call to verify credentials
+    if (form.value.username === 'admin' && form.value.password === 'admin123') {
+      // Set admin cookie
+      const isAdmin = useCookie('isAdmin')
+      isAdmin.value = 'true'
+      
+      // Redirect to admin dashboard
+      await navigateTo('/admin')
+    } else {
+      error.value = 'Invalid username or password'
+    }
+  } catch (err) {
+    error.value = 'An error occurred. Please try again.'
+  } finally {
+    loading.value = false
+  }
+}
+</script> 

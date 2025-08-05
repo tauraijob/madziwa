@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Supervisor {
+  id          Int           @id @default(autoincrement())
+  fullName    String        @map("fullName")
+  email       String        @unique
+  phoneNumber String        @map("phoneNumber")
+  nationalId  String        @unique @map("nationalId")
+  createdAt   DateTime      @default(now()) @map("createdAt")
+  updatedAt   DateTime      @updatedAt @map("updatedAt")
+  assessments Assessment[]
+
+  @@map("supervisors")
+}
+
+model Student {
+  id          Int           @id @default(autoincrement())
+  fullName    String        @map("fullName")
+  sex         String
+  candidateNo String        @unique @map("candidateNo")
+  email       String
+  schoolName  String        @map("schoolName")
+  className   String        @map("className")
+  createdAt   DateTime      @default(now()) @map("createdAt")
+  updatedAt   DateTime      @updatedAt @map("updatedAt")
+  assessments Assessment[]
+
+  @@map("students")
+}
+
+model Assessment {
+  id                    Int        @id @default(autoincrement())
+  assessmentDate        DateTime   @map("assessmentDate")
+  subject              String
+  topic                String
+  preparationMark      Int        @default(0) @map("preparationMark")
+  preparationComment   String     @map("preparationComment")
+  lessonPlanningMark   Int        @default(0) @map("lessonPlanningMark")
+  lessonPlanningComment String    @map("lessonPlanningComment")
+  environmentMark      Int        @default(0) @map("environmentMark")
+  environmentComment   String     @map("environmentComment")
+  documentsMark        Int        @default(0) @map("documentsMark")
+  documentsComment     String     @map("documentsComment")
+  introductionMark     Int        @default(0) @map("introductionMark")
+  introductionComment  String     @map("introductionComment")
+  developmentMark      Int        @default(0) @map("developmentMark")
+  developmentComment   String     @map("developmentComment")
+  conclusionMark       Int        @default(0) @map("conclusionMark")
+  conclusionComment    String     @map("conclusionComment")
+  personalDimensionsMark Int      @default(0) @map("personalDimensionsMark")
+  personalDimensionsComment String @default("") @map("personalDimensionsComment")
+  overallComment       String     @map("overallComment")
+  supervisorId         Int        @map("supervisorId")
+  studentId            Int        @map("studentId")
+  createdAt            DateTime   @default(now()) @map("createdAt")
+  updatedAt            DateTime   @updatedAt @map("updatedAt")
+  
+  supervisor           Supervisor @relation(fields: [supervisorId], references: [id], onDelete: Cascade)
+  student              Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("assessments")
+} 
