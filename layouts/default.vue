@@ -38,14 +38,6 @@
               New Assessment
             </NuxtLink>
             <NuxtLink 
-              to="/assessments" 
-              class="nav-link"
-              :class="{ 'active': $route.path.startsWith('/assessments') }"
-            >
-              <i class="pi pi-list mr-2"></i>
-              Assessments
-            </NuxtLink>
-            <NuxtLink 
               to="/admin" 
               class="nav-link"
               :class="{ 'active': $route.path === '/admin' }"
@@ -86,15 +78,6 @@
             >
               <i class="pi pi-plus mr-2"></i>
               New Assessment
-            </NuxtLink>
-            <NuxtLink 
-              to="/assessments" 
-              class="nav-link py-2"
-              :class="{ 'active': $route.path.startsWith('/assessments') }"
-              @click="mobileMenuOpen = false"
-            >
-              <i class="pi pi-list mr-2"></i>
-              Assessments
             </NuxtLink>
             <NuxtLink 
               to="/admin" 
@@ -155,11 +138,6 @@
               <li>
                 <NuxtLink to="/assessment/new" class="text-gray-300 hover:text-white transition-colors duration-200">
                   New Assessment
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink to="/assessments" class="text-gray-300 hover:text-white transition-colors duration-200">
-                  View Assessments
                 </NuxtLink>
               </li>
               <li>

@@ -33,24 +33,6 @@
               Admin Dashboard
             </NuxtLink>
           </div>
-          
-          <!-- Additional Management Links -->
-          <div class="flex flex-col sm:flex-row gap-4 justify-center mt-4">
-            <NuxtLink 
-              to="/students/new"
-              class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-all duration-200 shadow-lg"
-            >
-              <i class="pi pi-user-plus mr-2"></i>
-              Add Student
-            </NuxtLink>
-            <NuxtLink 
-              to="/supervisors/new"
-              class="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-all duration-200 shadow-lg"
-            >
-              <i class="pi pi-user-plus mr-2"></i>
-              Add Supervisor
-            </NuxtLink>
-          </div>
         </div>
       </div>
     </div>
@@ -104,110 +86,6 @@
       </div>
     </div>
 
-    <!-- Assessment Categories -->
-    <div class="py-24 bg-gray-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl font-bold text-gray-900 mb-4">
-            Assessment Categories
-          </h2>
-          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-            Our comprehensive scoring system evaluates teaching practice across multiple dimensions.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div class="bg-white rounded-xl p-6 shadow-sm border">
-            <div class="flex items-center mb-4">
-              <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                <i class="pi pi-book text-blue-600"></i>
-              </div>
-              <h3 class="font-semibold text-gray-900">Preparation & Scheming</h3>
-            </div>
-            <p class="text-sm text-gray-600 mb-3">Lesson preparation and scheme of work</p>
-            <div class="text-2xl font-bold text-blue-600">20 pts</div>
-          </div>
-
-          <div class="bg-white rounded-xl p-6 shadow-sm border">
-            <div class="flex items-center mb-4">
-              <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-                <i class="pi pi-calendar text-green-600"></i>
-              </div>
-              <h3 class="font-semibold text-gray-900">Lesson Planning</h3>
-            </div>
-            <p class="text-sm text-gray-600 mb-3">Detailed lesson planning and objectives</p>
-            <div class="text-2xl font-bold text-green-600">20 pts</div>
-          </div>
-
-          <div class="bg-white rounded-xl p-6 shadow-sm border">
-            <div class="flex items-center mb-4">
-              <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-                <i class="pi pi-users text-purple-600"></i>
-              </div>
-              <h3 class="font-semibold text-gray-900">Environment & Management</h3>
-            </div>
-            <p class="text-sm text-gray-600 mb-3">Classroom environment and management</p>
-            <div class="text-2xl font-bold text-purple-600">10 pts</div>
-          </div>
-
-          <div class="bg-white rounded-xl p-6 shadow-sm border">
-            <div class="flex items-center mb-4">
-              <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
-                <i class="pi pi-file text-orange-600"></i>
-              </div>
-              <h3 class="font-semibold text-gray-900">Learning Documents</h3>
-            </div>
-            <p class="text-sm text-gray-600 mb-3">Work-related learning documents</p>
-            <div class="text-2xl font-bold text-orange-600">10 pts</div>
-          </div>
-
-          <div class="bg-white rounded-xl p-6 shadow-sm border">
-            <div class="flex items-center mb-4">
-              <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
-                <i class="pi pi-play text-red-600"></i>
-              </div>
-              <h3 class="font-semibold text-gray-900">Lesson Introduction</h3>
-            </div>
-            <p class="text-sm text-gray-600 mb-3">Lesson introduction and engagement</p>
-            <div class="text-2xl font-bold text-red-600">3 pts</div>
-          </div>
-
-          <div class="bg-white rounded-xl p-6 shadow-sm border">
-            <div class="flex items-center mb-4">
-              <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
-                <i class="pi pi-cog text-indigo-600"></i>
-              </div>
-              <h3 class="font-semibold text-gray-900">Lesson Development</h3>
-            </div>
-            <p class="text-sm text-gray-600 mb-3">Main lesson development and delivery</p>
-            <div class="text-2xl font-bold text-indigo-600">30 pts</div>
-          </div>
-
-          <div class="bg-white rounded-xl p-6 shadow-sm border">
-            <div class="flex items-center mb-4">
-              <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center mr-3">
-                <i class="pi pi-stop text-pink-600"></i>
-              </div>
-              <h3 class="font-semibold text-gray-900">Lesson Conclusion</h3>
-            </div>
-            <p class="text-sm text-gray-600 mb-3">Lesson conclusion and summary</p>
-            <div class="text-2xl font-bold text-pink-600">3 pts</div>
-          </div>
-
-          <div class="bg-white rounded-xl p-6 shadow-sm border">
-            <div class="flex items-center mb-4">
-              <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center mr-3">
-                <i class="pi pi-user text-teal-600"></i>
-              </div>
-              <h3 class="font-semibold text-gray-900">Personal Dimensions</h3>
-            </div>
-            <p class="text-sm text-gray-600 mb-3">Personal and professional attributes</p>
-            <div class="text-2xl font-bold text-teal-600">4 pts</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- CTA Section -->
     <div class="py-24 bg-gradient-to-r from-blue-600 to-purple-600">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -224,13 +102,6 @@
           >
             <i class="pi pi-plus mr-2"></i>
             Create Assessment
-          </NuxtLink>
-          <NuxtLink 
-            to="/assessments"
-            class="bg-transparent text-white border-2 border-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-200"
-          >
-            <i class="pi pi-list mr-2"></i>
-            View Assessments
           </NuxtLink>
         </div>
       </div>

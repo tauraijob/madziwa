@@ -100,7 +100,7 @@
                 </div>
                 <h4 class="font-medium text-blue-900 text-sm">Preparation & Scheming</h4>
                 <p class="text-xs text-blue-700 mb-1">Lesson preparation and scheme of work</p>
-                <span class="text-blue-600 font-bold text-sm">20 pts</span>
+                <span class="text-blue-600 font-bold text-sm">{{ settings.preparationMax }} pts</span>
               </div>
 
               <!-- Lesson Planning -->
@@ -110,7 +110,7 @@
                 </div>
                 <h4 class="font-medium text-green-900 text-sm">Lesson Planning</h4>
                 <p class="text-xs text-green-700 mb-1">Detailed lesson planning and objectives</p>
-                <span class="text-green-600 font-bold text-sm">20 pts</span>
+                <span class="text-green-600 font-bold text-sm">{{ settings.lessonPlanningMax }} pts</span>
               </div>
 
               <!-- Environment & Management -->
@@ -120,7 +120,7 @@
                 </div>
                 <h4 class="font-medium text-purple-900 text-sm">Environment & Management</h4>
                 <p class="text-xs text-purple-700 mb-1">Classroom environment and management</p>
-                <span class="text-purple-600 font-bold text-sm">10 pts</span>
+                <span class="text-purple-600 font-bold text-sm">{{ settings.environmentMax }} pts</span>
               </div>
 
               <!-- Learning Documents -->
@@ -130,7 +130,7 @@
                 </div>
                 <h4 class="font-medium text-orange-900 text-sm">Learning Documents</h4>
                 <p class="text-xs text-orange-700 mb-1">Work-related learning documents</p>
-                <span class="text-orange-600 font-bold text-sm">10 pts</span>
+                <span class="text-orange-600 font-bold text-sm">{{ settings.documentsMax }} pts</span>
               </div>
 
               <!-- Lesson Introduction -->
@@ -140,7 +140,7 @@
                 </div>
                 <h4 class="font-medium text-red-900 text-sm">Lesson Introduction</h4>
                 <p class="text-xs text-red-700 mb-1">Lesson introduction and engagement</p>
-                <span class="text-red-600 font-bold text-sm">3 pts</span>
+                <span class="text-red-600 font-bold text-sm">{{ settings.introductionMax }} pts</span>
               </div>
 
               <!-- Lesson Development -->
@@ -150,7 +150,7 @@
                 </div>
                 <h4 class="font-medium text-blue-900 text-sm">Lesson Development</h4>
                 <p class="text-xs text-blue-700 mb-1">Main lesson development and delivery</p>
-                <span class="text-blue-600 font-bold text-sm">30 pts</span>
+                <span class="text-blue-600 font-bold text-sm">{{ settings.developmentMax }} pts</span>
               </div>
 
               <!-- Lesson Conclusion -->
@@ -160,7 +160,7 @@
                 </div>
                 <h4 class="font-medium text-pink-900 text-sm">Lesson Conclusion</h4>
                 <p class="text-xs text-pink-700 mb-1">Lesson conclusion and summary</p>
-                <span class="text-pink-600 font-bold text-sm">3 pts</span>
+                <span class="text-pink-600 font-bold text-sm">{{ settings.conclusionMax }} pts</span>
               </div>
 
               <!-- Personal Dimensions -->
@@ -170,7 +170,7 @@
                 </div>
                 <h4 class="font-medium text-teal-900 text-sm">Personal Dimensions</h4>
                 <p class="text-xs text-teal-700 mb-1">Personal and professional attributes</p>
-                <span class="text-teal-600 font-bold text-sm">4 pts</span>
+                <span class="text-teal-600 font-bold text-sm">{{ settings.personalDimensionsMax }} pts</span>
               </div>
             </div>
           </div>
@@ -182,16 +182,16 @@
                 <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
                   <i class="pi pi-file text-white text-sm"></i>
                 </div>
-                1. Preparation & Scheming (20 marks)
+                1. Preparation & Scheming ({{ settings.preparationMax }} marks)
               </h3>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-20)</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-{{ settings.preparationMax }})</label>
                   <input 
                     v-model.number="form.preparationMark" 
                     type="number" 
                     min="0" 
-                    max="20"
+                    :max="settings.preparationMax"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                 </div>
@@ -213,16 +213,16 @@
                 <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mr-3">
                   <i class="pi pi-calendar text-white text-sm"></i>
                 </div>
-                2. Lesson Planning (20 marks)
+                2. Lesson Planning ({{ settings.lessonPlanningMax }} marks)
               </h3>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-20)</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-{{ settings.lessonPlanningMax }})</label>
                   <input 
                     v-model.number="form.lessonPlanningMark" 
                     type="number" 
                     min="0" 
-                    max="20"
+                    :max="settings.lessonPlanningMax"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                   >
                 </div>
@@ -244,16 +244,16 @@
                 <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
                   <i class="pi pi-users text-white text-sm"></i>
                 </div>
-                3. Environment & Management (10 marks)
+                3. Environment & Management ({{ settings.environmentMax }} marks)
               </h3>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-10)</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-{{ settings.environmentMax }})</label>
                   <input 
                     v-model.number="form.environmentMark" 
                     type="number" 
                     min="0" 
-                    max="10"
+                    :max="settings.environmentMax"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   >
                 </div>
@@ -275,16 +275,16 @@
                 <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center mr-3">
                   <i class="pi pi-folder text-white text-sm"></i>
                 </div>
-                4. Learning Documents (10 marks)
+                4. Learning Documents ({{ settings.documentsMax }} marks)
               </h3>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-10)</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-{{ settings.documentsMax }})</label>
                   <input 
                     v-model.number="form.documentsMark" 
                     type="number" 
                     min="0" 
-                    max="10"
+                    :max="settings.documentsMax"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                   >
                 </div>
@@ -306,16 +306,16 @@
                 <div class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center mr-3">
                   <i class="pi pi-play text-white text-sm"></i>
                 </div>
-                5. Lesson Introduction (3 marks)
+                5. Lesson Introduction ({{ settings.introductionMax }} marks)
               </h3>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-3)</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-{{ settings.introductionMax }})</label>
                   <input 
                     v-model.number="form.introductionMark" 
                     type="number" 
                     min="0" 
-                    max="3"
+                    :max="settings.introductionMax"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
                   >
                 </div>
@@ -337,16 +337,16 @@
                 <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
                   <i class="pi pi-cog text-white text-sm"></i>
                 </div>
-                6. Lesson Development (30 marks)
+                6. Lesson Development ({{ settings.developmentMax }} marks)
               </h3>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-30)</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-{{ settings.developmentMax }})</label>
                   <input 
                     v-model.number="form.developmentMark" 
                     type="number" 
                     min="0" 
-                    max="30"
+                    :max="settings.developmentMax"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                 </div>
@@ -368,16 +368,16 @@
                 <div class="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center mr-3">
                   <i class="pi pi-stop text-white text-sm"></i>
                 </div>
-                7. Lesson Conclusion (3 marks)
+                7. Lesson Conclusion ({{ settings.conclusionMax }} marks)
               </h3>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-3)</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-{{ settings.conclusionMax }})</label>
                   <input 
                     v-model.number="form.conclusionMark" 
                     type="number" 
                     min="0" 
-                    max="3"
+                    :max="settings.conclusionMax"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
                   >
                 </div>
@@ -399,16 +399,16 @@
                 <div class="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center mr-3">
                   <i class="pi pi-user text-white text-sm"></i>
                 </div>
-                8. Personal Dimensions (4 marks)
+                8. Personal Dimensions ({{ settings.personalDimensionsMax }} marks)
               </h3>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-4)</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-{{ settings.personalDimensionsMax }})</label>
                   <input 
                     v-model.number="form.personalDimensionsMark" 
                     type="number" 
                     min="0" 
-                    max="4"
+                    :max="settings.personalDimensionsMax"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                   >
                 </div>
@@ -473,6 +473,9 @@ definePageMeta({ title: 'Create New Assessment' })
 const loading = ref(false)
 const students = ref([])
 const supervisors = ref([])
+
+// Load assessment settings
+const { settings, loadSettings } = useAssessmentSettings()
 
 const form = ref({
   studentId: '',
@@ -561,6 +564,7 @@ const submitAssessment = async () => {
 }
 
 onMounted(() => {
+  loadSettings()
   fetchStudents()
   fetchSupervisors()
 })
