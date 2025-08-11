@@ -59,6 +59,10 @@ model Assessment {
   conclusionComment    String     @map("conclusionComment")
   personalDimensionsMark Int      @default(0) @map("personalDimensionsMark")
   personalDimensionsComment String @default("") @map("personalDimensionsComment")
+  communityMark        Int        @default(0) @map("communityMark")
+  communityComment     String     @default("") @map("communityComment")
+  // New: which form was used
+  formType             String     @default("junior") @map("formType")
   overallComment       String     @map("overallComment")
   supervisorId         Int        @map("supervisorId")
   studentId            Int        @map("studentId")

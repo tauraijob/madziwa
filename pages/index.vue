@@ -19,7 +19,7 @@
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <NuxtLink 
-              to="/assessment/new"
+              to="/assessment"
               class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               <i class="pi pi-plus mr-2"></i>
@@ -97,7 +97,7 @@
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
           <NuxtLink 
-            to="/assessment/new"
+            to="/assessment"
             class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-50 transition-all duration-200 shadow-lg"
           >
             <i class="pi pi-plus mr-2"></i>

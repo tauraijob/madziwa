@@ -31,13 +31,15 @@ export default defineEventHandler(async (event) => {
                      assessment.introductionMark + 
                      assessment.developmentMark + 
                      assessment.conclusionMark + 
-                     assessment.personalDimensionsMark
+                     assessment.personalDimensionsMark + 
+                     (assessment.communityMark || 0)
 
     // Generate HTML content for PDF
     const htmlContent = generateAssessmentHTML(assessment, totalMark)
 
     // Generate PDF using Puppeteer with better error handling
     let browser
+    let pdfBuffer: Buffer | Uint8Array | null = null
     try {
       browser = await puppeteer.launch({ 
         headless: 'new',
@@ -47,27 +49,50 @@ export default defineEventHandler(async (event) => {
           '--disable-dev-shm-usage',
           '--disable-gpu',
           '--no-first-run',
-          '--no-zygote',
-          '--single-process'
+          '--no-zygote'
         ],
         timeout: 30000
       })
       
       const page = await browser.newPage()
+      await page.emulateMediaType('screen')
       await page.setContent(htmlContent, { waitUntil: 'domcontentloaded' })
-      
-      const pdf = await page.pdf({
-        format: 'A4',
-        margin: {
-          top: '20mm',
-          right: '20mm',
-          bottom: '20mm',
-          left: '20mm'
-        },
-        printBackground: true
-      })
 
-      return pdf
+      // Try once, then retry if target closed
+      try {
+        pdfBuffer = await page.pdf({
+          format: 'A4',
+          margin: {
+            top: '20mm',
+            right: '20mm',
+            bottom: '20mm',
+            left: '20mm'
+          },
+          printBackground: true,
+          preferCSSPageSize: true
+        })
+      } catch (err) {
+        // Retry with a new page
+        try {
+          const retryPage = await browser.newPage()
+          await retryPage.emulateMediaType('screen')
+          await retryPage.setContent(htmlContent, { waitUntil: 'domcontentloaded' })
+          pdfBuffer = await retryPage.pdf({
+            format: 'A4',
+            margin: {
+              top: '20mm',
+              right: '20mm',
+              bottom: '20mm',
+              left: '20mm'
+            },
+            printBackground: true,
+            preferCSSPageSize: true
+          })
+          await retryPage.close()
+        } catch (retryErr) {
+          throw retryErr
+        }
+      }
     } finally {
       if (browser) {
         try {
@@ -78,11 +103,15 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    // Set response headers
+    if (!pdfBuffer) {
+      throw createError({ statusCode: 500, statusMessage: 'Failed to generate PDF' })
+    }
+
+    // Set response headers and return
     setHeader(event, 'Content-Type', 'application/pdf')
     setHeader(event, 'Content-Disposition', `attachment; filename="assessment-${assessment.student.fullName}-${assessment.subject}.pdf"`)
 
-    return pdf
+    return pdfBuffer
   } catch (error) {
     console.error('Error generating PDF:', error)
     throw createError({
@@ -361,6 +390,12 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
               <td>${assessment.personalDimensionsMark}</td>
               <td>4</td>
               <td>${Math.round(assessment.personalDimensionsMark / 4 * 100)}%</td>
+            </tr>
+            <tr>
+              <td>Community Engagement (Education 5.0)</td>
+              <td>${assessment.communityMark || 0}</td>
+              <td>20</td>
+              <td>${Math.round(((assessment.communityMark || 0) / 20) * 100)}%</td>
             </tr>
           </tbody>
         </table>

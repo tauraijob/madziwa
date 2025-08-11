@@ -63,7 +63,8 @@ export default defineEventHandler(async (event) => {
                          assessment.introductionMark + 
                          assessment.developmentMark + 
                          assessment.conclusionMark + 
-                         assessment.personalDimensionsMark
+                         assessment.personalDimensionsMark + 
+                         (assessment.communityMark || 0)
 
         // Generate HTML content for PDF
         const htmlContent = generateAssessmentHTML(assessment, totalMark)
@@ -383,6 +384,12 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
               <td>${assessment.personalDimensionsMark}</td>
               <td>4</td>
               <td>${Math.round(assessment.personalDimensionsMark / 4 * 100)}%</td>
+            </tr>
+            <tr>
+              <td>Community Engagement (Education 5.0)</td>
+              <td>${assessment.communityMark || 0}</td>
+              <td>20</td>
+              <td>${Math.round(((assessment.communityMark || 0) / 20) * 100)}%</td>
             </tr>
           </tbody>
         </table>

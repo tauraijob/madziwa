@@ -98,7 +98,7 @@
 
       <!-- Filters and Search -->
       <div class="bg-white rounded-xl shadow-sm border p-6 mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
             <input 
@@ -146,6 +146,17 @@
               <option value="70-79">70-79% (Good)</option>
               <option value="60-69">60-69% (Satisfactory)</option>
               <option value="0-59">0-59% (Needs Improvement)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Form Type</label>
+            <select
+              v-model="filters.formType"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All Forms</option>
+              <option value="junior">Junior Supervision</option>
+              <option value="ecd">Early Childhood Development</option>
             </select>
           </div>
         </div>
@@ -383,7 +394,8 @@ const filters = ref({
   search: '',
   subject: '',
   dateRange: '',
-  scoreRange: ''
+  scoreRange: '',
+  formType: ''
 })
 
 // Statistics
@@ -471,6 +483,11 @@ const filteredAssessments = computed(() => {
     })
   }
 
+  // Form type filter
+  if (filters.value.formType) {
+    filtered = filtered.filter(assessment => assessment.formType === filters.value.formType)
+  }
+
   return filtered
 })
 
@@ -549,7 +566,8 @@ const createSampleData = () => {
       subject: 'Mathematics',
       topic: 'Algebra Basics',
       totalMark: 85,
-      assessmentDate: '2024-01-15'
+      assessmentDate: '2024-01-15',
+      formType: 'junior'
     },
     {
       id: 2,
@@ -558,7 +576,8 @@ const createSampleData = () => {
       subject: 'English',
       topic: 'Essay Writing',
       totalMark: 92,
-      assessmentDate: '2024-01-16'
+      assessmentDate: '2024-01-16',
+      formType: 'ecd'
     },
     {
       id: 3,
@@ -567,7 +586,8 @@ const createSampleData = () => {
       subject: 'Science',
       topic: 'Chemistry Lab',
       totalMark: 78,
-      assessmentDate: '2024-01-17'
+      assessmentDate: '2024-01-17',
+      formType: 'junior'
     }
   ]
   

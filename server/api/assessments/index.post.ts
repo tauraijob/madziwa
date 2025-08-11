@@ -36,6 +36,11 @@ export default defineEventHandler(async (event) => {
         conclusionComment: body.conclusionComment || '',
         personalDimensionsMark: parseInt(body.personalDimensionsMark) || 0,
         personalDimensionsComment: body.personalDimensionsComment || '',
+        // Community engagement
+        communityMark: parseInt(body.communityMark) || 0,
+        communityComment: body.communityComment || '',
+        // Form type
+        formType: (body.formType === 'ecd' ? 'ecd' : 'junior'),
         overallComment: body.overallComment || '',
         supervisorId: parseInt(body.supervisorId),
         studentId: parseInt(body.studentId)

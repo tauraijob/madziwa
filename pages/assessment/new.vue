@@ -1,47 +1,125 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- Header -->
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900">Create New Assessment</h1>
-        <p class="mt-2 text-gray-600">Fill in the assessment details below</p>
+        <p class="mt-2 text-gray-600">Supervisor registers, searches student, then completes assessment.</p>
       </div>
 
-      <!-- Assessment Form -->
       <form @submit.prevent="submitAssessment" class="space-y-8">
-        <!-- Student and Supervisor Selection -->
+        <!-- Assessment Type -->
         <div class="bg-white rounded-xl shadow-sm border p-6">
-          <h2 class="text-xl font-semibold text-gray-900 mb-4">Student & Supervisor Information</h2>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Student Selection -->
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Assessment Type</h2>
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Student</label>
-              <select 
-                v-model="form.studentId" 
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              <span class="block text-sm font-medium text-gray-700">Form</span>
+              <span
+                class="inline-flex items-center mt-1 px-3 py-1 rounded-full text-sm font-medium"
+                :class="assessmentType==='junior' ? 'bg-blue-100 text-blue-800' : 'bg-rose-100 text-rose-800'"
               >
-                <option value="">Select a student</option>
-                <option v-for="student in students" :key="student.id" :value="student.id">
-                  {{ student.fullName }} - {{ student.candidateNo }}
-                </option>
-              </select>
+                {{ assessmentType==='junior' ? 'Junior Supervision' : 'Early Childhood Development' }}
+              </span>
             </div>
+            <div class="text-sm text-gray-600 md:max-w-2xl">
+              <div v-if="assessmentType==='junior'">
+                Follows Education 5.0: Research-Teaching & Learning, Records Management, Environment, Community Engagement.
+              </div>
+              <div v-else>
+                Includes ECD-specific records and environment checks per Education 5.0.
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <!-- Supervisor Selection -->
+        <!-- Supervisor Registration -->
+        <div class="bg-white rounded-xl shadow-sm border p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Supervisor Registration</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Supervisor</label>
-              <select 
-                v-model="form.supervisorId" 
-                required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">Select a supervisor</option>
-                <option v-for="supervisor in supervisors" :key="supervisor.id" :value="supervisor.id">
-                  {{ supervisor.fullName }}
-                </option>
-              </select>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+              <input v-model="supervisor.fullName" type="text" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">National ID</label>
+              <input v-model="supervisor.nationalId" type="text" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+              <input v-model="supervisor.phoneNumber" type="tel" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input v-model="supervisor.email" type="email" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Search -->
+        <div class="bg-white rounded-xl shadow-sm border p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Find Student</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div class="md:col-span-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Search by SRN</label>
+              <input v-model="studentSearch.srn" type="text" placeholder="Candidate No" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div class="md:col-span-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Or Surname</label>
+              <input v-model="studentSearch.surname" type="text" placeholder="Surname" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div class="md:col-span-1">
+              <button type="button" @click="searchStudents" :disabled="searching" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
+                <i v-if="searching" class="pi pi-spinner pi-spin mr-2"></i>
+                Search
+              </button>
+            </div>
+          </div>
+
+          <!-- Search Results -->
+          <div v-if="studentsResults.length" class="mt-4 border rounded-lg divide-y">
+            <div v-for="s in studentsResults" :key="s.id" class="p-3 flex items-center justify-between">
+              <div>
+                <div class="font-medium text-gray-900">{{ s.fullName }} <span class="text-gray-500">({{ s.candidateNo }})</span></div>
+                <div class="text-sm text-gray-600">{{ s.schoolName }} • {{ s.className }} • {{ s.email }}</div>
+              </div>
+              <button type="button" @click="selectStudent(s)" class="px-3 py-1.5 text-sm bg-green-600 text-white rounded hover:bg-green-700">Select</button>
+            </div>
+          </div>
+
+          <!-- Or enter student details manually -->
+          <div class="mt-6">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-semibold text-gray-900">Student Details</h3>
+              <span v-if="selectedStudentId" class="text-xs text-green-700 bg-green-50 border border-green-200 px-2 py-1 rounded">Selected from search</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Full name</label>
+                <input v-model="student.fullName" type="text" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Sex</label>
+                <select v-model="student.sex" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required>
+                  <option value="">Select</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Candidate number (SRN)</label>
+                <input v-model="student.candidateNo" type="text" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input v-model="student.email" type="email" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">School name</label>
+                <input v-model="student.schoolName" type="text" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Class</label>
+                <input v-model="student.className" type="text" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+              </div>
             </div>
           </div>
         </div>
@@ -49,38 +127,35 @@
         <!-- Assessment Details -->
         <div class="bg-white rounded-xl shadow-sm border p-6">
           <h2 class="text-xl font-semibold text-gray-900 mb-4">Assessment Details</h2>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-              <input 
-                v-model="form.subject" 
-                type="text" 
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="md:col-span-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+              <input
+                v-model="form.subject"
+                type="text"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="e.g., Mathematics"
-              >
+                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Topic</label>
-              <input 
-                v-model="form.topic" 
-                type="text" 
+            <div class="md:col-span-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Topic</label>
+              <input
+                v-model="form.topic"
+                type="text"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="e.g., Algebra"
-              >
+                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Assessment Date</label>
-              <input 
-                v-model="form.assessmentDate" 
-                type="datetime-local" 
+            <div class="md:col-span-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Assessment Date</label>
+              <input
+                v-model="form.assessmentDate"
+                type="datetime-local"
                 required
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
+                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
             </div>
           </div>
         </div>
@@ -423,6 +498,37 @@
                 </div>
               </div>
             </div>
+
+            <!-- Community Engagement (Education 5.0) -->
+            <div class="border border-gray-200 rounded-lg p-4">
+              <h3 class="text-lg font-medium text-gray-900 mb-3 flex items-center">
+                <div class="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center mr-3">
+                  <i class="pi pi-users text-white text-sm"></i>
+                </div>
+                9. Community Engagement (Education 5.0) (20 marks)
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-20)</label>
+                  <input 
+                    v-model.number="form.communityMark" 
+                    type="number" 
+                    min="0" 
+                    max="20"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  >
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Observations</label>
+                  <textarea 
+                    v-model="form.communityComment" 
+                    rows="2"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                    placeholder="Community engagement & provision of goods and services (CDP)"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -445,20 +551,8 @@
         </div>
 
         <!-- Submit Button -->
-        <div class="flex justify-end space-x-4">
-          <NuxtLink 
-            to="/" 
-            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            Cancel
-          </NuxtLink>
-          <button 
-            type="submit" 
-            :disabled="loading"
-            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {{ loading ? 'Creating...' : 'Create Assessment' }}
-          </button>
+        <div class="flex justify-end">
+          <button type="submit" :disabled="loading" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">{{ loading ? 'Submitting...' : 'Submit Assessment' }}</button>
         </div>
       </form>
     </div>
@@ -467,19 +561,30 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 
 definePageMeta({ title: 'Create New Assessment' })
 
 const loading = ref(false)
-const students = ref([])
-const supervisors = ref([])
+const searching = ref(false)
 
-// Load assessment settings
+// Supervisor model (registration)
+const supervisor = ref({ fullName: '', nationalId: '', phoneNumber: '', email: '' })
+
+// Student search and model
+const studentSearch = ref({ srn: '', surname: '' })
+const studentsResults = ref([])
+const selectedStudentId = ref(null)
+const student = ref({ fullName: '', sex: '', candidateNo: '', email: '', schoolName: '', className: '' })
+
+// Settings
 const { settings, loadSettings } = useAssessmentSettings()
 
+// Selected assessment type (from query). Default to junior
+const assessmentType = ref('junior')
+
+// Assessment fields (scores/comments)
 const form = ref({
-  studentId: '',
-  supervisorId: '',
   subject: '',
   topic: '',
   assessmentDate: new Date().toISOString().slice(0, 16),
@@ -499,21 +604,22 @@ const form = ref({
   conclusionComment: '',
   personalDimensionsMark: 0,
   personalDimensionsComment: '',
+  communityMark: 0,
+  communityComment: '',
   overallComment: ''
 })
 
-const totalScore = computed(() => {
-  return (
-    form.value.preparationMark +
-    form.value.lessonPlanningMark +
-    form.value.environmentMark +
-    form.value.documentsMark +
-    form.value.introductionMark +
-    form.value.developmentMark +
-    form.value.conclusionMark +
-    form.value.personalDimensionsMark
-  )
-})
+const totalScore = computed(() => (
+  form.value.preparationMark +
+  form.value.lessonPlanningMark +
+  form.value.environmentMark +
+  form.value.documentsMark +
+  form.value.introductionMark +
+  form.value.developmentMark +
+  form.value.conclusionMark +
+  form.value.personalDimensionsMark +
+  form.value.communityMark
+))
 
 const getGrade = (score) => {
   if (score >= 80) return 'A'
@@ -523,37 +629,85 @@ const getGrade = (score) => {
   return 'F'
 }
 
-const fetchStudents = async () => {
+const searchStudents = async () => {
+  searching.value = true
   try {
-    const response = await $fetch('/api/students')
-    students.value = response.students
-  } catch (error) {
-    console.error('Error fetching students:', error)
+    const params = new URLSearchParams()
+    if (studentSearch.value.srn) params.set('candidateNo', studentSearch.value.srn)
+    if (studentSearch.value.surname) params.set('surname', studentSearch.value.surname)
+    const res = await $fetch(`/api/students/search?${params.toString()}`)
+    studentsResults.value = res.students
+  } catch (e) {
+    console.error('Search failed', e)
+    alert('Student search failed')
+  } finally {
+    searching.value = false
   }
 }
 
-const fetchSupervisors = async () => {
+const selectStudent = (s) => {
+  selectedStudentId.value = s.id
+  student.value = { ...s }
+}
+
+const ensureSupervisor = async () => {
+  // try find by nationalId or email, otherwise create
   try {
-    const response = await $fetch('/api/supervisors')
-    supervisors.value = response.supervisors
-  } catch (error) {
-    console.error('Error fetching supervisors:', error)
+    const existing = await $fetch('/api/supervisors')
+    const found = existing.supervisors.find((x) => x.nationalId === supervisor.value.nationalId || x.email === supervisor.value.email)
+    if (found) return found.id
+    const created = await $fetch('/api/supervisors', { method: 'POST', body: supervisor.value })
+    return created.supervisor.id
+  } catch (e) {
+    console.error('Ensure supervisor failed', e)
+    throw e
+  }
+}
+
+const ensureStudent = async () => {
+  // if selected from search, reuse id; else find by candidateNo, else create
+  if (selectedStudentId.value) return selectedStudentId.value
+  try {
+    const res = await $fetch(`/api/students/search?candidateNo=${encodeURIComponent(student.value.candidateNo || '')}`)
+    const found = (res.students || [])[0]
+    if (found) return found.id
+    const created = await $fetch('/api/students', { method: 'POST', body: student.value })
+    return created.student.id
+  } catch (e) {
+    console.error('Ensure student failed', e)
+    throw e
   }
 }
 
 const submitAssessment = async () => {
   loading.value = true
-  
   try {
-    const response = await $fetch('/api/assessments', {
+    // validate required parts
+    if (!supervisor.value.fullName || !supervisor.value.nationalId || !supervisor.value.phoneNumber || !supervisor.value.email) {
+      alert('Please complete supervisor registration')
+      loading.value = false
+      return
+    }
+    if (!student.value.fullName || !student.value.candidateNo || !student.value.schoolName || !student.value.className || !student.value.sex) {
+      alert('Please complete student details')
+      loading.value = false
+      return
+    }
+    if (!form.value.subject || !form.value.topic) {
+      alert('Please fill in Subject and Topic')
+      loading.value = false
+      return
+    }
+
+    const supervisorId = await ensureSupervisor()
+    const studentId = await ensureStudent()
+
+    await $fetch('/api/assessments', {
       method: 'POST',
-      body: form.value
+      body: { ...form.value, supervisorId, studentId, formType: assessmentType.value }
     })
-    
-    // Show success message
+
     alert('Assessment created successfully!')
-    
-    // Redirect to admin dashboard
     await navigateTo('/admin')
   } catch (error) {
     console.error('Error creating assessment:', error)
@@ -565,7 +719,10 @@ const submitAssessment = async () => {
 
 onMounted(() => {
   loadSettings()
-  fetchStudents()
-  fetchSupervisors()
+  const route = useRoute()
+  const q = String(route.query.type || '').toLowerCase()
+  if (q === 'ecd' || q === 'junior') {
+    assessmentType.value = q
+  }
 })
 </script> 

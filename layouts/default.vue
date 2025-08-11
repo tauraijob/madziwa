@@ -30,9 +30,9 @@
               Home
             </NuxtLink>
             <NuxtLink 
-              to="/assessment/new" 
+              to="/assessment" 
               class="nav-link"
-              :class="{ 'active': $route.path === '/assessment/new' }"
+              :class="{ 'active': $route.path === '/assessment' || $route.path.startsWith('/assessment/') }"
             >
               <i class="pi pi-plus mr-2"></i>
               New Assessment
@@ -71,9 +71,9 @@
               Home
             </NuxtLink>
             <NuxtLink 
-              to="/assessment/new" 
+              to="/assessment" 
               class="nav-link py-2"
-              :class="{ 'active': $route.path === '/assessment/new' }"
+              :class="{ 'active': $route.path === '/assessment' || $route.path.startsWith('/assessment/') }"
               @click="mobileMenuOpen = false"
             >
               <i class="pi pi-plus mr-2"></i>

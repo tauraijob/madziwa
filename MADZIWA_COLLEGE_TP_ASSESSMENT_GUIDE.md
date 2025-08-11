@@ -48,7 +48,7 @@ madziwa-tp-platform/
 │   ├── requirements.txt
 │   └── manage.py
 └── README.md
-```
+
 
 ## Core Features
 
