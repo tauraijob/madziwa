@@ -1,6 +1,6 @@
 # Madziwa College TP Assessment Platform
 
-A comprehensive web-based application for Teaching Practice (TP) assessment management at Madziwa College. Built with Nuxt 3, Vue 3, Prisma, and PrimeVue UI components.
+A comprehensive web-based application for Teaching Practice (TP) assessment management at Madziwa College. Built with Nuxt 4 (Nitro 2), Vue 3, PrimeVue 4, Tailwind CSS 3, Prisma 6, and MySQL. PDF export via Puppeteer and batch ZIP via JSZip.
 
 ## 🚀 Features
 
@@ -19,14 +19,15 @@ A comprehensive web-based application for Teaching Practice (TP) assessment mana
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: Nuxt 3, Vue 3, PrimeVue
-- **Backend**: Nuxt Server API routes
+- **Frontend**: Nuxt 4, Vue 3, PrimeVue 4, Vue Router 4
+- **Backend**: Nuxt Server API routes (Nitro 2)
 - **Database**: MySQL (XAMPP)
-- **ORM**: Prisma
-- **Styling**: Tailwind CSS + PrimeVue themes
-- **Icons**: PrimeIcons
-- **PDF Generation**: Puppeteer
-- **ZIP Creation**: JSZip
+- **ORM**: Prisma 6
+- **Styling**: Tailwind CSS 3 via `@nuxtjs/tailwindcss` + PrimeIcons 7
+- **HTTP Client**: Axios
+- **PDF Generation**: Puppeteer 24
+- **ZIP Creation**: JSZip 3
+- **Build Tooling**: PostCSS 8 + Autoprefixer 10
 
 ## 📋 Prerequisites
 
