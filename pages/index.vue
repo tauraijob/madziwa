@@ -10,11 +10,11 @@
           <h1 class="text-5xl font-bold text-gray-900 mb-6">
             Madziwa College
             <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-              TP Assessment Platform
+              WIL Assessment Platform
             </span>
           </h1>
           <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Empowering educators through comprehensive Teaching Practice assessment and evaluation. 
+            Empowering educators through comprehensive WIL Practice assessment and evaluation. 
             Streamline your assessment process with our modern, user-friendly platform.
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
