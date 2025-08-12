@@ -154,14 +154,14 @@
             <div class="space-y-3">
               <div class="flex items-center space-x-3">
                 <i class="pi pi-phone text-blue-400"></i>
-                <a href="tel:+27616291608" class="text-gray-300 hover:text-white transition-colors duration-200">
-                  +27 61 629 1608
+                <a href="tel:+263772504845" class="text-gray-300 hover:text-white transition-colors duration-200">
+                  +263772504845
                 </a>
               </div>
               <div class="flex items-center space-x-3">
                 <i class="pi pi-envelope text-blue-400"></i>
-                <a href="mailto:info@madziwacollege.edu.zw" class="text-gray-300 hover:text-white transition-colors duration-200">
-                  info@madziwacollege.edu.zw
+                <a href="mailto:info@madziwatc.ac.zw" class="text-gray-300 hover:text-white transition-colors duration-200">
+                  info@madziwatc.ac.zw
                 </a>
               </div>
               <div class="flex items-center space-x-3">
@@ -178,7 +178,7 @@
         <div class="border-t border-gray-700 mt-8 pt-8 text-center">
           <p class="text-gray-400">
             © {{ new Date().getFullYear() }} Madziwa College. All rights reserved. 
-            <span class="text-blue-400">TP Assessment Platform</span>
+            <span class="text-blue-400">WIL Assessment Platform</span>
           </p>
         </div>
       </div>
