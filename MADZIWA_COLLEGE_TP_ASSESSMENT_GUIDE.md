@@ -6,23 +6,23 @@ A comprehensive web-based application for Teaching Practice (TP) assessment mana
 ## Technology Stack
 
 ### Frontend
-- **React 18** - Modern React with hooks and functional components
-- **PrimeVue 10** - Complete UI component library
-- **PrimeReact** - React implementation of PrimeVue
-- **React Router** - Client-side routing
+- **Nuxt 4 (Vue 3)** - Application framework with Vite dev server
+- **PrimeVue 4** - UI component library
+- **Vue Router 4** - Client-side routing
 - **Axios** - HTTP client for API communication
-- **Vite** - Build tool and development server
+- **Tailwind CSS 3** - Utility-first styling
+- **PrimeIcons 7** - Icon library
 
 ### Backend
-- **Django 5** - Python web framework
-- **Django REST Framework** - API development
-- **Django CORS Headers** - Cross-origin resource sharing
-- **SQLite/PostgreSQL** - Database (SQLite for development, PostgreSQL for production)
-- **Django Admin** - Built-in admin interface
+- **Nuxt Server API (Nitro 2)** - Server routes and runtime
+- **Prisma 6** - Type-safe ORM
+- **MySQL** - Primary database (XAMPP in local dev)
+- **Puppeteer 24** - PDF generation
+- **JSZip 3** - ZIP creation for batch downloads
 
 ### Styling
+- **Tailwind CSS** - Utility classes and theming
 - **PrimeVue CSS** - Component styling
-- **PrimeIcons** - Icon library
 - **Responsive Design** - Mobile-first approach
 
 ## Project Structure

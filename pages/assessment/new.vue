@@ -265,6 +265,7 @@
                   <input 
                     v-model.number="form.preparationMark" 
                     type="number" 
+                    step="1" 
                     min="0" 
                     :max="settings.preparationMax"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -296,6 +297,7 @@
                   <input 
                     v-model.number="form.lessonPlanningMark" 
                     type="number" 
+                    step="1" 
                     min="0" 
                     :max="settings.lessonPlanningMax"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
@@ -327,6 +329,7 @@
                   <input 
                     v-model.number="form.environmentMark" 
                     type="number" 
+                    step="1" 
                     min="0" 
                     :max="settings.environmentMax"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
@@ -358,6 +361,7 @@
                   <input 
                     v-model.number="form.documentsMark" 
                     type="number" 
+                    step="1" 
                     min="0" 
                     :max="settings.documentsMax"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
@@ -389,6 +393,7 @@
                   <input 
                     v-model.number="form.introductionMark" 
                     type="number" 
+                    step="1" 
                     min="0" 
                     :max="settings.introductionMax"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
@@ -420,6 +425,7 @@
                   <input 
                     v-model.number="form.developmentMark" 
                     type="number" 
+                    step="1" 
                     min="0" 
                     :max="settings.developmentMax"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -451,6 +457,7 @@
                   <input 
                     v-model.number="form.conclusionMark" 
                     type="number" 
+                    step="1" 
                     min="0" 
                     :max="settings.conclusionMax"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
@@ -482,6 +489,7 @@
                   <input 
                     v-model.number="form.personalDimensionsMark" 
                     type="number" 
+                    step="1" 
                     min="0" 
                     :max="settings.personalDimensionsMax"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
@@ -513,8 +521,10 @@
                   <input 
                     v-model.number="form.communityMark" 
                     type="number" 
+                    step="1" 
                     min="0" 
                     max="20"
+                    @input="clampField('communityMark', 20)"
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   >
                 </div>
@@ -560,7 +570,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 definePageMeta({ title: 'Create New Assessment' })
@@ -608,6 +618,32 @@ const form = ref({
   communityComment: '',
   overallComment: ''
 })
+
+// Clamp helpers to enforce max marks strictly
+const clamp = (value, min, max) => {
+  const num = Number(value)
+  if (Number.isNaN(num)) return min
+  if (num < min) return min
+  if (num > max) return max
+  return Math.round(num)
+}
+
+const clampField = (field, max) => {
+  form.value[field] = clamp(form.value[field], 0, max)
+}
+
+// Deep watch: clamp any time a mark changes (covers paste, wheel, programmatic)
+watch(form, () => {
+  clampField('preparationMark', settings.value.preparationMax)
+  clampField('lessonPlanningMark', settings.value.lessonPlanningMax)
+  clampField('environmentMark', settings.value.environmentMax)
+  clampField('documentsMark', settings.value.documentsMax)
+  clampField('introductionMark', settings.value.introductionMax)
+  clampField('developmentMark', settings.value.developmentMax)
+  clampField('conclusionMark', settings.value.conclusionMax)
+  clampField('personalDimensionsMark', settings.value.personalDimensionsMax)
+  clampField('communityMark', 20)
+}, { deep: true })
 
 const totalScore = computed(() => (
   form.value.preparationMark +
@@ -698,6 +734,17 @@ const submitAssessment = async () => {
       loading.value = false
       return
     }
+
+    // Final clamp before submit to guarantee marks never exceed maxima
+    clampField('preparationMark', settings.value.preparationMax)
+    clampField('lessonPlanningMark', settings.value.lessonPlanningMax)
+    clampField('environmentMark', settings.value.environmentMax)
+    clampField('documentsMark', settings.value.documentsMax)
+    clampField('introductionMark', settings.value.introductionMax)
+    clampField('developmentMark', settings.value.developmentMax)
+    clampField('conclusionMark', settings.value.conclusionMax)
+    clampField('personalDimensionsMark', settings.value.personalDimensionsMax)
+    clampField('communityMark', 20)
 
     const supervisorId = await ensureSupervisor()
     const studentId = await ensureStudent()
