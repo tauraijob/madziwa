@@ -41,15 +41,15 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">National ID</label>
-              <input v-model="supervisor.nationalId" type="text" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+              <input v-model="supervisor.nationalId" type="text" placeholder="e.g. 63-123433322X18" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-              <input v-model="supervisor.phoneNumber" type="tel" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+              <input v-model="supervisor.phoneNumber" type="tel" placeholder="e.g.+263 777 000 000"class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input v-model="supervisor.email" type="email" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+              <input v-model="supervisor.email" type="email" placeholder="e.g.supervisor@gmail.com" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
             </div>
           </div>
         </div>
@@ -60,7 +60,7 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div class="md:col-span-1">
               <label class="block text-sm font-medium text-gray-700 mb-1">Search by SRN</label>
-              <input v-model="studentSearch.srn" type="text" placeholder="Candidate No" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+              <input v-model="studentSearch.srn" type="text" placeholder="e.g.23/002/2024" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
             </div>
             <div class="md:col-span-1">
               <label class="block text-sm font-medium text-gray-700 mb-1">Or Surname</label>
@@ -106,7 +106,7 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Candidate number (SRN)</label>
-                <input v-model="student.candidateNo" type="text" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+                <input v-model="student.candidateNo" type="text" placeholder="23/002/24" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -118,7 +118,7 @@
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Class</label>
-                <input v-model="student.className" type="text" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+                <input v-model="student.className" type="text" placeholder="Grade 4Blue" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
               </div>
             </div>
           </div>
@@ -144,7 +144,7 @@
                 v-model="form.topic"
                 type="text"
                 required
-                placeholder="e.g., Algebra"
+                placeholder="e.g., Addition and Subtraction"
                 class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -658,10 +658,10 @@ const totalScore = computed(() => (
 ))
 
 const getGrade = (score) => {
-  if (score >= 80) return 'A'
-  if (score >= 70) return 'B'
-  if (score >= 60) return 'C'
-  if (score >= 50) return 'D'
+  if (score >= 80) return '1'
+  if (score >= 70) return '2.1'
+  if (score >= 60) return '2.2'
+  if (score >= 50) return '3'
   return 'F'
 }
 
