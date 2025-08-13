@@ -38,18 +38,18 @@ export default defineEventHandler(async (event) => {
 
     // Create ZIP file
     const zip = new JSZip()
-    const browser = await puppeteer.launch({ 
-      headless: 'new',
+    const browser = await puppeteer.launch({
+      headless: true,
+      executablePath: puppeteer.executablePath(),
       args: [
-        '--no-sandbox', 
+        '--no-sandbox',
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
         '--disable-gpu',
         '--no-first-run',
-        '--no-zygote',
-        '--single-process'
+        '--no-zygote'
       ],
-      timeout: 30000
+      timeout: 60000
     })
 
     try {
@@ -69,20 +69,41 @@ export default defineEventHandler(async (event) => {
         // Generate HTML content for PDF
         const htmlContent = generateAssessmentHTML(assessment, totalMark)
 
-        // Generate PDF
+        // Generate PDF with retry to avoid Target closed
         const page = await browser.newPage()
+        await page.emulateMediaType('screen')
         await page.setContent(htmlContent, { waitUntil: 'domcontentloaded' })
-        
-        const pdf = await page.pdf({
-          format: 'A4',
-          margin: {
-            top: '20mm',
-            right: '20mm',
-            bottom: '20mm',
-            left: '20mm'
-          },
-          printBackground: true
-        })
+
+        let pdf: Buffer | Uint8Array
+        try {
+          pdf = await page.pdf({
+            format: 'A4',
+            margin: {
+              top: '20mm',
+              right: '20mm',
+              bottom: '20mm',
+              left: '20mm'
+            },
+            printBackground: true,
+            preferCSSPageSize: true
+          })
+        } catch (err) {
+          const retryPage = await browser.newPage()
+          await retryPage.emulateMediaType('screen')
+          await retryPage.setContent(htmlContent, { waitUntil: 'domcontentloaded' })
+          pdf = await retryPage.pdf({
+            format: 'A4',
+            margin: {
+              top: '20mm',
+              right: '20mm',
+              bottom: '20mm',
+              left: '20mm'
+            },
+            printBackground: true,
+            preferCSSPageSize: true
+          })
+          await retryPage.close()
+        }
 
         await page.close()
 
