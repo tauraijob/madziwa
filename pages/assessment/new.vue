@@ -52,8 +52,8 @@
           <h2 class="text-xl font-semibold text-gray-900 mb-4">Supervisor Registration</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-              <input v-model="supervisor.fullName" type="text" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+              <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+              <input v-model="supervisor.fullName" type="text" placeholder="start by surname" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">National ID</label>
@@ -110,7 +110,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Full name</label>
-                <input v-model="student.fullName" type="text" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
+                <input v-model="student.fullName" type="text" placeholder="start by surname" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" required />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Sex</label>

@@ -77,7 +77,7 @@
       <!-- Footer -->
       <div class="text-center mt-8">
         <p class="text-gray-500 text-sm">
-          Madziwa College TP Assessment Platform
+          Madziwa Teachers College WIL Assessment Platform
         </p>
       </div>
     </div>
