@@ -7,6 +7,22 @@
       </div>
 
       <form @submit.prevent="submitAssessment" class="space-y-8">
+        <!-- Offline Import -->
+        <div class="bg-white rounded-xl shadow-sm border p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Offline Import</h2>
+          <div class="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-3 md:space-y-0">
+            <a
+              href="/api/assessments/template"
+              class="inline-flex items-center bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
+            >
+              <i class="pi pi-file mr-2"></i> Download Excel Template
+            </a>
+            <label class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
+              <i class="pi pi-upload mr-2"></i> Upload Completed Excel
+              <input type="file" accept=".xlsx,.xls,.csv" class="hidden" @change="onSupervisorImport" />
+            </label>
+          </div>
+        </div>
         <!-- Assessment Type -->
         <div class="bg-white rounded-xl shadow-sm border p-6">
           <h2 class="text-xl font-semibold text-gray-900 mb-4">Assessment Type</h2>
@@ -684,6 +700,24 @@ const searchStudents = async () => {
 const selectStudent = (s) => {
   selectedStudentId.value = s.id
   student.value = { ...s }
+}
+
+const onSupervisorImport = async (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  loading.value = true
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    const result = await $fetch('/api/assessments/import-xlsx', { method: 'POST', body: formData })
+    alert(`Imported. Created: ${result.created}, Updated: ${result.updated}, Errors: ${result.errors}`)
+  } catch (err) {
+    console.error('Supervisor import failed', err)
+    alert('Import failed. Please ensure you used the provided template.')
+  } finally {
+    loading.value = false
+    e.target.value = ''
+  }
 }
 
 const ensureSupervisor = async () => {

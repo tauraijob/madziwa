@@ -24,7 +24,8 @@
         "puppeteer": "^24.15.0",
         "tailwindcss": "^3.4.17",
         "vue": "^3.5.17",
-        "vue-router": "^4.5.1"
+        "vue-router": "^4.5.1",
+        "xlsx": "^0.18.5"
     },
     "devDependencies": {
         "@types/node": "^20.0.0",
