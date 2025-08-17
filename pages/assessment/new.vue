@@ -31,7 +31,7 @@
               <span class="block text-sm font-medium text-gray-700">Form</span>
               <span
                 class="inline-flex items-center mt-1 px-3 py-1 rounded-full text-sm font-medium"
-                :class="assessmentType==='junior' ? 'bg-blue-100 text-blue-800' : 'bg-rose-100 text-rose-800'"
+                :class="assessmentType==='junior' ? 'bg-primary-100 text-primary-800' : 'bg-rose-100 text-rose-800'"
               >
                 {{ assessmentType==='junior' ? 'Junior Supervision' : 'Early Childhood Development' }}
               </span>
@@ -83,7 +83,7 @@
               <input v-model="studentSearch.surname" type="text" placeholder="Surname" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
             </div>
             <div class="md:col-span-1">
-              <button type="button" @click="searchStudents" :disabled="searching" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
+              <button type="button" @click="searchStudents" :disabled="searching" class="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50">
                 <i v-if="searching" class="pi pi-spinner pi-spin mr-2"></i>
                 Search
               </button>

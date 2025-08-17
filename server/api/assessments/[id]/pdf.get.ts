@@ -154,12 +154,12 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
         }
         .header {
           text-align: center;
-          border-bottom: 3px solid #2563eb;
+          border-bottom: 3px solid #096540;
           padding-bottom: 20px;
           margin-bottom: 30px;
         }
         .header h1 {
-          color: #2563eb;
+          color: #096540;
           margin: 0;
           font-size: 28px;
         }
@@ -171,7 +171,7 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
           margin-bottom: 25px;
         }
         .section h2 {
-          color: #2563eb;
+          color: #096540;
           border-bottom: 2px solid #e5e7eb;
           padding-bottom: 5px;
           margin-bottom: 15px;
@@ -186,7 +186,7 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
           background: #f9fafb;
           padding: 15px;
           border-radius: 8px;
-          border-left: 4px solid #2563eb;
+          border-left: 4px solid #096540;
         }
         .info-item label {
           font-weight: bold;
@@ -218,7 +218,7 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
           background: #f9fafb;
         }
         .total-score {
-          background: linear-gradient(135deg, #2563eb, #7c3aed);
+          background: linear-gradient(135deg, #096540, #0b7a55);
           color: white;
           padding: 20px;
           border-radius: 10px;
@@ -245,7 +245,7 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
           margin: 20px 0;
         }
         .comment-section h3 {
-          color: #2563eb;
+          color: #096540;
           margin-top: 0;
         }
         .footer {
