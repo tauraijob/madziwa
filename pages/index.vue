@@ -17,22 +17,7 @@
             Empowering educators through comprehensive WIL Practice assessment and evaluation. 
             Streamline your assessment process with our modern, user-friendly platform.
           </p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <NuxtLink 
-              to="/assessment"
-              class="bg-gradient-to-r from-primary-600 to-emerald-600 text-white px-8 py-4 rounded-lg font-semibold hover:from-primary-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              <i class="pi pi-plus mr-2"></i>
-              Create New Assessment
-            </NuxtLink>
-            <NuxtLink 
-              to="/admin"
-              class="bg-white text-gray-700 px-8 py-4 rounded-lg font-semibold hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl border border-gray-200"
-            >
-              <i class="pi pi-cog mr-2"></i>
-              Admin Dashboard
-            </NuxtLink>
-          </div>
+          <div class="text-gray-500">Use the login links in the header to continue.</div>
         </div>
       </div>
     </div>
@@ -86,23 +71,18 @@
       </div>
     </div>
 
-    <!-- CTA Section -->
+    <!-- Instructions Section -->
     <div class="py-24 bg-gradient-to-r from-primary-600 to-emerald-600">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-3xl font-bold text-white mb-6">
-          Ready to Start Assessing?
-        </h2>
-        <p class="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-          Join Madziwa College in revolutionizing teaching practice assessment with our comprehensive platform.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <NuxtLink 
-            to="/assessment"
-            class="bg-white text-primary-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-50 transition-all duration-200 shadow-lg"
-          >
-            <i class="pi pi-plus mr-2"></i>
-            Create Assessment
-          </NuxtLink>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white/90 backdrop-blur rounded-2xl shadow-lg p-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">How it works</h2>
+          <ol class="list-decimal pl-6 space-y-2 text-gray-700">
+            <li>Supervisor logs in using the header link.</li>
+            <li>Register supervisor details and find the student (SRN or surname).</li>
+            <li>Complete the assessment form and submit.</li>
+            <li>Upload the completed Excel if assessing offline.</li>
+            <li>Admins review data; superadmins can import students CSV and manage deletions.</li>
+          </ol>
         </div>
       </div>
     </div>

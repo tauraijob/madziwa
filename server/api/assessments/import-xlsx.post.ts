@@ -156,6 +156,12 @@ async function handleRow(row: ImportRow) {
 
 export default defineEventHandler(async (event: H3Event) => {
   try {
+    // Only supervisors can upload completed assessment spreadsheets
+    const role = getCookie(event, 'role')
+    if (role !== 'supervisor') {
+      throw createError({ statusCode: 401, statusMessage: 'Only supervisors may import assessments' })
+    }
+
     const parts = await readMultipartFormData(event)
     if (!parts || parts.length === 0) {
       throw createError({ statusCode: 400, statusMessage: 'No file uploaded' })

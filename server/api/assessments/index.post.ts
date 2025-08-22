@@ -4,6 +4,11 @@ const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
   try {
+    // Only supervisors may create assessments
+    const role = getCookie(event, 'role')
+    if (role !== 'supervisor') {
+      throw createError({ statusCode: 401, statusMessage: 'Only supervisors may create assessments' })
+    }
     const body = await readBody(event)
     
     // Validate required fields

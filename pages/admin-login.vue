@@ -109,12 +109,14 @@ const handleLogin = async () => {
     // Simple authentication for demo purposes
     // In a real application, you would make an API call to verify credentials
     if (form.value.username === 'admin' && form.value.password === 'admin123') {
-      // Set admin cookie
-      const isAdmin = useCookie('isAdmin')
-      isAdmin.value = 'true'
-      
-      // Redirect to admin dashboard
+      // Set role cookie (admin by default; superadmin via env or special creds in real app)
+      const role = useCookie('role')
+      role.value = 'admin'
       await navigateTo('/admin')
+    } else if (form.value.username === 'superadmin' && form.value.password === 'superadmin123') {
+      const role = useCookie('role')
+      role.value = 'superadmin'
+      await navigateTo('/superadmin')
     } else {
       error.value = 'Invalid username or password'
     }

@@ -18,8 +18,24 @@
         </div>
       </div>
 
-      <!-- Settings Form -->
+      <!-- Students CSV Import (Superadmin only) -->
       <div class="bg-white rounded-xl shadow-sm border p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-semibold text-gray-900">Import Students (CSV)</h2>
+          <label v-if="isSuperadmin" class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
+            <i class="pi pi-upload mr-2"></i> Import CSV
+            <input type="file" accept=".csv" class="hidden" @change="onImportStudentsCsv" />
+          </label>
+          <span v-else class="text-sm text-gray-500">Superadmin only</span>
+        </div>
+        <div v-if="csvImportSummary" class="bg-gray-50 border border-gray-200 rounded p-4 text-sm text-gray-700">
+          <div class="font-medium mb-1">Import Summary</div>
+          <div>Created: {{ csvImportSummary.created }}, Updated: {{ csvImportSummary.updated }}, Errors: {{ csvImportSummary.errors }}</div>
+        </div>
+      </div>
+
+      <!-- Settings Form -->
+      <div class="bg-white rounded-xl shadow-sm border p-6 mt-6">
         <form @submit.prevent="handleSaveSettings" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Preparation & Scheming -->
@@ -212,6 +228,29 @@ definePageMeta({
 })
 
 const loading = ref(false)
+const role = useCookie('role')
+const isSuperadmin = computed(() => role.value === 'superadmin')
+const csvImportSummary = ref(null)
+
+const onImportStudentsCsv = async (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  loading.value = true
+  csvImportSummary.value = null
+  try {
+    const form = new FormData()
+    form.append('file', file)
+    const result = await $fetch('/api/students/import-csv', { method: 'POST', body: form })
+    csvImportSummary.value = result
+    alert(`Students import complete. Created: ${result.created}, Updated: ${result.updated}, Errors: ${result.errors}`)
+  } catch (err) {
+    console.error('Students import failed', err)
+    alert('Import failed. Please verify the CSV and try again.')
+  } finally {
+    loading.value = false
+    e.target.value = ''
+  }
+}
 
 
 

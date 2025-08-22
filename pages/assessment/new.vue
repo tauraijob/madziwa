@@ -18,7 +18,7 @@
               <i class="pi pi-file mr-2"></i> Download Excel Template
             </a>
             <label class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
-              <i class="pi pi-upload mr-2"></i> Upload Completed Excel
+              <i class="pi pi-upload mr-2"></i> Upload Completed Excel (supervisors only)
               <input type="file" accept=".xlsx,.xls,.csv" class="hidden" @change="onSupervisorImport" />
             </label>
           </div>
@@ -589,7 +589,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
-definePageMeta({ title: 'Create New Assessment' })
+definePageMeta({ title: 'Create New Assessment', middleware: 'supervisor-auth' })
 
 const loading = ref(false)
 const searching = ref(false)

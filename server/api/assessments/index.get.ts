@@ -4,6 +4,12 @@ const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
   try {
+    // Basic role check
+    const role = getCookie(event, 'role')
+    if (role !== 'admin' && role !== 'superadmin') {
+      throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+    }
+
     // Get all assessments with related data
     const assessments = await prisma.assessment.findMany({
       include: {

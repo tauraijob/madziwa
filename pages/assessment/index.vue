@@ -54,5 +54,5 @@
 </template>
 
 <script setup>
-definePageMeta({ title: 'Choose Assessment Type' })
+definePageMeta({ title: 'Choose Assessment Type', middleware: 'supervisor-auth' })
 </script>

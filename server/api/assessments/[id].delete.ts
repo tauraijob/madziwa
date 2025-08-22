@@ -4,6 +4,12 @@ const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
   try {
+    // Only superadmin may delete assessments
+    const role = getCookie(event, 'role')
+    if (role !== 'superadmin') {
+      throw createError({ statusCode: 401, statusMessage: 'Only superadmin may delete assessments' })
+    }
+
     const id = getRouterParam(event, 'id')
     
     // Check if assessment exists

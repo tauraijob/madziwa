@@ -29,22 +29,63 @@
               <i class="pi pi-home mr-2"></i>
               Home
             </NuxtLink>
-            <NuxtLink 
-              to="/assessment" 
-              class="nav-link"
-              :class="{ 'active': $route.path === '/assessment' || $route.path.startsWith('/assessment/') }"
-            >
-              <i class="pi pi-plus mr-2"></i>
-              New Assessment
-            </NuxtLink>
-            <NuxtLink 
-              to="/admin" 
-              class="nav-link"
-              :class="{ 'active': $route.path === '/admin' }"
-            >
-              <i class="pi pi-cog mr-2"></i>
-              Admin
-            </NuxtLink>
+            <template v-if="role === 'supervisor'">
+              <NuxtLink 
+                to="/supervisor" 
+                class="nav-link"
+                :class="{ 'active': $route.path === '/supervisor' }"
+              >
+                <i class="pi pi-home mr-2"></i>
+                Supervisor
+              </NuxtLink>
+              <NuxtLink 
+                to="/assessment" 
+                class="nav-link"
+                :class="{ 'active': $route.path === '/assessment' || $route.path.startsWith('/assessment/') }"
+              >
+                <i class="pi pi-plus mr-2"></i>
+                New Assessment
+              </NuxtLink>
+            </template>
+            <template v-if="!isAuthenticated">
+              <NuxtLink 
+                to="/supervisor-login" 
+                class="nav-link"
+                :class="{ 'active': $route.path === '/supervisor-login' }"
+              >
+                <i class="pi pi-user mr-2"></i>
+                Supervisor Login
+              </NuxtLink>
+              <NuxtLink 
+                to="/admin-login" 
+                class="nav-link"
+                :class="{ 'active': $route.path === '/admin-login' }"
+              >
+                <i class="pi pi-shield mr-2"></i>
+                Admin Login
+              </NuxtLink>
+            </template>
+            <template v-if="role === 'admin'">
+              <NuxtLink 
+                to="/admin" 
+                class="nav-link"
+                :class="{ 'active': $route.path === '/admin' }"
+              >
+                <i class="pi pi-cog mr-2"></i>
+                Admin
+              </NuxtLink>
+            </template>
+            <template v-if="role === 'superadmin'">
+              <NuxtLink 
+                to="/superadmin" 
+                class="nav-link"
+                :class="{ 'active': $route.path === '/superadmin' }"
+              >
+                <i class="pi pi-shield mr-2"></i>
+                Superadmin
+              </NuxtLink>
+            </template>
+            <button v-if="isAuthenticated" @click="logout" class="px-3 py-1.5 text-sm border rounded-lg text-gray-700 hover:bg-gray-100">Logout</button>
           </nav>
 
           <!-- Mobile menu button -->
@@ -70,24 +111,71 @@
               <i class="pi pi-home mr-2"></i>
               Home
             </NuxtLink>
-            <NuxtLink 
-              to="/assessment" 
-              class="nav-link py-2"
-              :class="{ 'active': $route.path === '/assessment' || $route.path.startsWith('/assessment/') }"
-              @click="mobileMenuOpen = false"
-            >
-              <i class="pi pi-plus mr-2"></i>
-              New Assessment
-            </NuxtLink>
-            <NuxtLink 
-              to="/admin" 
-              class="nav-link py-2"
-              :class="{ 'active': $route.path === '/admin' }"
-              @click="mobileMenuOpen = false"
-            >
-              <i class="pi pi-cog mr-2"></i>
-              Admin
-            </NuxtLink>
+            <template v-if="role === 'supervisor'">
+              <NuxtLink 
+                to="/supervisor" 
+                class="nav-link py-2"
+                :class="{ 'active': $route.path === '/supervisor' }"
+                @click="mobileMenuOpen = false"
+              >
+                <i class="pi pi-home mr-2"></i>
+                Supervisor
+              </NuxtLink>
+              <NuxtLink 
+                to="/assessment" 
+                class="nav-link py-2"
+                :class="{ 'active': $route.path === '/assessment' || $route.path.startsWith('/assessment/') }"
+                @click="mobileMenuOpen = false"
+              >
+                <i class="pi pi-plus mr-2"></i>
+                New Assessment
+              </NuxtLink>
+            </template>
+            <template v-if="!isAuthenticated">
+              <NuxtLink 
+                to="/supervisor-login" 
+                class="nav-link py-2"
+                :class="{ 'active': $route.path === '/supervisor-login' }"
+                @click="mobileMenuOpen = false"
+              >
+                <i class="pi pi-user mr-2"></i>
+                Supervisor Login
+              </NuxtLink>
+              <NuxtLink 
+                to="/admin-login" 
+                class="nav-link py-2"
+                :class="{ 'active': $route.path === '/admin-login' }"
+                @click="mobileMenuOpen = false"
+              >
+                <i class="pi pi-shield mr-2"></i>
+                Admin Login
+              </NuxtLink>
+            </template>
+            <template v-if="role === 'admin'">
+              <NuxtLink 
+                to="/admin" 
+                class="nav-link py-2"
+                :class="{ 'active': $route.path === '/admin' }"
+                @click="mobileMenuOpen = false"
+              >
+                <i class="pi pi-cog mr-2"></i>
+                Admin
+              </NuxtLink>
+            </template>
+            <template v-if="role === 'superadmin'">
+              <NuxtLink 
+                to="/superadmin" 
+                class="nav-link py-2"
+                :class="{ 'active': $route.path === '/superadmin' }"
+                @click="mobileMenuOpen = false"
+              >
+                <i class="pi pi-shield mr-2"></i>
+                Superadmin
+              </NuxtLink>
+            </template>
+            <div v-if="isAuthenticated" class="pt-2">
+              <button @click="() => { logout(); mobileMenuOpen = false }" class="w-full text-left px-3 py-2 border rounded-lg text-gray-700 hover:bg-gray-100">Logout</button>
+            </div>
           </div>
         </div>
       </div>
@@ -190,6 +278,17 @@
 import { ref } from 'vue'
 
 const mobileMenuOpen = ref(false)
+const role = useCookie('role')
+
+const isAuthenticated = computed(() => !!role.value)
+
+const logout = () => {
+  const r = useCookie('role')
+  const sid = useCookie('supervisorId')
+  r.value = null
+  sid.value = null
+  navigateTo('/')
+}
 </script>
 
 <style scoped>

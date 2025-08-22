@@ -32,18 +32,7 @@
               <i class="pi pi-download mr-2"></i>
               Export Selected ({{ selectedAssessments.length }})
             </button>
-            <a
-              href="/api/assessments/template"
-              class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
-            >
-              <i class="pi pi-file mr-2"></i>
-              Download Excel Template
-            </a>
-            <label class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
-              <i class="pi pi-upload mr-2"></i>
-              Import from Excel
-              <input type="file" accept=".xlsx,.xls,.csv" class="hidden" @change="onImportFile" />
-            </label>
+            <!-- Removed assessment import from admin as supervisors upload after assessment -->
             <button 
               @click="logout"
               class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
@@ -286,6 +275,7 @@
                       <i class="pi pi-pencil"></i>
                     </button>
                     <button 
+                      v-if="isSuperadmin"
                       @click="deleteAssessment(assessment)"
                       class="text-red-600 hover:text-red-900"
                     >
@@ -401,6 +391,8 @@ const selectedAssessment = ref(null)
 const currentPage = ref(1)
 const itemsPerPage = 10
 const importSummary = ref(null)
+const role = useCookie('role')
+const isSuperadmin = computed(() => role.value === 'superadmin')
 
 // Filters
 const filters = ref({
@@ -763,11 +755,8 @@ const formatDate = (dateString) => {
 }
 
 const logout = () => {
-  // Clear the admin cookie
-  const isAdmin = useCookie('isAdmin')
-  isAdmin.value = null
-  
-  // Redirect to home page
+  const role = useCookie('role')
+  role.value = null
   navigateTo('/')
 }
 
