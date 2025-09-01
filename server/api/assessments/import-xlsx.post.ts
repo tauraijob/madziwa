@@ -117,14 +117,10 @@ function mapAssessmentData(row: ImportRow) {
   return base
 }
 
-async function handleRow(row: ImportRow) {
+async function handleRow(row: ImportRow, currentSupervisorId: number) {
   // Required identifiers
   if (!row.fullName || !row.candidateNo) throw new Error('Student fullName and candidateNo are required')
-  if (!row.supervisorFullName || (!row.supervisorEmail && !row.supervisorNationalId)) {
-    throw new Error('Supervisor fullName and (email or nationalId) are required')
-  }
-
-  const supervisor = await upsertSupervisor(row)
+  // Supervisor fields in the sheet are ignored; we attach to the logged-in supervisor
   const student = await upsertStudent(row)
   const data = mapAssessmentData(row)
 
@@ -143,13 +139,13 @@ async function handleRow(row: ImportRow) {
   if (existing) {
     await prisma.assessment.update({
       where: { id: existing.id },
-      data: { ...data, supervisorId: supervisor.id, studentId: student.id },
+      data: { ...data, supervisorId: currentSupervisorId, studentId: student.id },
     })
     return { status: 'updated', student: student.candidateNo, subject: data.subject }
   }
 
   await prisma.assessment.create({
-    data: { ...data, supervisorId: supervisor.id, studentId: student.id },
+    data: { ...data, supervisorId: currentSupervisorId, studentId: student.id },
   })
   return { status: 'created', student: student.candidateNo, subject: data.subject }
 }
@@ -160,6 +156,12 @@ export default defineEventHandler(async (event: H3Event) => {
     const role = getCookie(event, 'role')
     if (role !== 'supervisor') {
       throw createError({ statusCode: 401, statusMessage: 'Only supervisors may import assessments' })
+    }
+
+    const supervisorIdCookie = getCookie(event, 'supervisorId')
+    const currentSupervisorId = parseInt(String(supervisorIdCookie || '0'))
+    if (!currentSupervisorId) {
+      throw createError({ statusCode: 401, statusMessage: 'Missing supervisor session' })
     }
 
     const parts = await readMultipartFormData(event)
@@ -185,7 +187,7 @@ export default defineEventHandler(async (event: H3Event) => {
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i]
       try {
-        const res = await handleRow(row)
+        const res = await handleRow(row, currentSupervisorId)
         results.push({ row: i + 2, ...res }) // +2 accounts for 1-based index and header row
       } catch (err: any) {
         results.push({ row: i + 2, status: 'error', error: err?.message || String(err) })

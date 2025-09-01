@@ -588,6 +588,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import * as XLSX from 'xlsx'
 
 definePageMeta({ title: 'Create New Assessment', middleware: 'supervisor-auth' })
 
@@ -707,13 +708,58 @@ const onSupervisorImport = async (e) => {
   if (!file) return
   loading.value = true
   try {
-    const formData = new FormData()
-    formData.append('file', file)
-    const result = await $fetch('/api/assessments/import-xlsx', { method: 'POST', body: formData })
-    alert(`Imported. Created: ${result.created}, Updated: ${result.updated}, Errors: ${result.errors}`)
+    const buf = await file.arrayBuffer()
+    const workbook = XLSX.read(buf, { type: 'array' })
+    const sheetName = workbook.SheetNames.includes('Assessments') ? 'Assessments' : workbook.SheetNames[0]
+    const worksheet = workbook.Sheets[sheetName]
+    const rows = XLSX.utils.sheet_to_json(worksheet, { defval: '' })
+    if (!rows.length) {
+      alert('No rows found in sheet')
+      return
+    }
+    const row = rows[0]
+
+    // Prefill assessment type
+    const ft = String(row.formType || '').toLowerCase()
+    assessmentType.value = (ft === 'ecd' ? 'ecd' : 'junior')
+
+    // Prefill student
+    student.value.fullName = String(row.fullName || student.value.fullName)
+    student.value.sex = String(row.sex || student.value.sex)
+    student.value.candidateNo = String(row.candidateNo || student.value.candidateNo)
+    student.value.email = String(row.email || student.value.email)
+    student.value.schoolName = String(row.schoolName || student.value.schoolName)
+    student.value.className = String(row.className || student.value.className)
+
+    // Prefill supervisor (optional)
+    supervisor.value.fullName = String(row.supervisorFullName || supervisor.value.fullName)
+    supervisor.value.nationalId = String(row.supervisorNationalId || supervisor.value.nationalId)
+    supervisor.value.phoneNumber = String(row.supervisorPhoneNumber || supervisor.value.phoneNumber)
+    supervisor.value.email = String(row.supervisorEmail || supervisor.value.email)
+
+    // Prefill assessment details
+    form.value.subject = String(row.subject || form.value.subject)
+    form.value.topic = String(row.topic || form.value.topic)
+    const d = (row.assessmentDate ? new Date(row.assessmentDate) : null)
+    if (d && !isNaN(d.getTime())) {
+      form.value.assessmentDate = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16)
+    }
+    const num = (v) => Number.isNaN(Number(v)) ? undefined : Number(v)
+    if (num(row.preparationMark) !== undefined) form.value.preparationMark = num(row.preparationMark)
+    if (num(row.lessonPlanningMark) !== undefined) form.value.lessonPlanningMark = num(row.lessonPlanningMark)
+    if (num(row.environmentMark) !== undefined) form.value.environmentMark = num(row.environmentMark)
+    if (num(row.documentsMark) !== undefined) form.value.documentsMark = num(row.documentsMark)
+    if (num(row.introductionMark) !== undefined) form.value.introductionMark = num(row.introductionMark)
+    if (num(row.developmentMark) !== undefined) form.value.developmentMark = num(row.developmentMark)
+    if (num(row.conclusionMark) !== undefined) form.value.conclusionMark = num(row.conclusionMark)
+    if (num(row.personalDimensionsMark) !== undefined) form.value.personalDimensionsMark = num(row.personalDimensionsMark)
+    if (num(row.communityMark) !== undefined) form.value.communityMark = num(row.communityMark)
+    form.value.overallComment = String(row.overallComment || form.value.overallComment)
+
+    alert('Form prefilled from Excel. Review and submit.')
   } catch (err) {
-    console.error('Supervisor import failed', err)
-    alert('Import failed. Please ensure you used the provided template.')
+    console.error('Prefill from Excel failed', err)
+    alert('Prefill failed. Please ensure you used the provided template.')
   } finally {
     loading.value = false
     e.target.value = ''
@@ -785,11 +831,11 @@ const submitAssessment = async () => {
 
     await $fetch('/api/assessments', {
       method: 'POST',
-      body: { ...form.value, supervisorId, studentId, formType: assessmentType.value }
+      body: { ...form.value, studentId, formType: assessmentType.value }
     })
 
     alert('Assessment created successfully!')
-    await navigateTo('/admin')
+    await navigateTo('/supervisor')
   } catch (error) {
     console.error('Error creating assessment:', error)
     alert('Failed to create assessment. Please try again.')

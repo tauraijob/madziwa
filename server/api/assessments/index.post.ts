@@ -9,13 +9,18 @@ export default defineEventHandler(async (event) => {
     if (role !== 'supervisor') {
       throw createError({ statusCode: 401, statusMessage: 'Only supervisors may create assessments' })
     }
+    const supervisorIdCookie = getCookie(event, 'supervisorId')
+    const supervisorId = parseInt(String(supervisorIdCookie || '0'))
+    if (!supervisorId) {
+      throw createError({ statusCode: 401, statusMessage: 'Missing supervisor session' })
+    }
     const body = await readBody(event)
     
     // Validate required fields
-    if (!body.studentId || !body.supervisorId || !body.subject || !body.topic) {
+    if (!body.studentId || !body.subject || !body.topic) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Missing required fields: studentId, supervisorId, subject, topic'
+        statusMessage: 'Missing required fields: studentId, subject, topic'
       })
     }
 
@@ -47,7 +52,7 @@ export default defineEventHandler(async (event) => {
         // Form type
         formType: (body.formType === 'ecd' ? 'ecd' : 'junior'),
         overallComment: body.overallComment || '',
-        supervisorId: parseInt(body.supervisorId),
+        supervisorId: supervisorId,
         studentId: parseInt(body.studentId)
       },
       include: {
