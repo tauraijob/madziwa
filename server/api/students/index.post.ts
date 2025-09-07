@@ -22,7 +22,9 @@ export default defineEventHandler(async (event) => {
         candidateNo: body.candidateNo,
         email: body.email,
         schoolName: body.schoolName,
-        className: body.className
+        className: body.className,
+        phoneNumber: String(body.phoneNumber || ''),
+        districtId: body.districtId ? parseInt(String(body.districtId)) : undefined,
       }
     })
 

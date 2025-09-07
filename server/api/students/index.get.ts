@@ -4,7 +4,17 @@ const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
   try {
+    const role = getCookie(event, 'role')
+    const adminDistrictIdCookie = getCookie(event, 'adminDistrictId')
+    const adminDistrictId = adminDistrictIdCookie ? parseInt(String(adminDistrictIdCookie)) : null
+
+    const where: any = {}
+    if (role === 'admin' && adminDistrictId) {
+      where.districtId = adminDistrictId
+    }
+
     const students = await prisma.student.findMany({
+      where,
       orderBy: {
         createdAt: 'desc'
       }

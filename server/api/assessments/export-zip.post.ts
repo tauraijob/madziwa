@@ -6,6 +6,13 @@ const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
   try {
+    const role = getCookie(event, 'role')
+    if (role !== 'admin' && role !== 'superadmin') {
+      throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+    }
+    const adminDistrictIdCookie = getCookie(event, 'adminDistrictId')
+    const adminDistrictId = adminDistrictIdCookie ? parseInt(String(adminDistrictIdCookie)) : null
+
     const body = await readBody(event)
     const { assessmentIds } = body
 
@@ -16,12 +23,11 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // Get assessments with related data
+    // Get assessments with related data (admins restricted to their district)
     const assessments = await prisma.assessment.findMany({
       where: {
-        id: {
-          in: assessmentIds.map(id => parseInt(id))
-        }
+        id: { in: assessmentIds.map(id => parseInt(id)) },
+        ...(role === 'admin' && adminDistrictId ? { student: { districtId: adminDistrictId } } : {}),
       },
       include: {
         student: true,

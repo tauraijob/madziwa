@@ -1,8 +1,40 @@
 import { PrismaClient } from '@prisma/client'
+import crypto from 'crypto'
 
 const prisma = new PrismaClient()
 
 async function main() {
+  // Ensure at least one district exists
+  const defaultDistrict = await prisma.district.upsert({
+    where: { name: 'Default District' },
+    update: {},
+    create: { name: 'Default District' },
+  })
+
+  // Seed admin users
+  const sha256 = (s: string) => crypto.createHash('sha256').update(s).digest('hex')
+  await prisma.adminUser.upsert({
+    where: { email: 'superadmin@example.com' },
+    update: {},
+    create: {
+      fullName: 'Super Admin',
+      email: 'superadmin@example.com',
+      passwordHash: sha256('superadmin123'),
+      role: 'superadmin',
+    },
+  })
+  await prisma.adminUser.upsert({
+    where: { email: 'admin@example.com' },
+    update: {},
+    create: {
+      fullName: 'District Admin',
+      email: 'admin@example.com',
+      passwordHash: sha256('admin123'),
+      role: 'admin',
+      assignedDistrictId: defaultDistrict.id,
+    },
+  })
+
   // Dummy supervisors
   const supervisors = [
     { fullName: 'Alice Moyo', email: 'alice.moyo@example.com', phoneNumber: '+263777000001', nationalId: '63-1111111X18' },

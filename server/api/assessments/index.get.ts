@@ -10,8 +10,29 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
     }
 
-    // Get all assessments with related data
+    const query = getQuery(event) as { districtId?: string; studentId?: string }
+
+    // District scoping for admins
+    const adminDistrictIdCookie = getCookie(event, 'adminDistrictId')
+    const adminDistrictId = adminDistrictIdCookie ? parseInt(String(adminDistrictIdCookie)) : null
+
+    const where: any = {}
+    if (role === 'admin' && adminDistrictId) {
+      where.student = { districtId: adminDistrictId }
+    } else if (role === 'superadmin' && query?.districtId) {
+      const qId = parseInt(String(query.districtId))
+      if (qId) where.student = { districtId: qId }
+    }
+
+    // Optional: filter by specific student
+    if (query?.studentId) {
+      const sid = parseInt(String(query.studentId))
+      if (sid) where.studentId = sid
+    }
+
+    // Get assessments with related data
     const assessments = await prisma.assessment.findMany({
+      where,
       include: {
         student: true,
         supervisor: true

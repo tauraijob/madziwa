@@ -15,24 +15,29 @@ const defaultSettings = {
 export const useAssessmentSettings = () => {
   const settings = ref({ ...defaultSettings })
 
-  // Load settings from localStorage
-  const loadSettings = () => {
-    if (process.client) {
-      const savedSettings = localStorage.getItem('assessmentSettings')
-      if (savedSettings) {
-        try {
-          settings.value = { ...defaultSettings, ...JSON.parse(savedSettings) }
-        } catch (error) {
-          console.error('Error loading settings:', error)
+  // Load settings from server (fallback to localStorage then defaults)
+  const loadSettings = async () => {
+    try {
+      const res = await $fetch('/api/settings/assessment-points')
+      if (res?.settings) settings.value = { ...defaultSettings, ...res.settings }
+    } catch (e) {
+      if (process.client) {
+        const savedSettings = localStorage.getItem('assessmentSettings')
+        if (savedSettings) {
+          try { settings.value = { ...defaultSettings, ...JSON.parse(savedSettings) } } catch {}
         }
       }
     }
   }
 
-  // Save settings to localStorage
-  const saveSettings = (newSettings) => {
-    if (process.client) {
-      localStorage.setItem('assessmentSettings', JSON.stringify(newSettings))
+  // Save settings to server (and cache locally for offline)
+  const saveSettings = async (newSettings) => {
+    try {
+      await $fetch('/api/settings/assessment-points', { method: 'POST', body: newSettings })
+      settings.value = newSettings
+      if (process.client) localStorage.setItem('assessmentSettings', JSON.stringify(newSettings))
+    } catch (e) {
+      if (process.client) localStorage.setItem('assessmentSettings', JSON.stringify(newSettings))
       settings.value = newSettings
     }
   }

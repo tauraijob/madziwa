@@ -27,7 +27,8 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 400, statusMessage: 'CSV has no data rows' })
     }
     const header = lines[0].split(',').map(h => h.trim().toLowerCase())
-    const required = ['surname','names','sex','phone','email','candidateNo','schoolName','className']
+    if (!header.length) throw createError({ statusCode: 400, statusMessage: 'Invalid CSV header' })
+    const required = ['surname','names','sex','phone','email','district','schoolname','classname','candidateno']
     // Accept flexible headers; map to expected fields
     const aliasMap: Record<string,string> = {
       surname: 'surname',
@@ -37,12 +38,16 @@ export default defineEventHandler(async (event) => {
       phonenumber: 'phone',
       email: 'email',
       candidate: 'candidateNo',
+      candidatnumber: 'candidateNo',
       candidateno: 'candidateNo',
       srn: 'candidateNo',
+      candidate_no: 'candidateNo',
+      candidate_number: 'candidateNo',
       school: 'schoolName',
       schoolname: 'schoolName',
       class: 'className',
       classname: 'className',
+      district: 'district',
     }
     const idxMap: Record<string,number> = {}
     header.forEach((h, i) => {
@@ -66,10 +71,22 @@ export default defineEventHandler(async (event) => {
         const candidateNo = (row[idxMap['candidateNo']] || '').trim()
         const schoolName = (row[idxMap['schoolName']] || '').trim()
         const className = (row[idxMap['className']] || '').trim()
+        const districtName = (row[idxMap['district']] || '').trim()
 
         if (!fullName || !candidateNo) throw new Error('fullName and candidateNo required')
 
-        const data = { fullName, sex, candidateNo, email, schoolName, className }
+        // Ensure district exists if provided
+        let districtId: number | undefined = undefined
+        if (districtName) {
+          let district = await prisma.district.findFirst({ where: { name: districtName } })
+          if (!district) {
+            district = await prisma.district.create({ data: { name: districtName } })
+          }
+          districtId = district.id
+        }
+
+        const data: any = { fullName, sex, candidateNo, email, schoolName, className, phoneNumber: phone }
+        if (districtId) data.districtId = districtId
 
         let existing = await prisma.student.findUnique({ where: { candidateNo } })
         if (!existing) {

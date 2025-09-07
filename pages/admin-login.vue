@@ -106,22 +106,22 @@ const handleLogin = async () => {
   error.value = ''
 
   try {
-    // Simple authentication for demo purposes
-    // In a real application, you would make an API call to verify credentials
-    if (form.value.username === 'admin' && form.value.password === 'admin123') {
-      // Set role cookie (admin by default; superadmin via env or special creds in real app)
-      const role = useCookie('role')
-      role.value = 'admin'
-      await navigateTo('/admin')
-    } else if (form.value.username === 'superadmin' && form.value.password === 'superadmin123') {
-      const role = useCookie('role')
-      role.value = 'superadmin'
+    const res = await $fetch('/api/auth/admin-login', {
+      method: 'POST',
+      body: {
+        email: form.value.username,
+        password: form.value.password,
+      },
+    })
+
+    const role = useCookie('role')
+    if (role.value === 'superadmin' || res?.user?.role === 'superadmin') {
       await navigateTo('/superadmin')
     } else {
-      error.value = 'Invalid username or password'
+      await navigateTo('/admin')
     }
   } catch (err) {
-    error.value = 'An error occurred. Please try again.'
+    error.value = (err && err.statusMessage) ? err.statusMessage : 'Invalid username or password'
   } finally {
     loading.value = false
   }

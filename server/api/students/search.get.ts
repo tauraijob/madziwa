@@ -13,7 +13,15 @@ export default defineEventHandler(async (event) => {
     }
 
     if (query.surname && query.surname.trim() !== '') {
-      where.fullName = { contains: query.surname.trim(), mode: 'insensitive' as const }
+      where.fullName = { contains: query.surname.trim() }
+    }
+
+    // District scoping for admins
+    const role = getCookie(event, 'role')
+    const adminDistrictIdCookie = getCookie(event, 'adminDistrictId')
+    const adminDistrictId = adminDistrictIdCookie ? parseInt(String(adminDistrictIdCookie)) : null
+    if (role === 'admin' && adminDistrictId) {
+      where.districtId = adminDistrictId
     }
 
     // If no filters provided, return empty list to avoid dumping all students

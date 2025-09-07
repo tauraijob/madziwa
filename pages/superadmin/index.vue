@@ -6,6 +6,13 @@
           <h1 class="text-3xl font-bold text-gray-900">Superadmin Dashboard</h1>
           <p class="text-gray-600 mt-1">Manage data, imports, and high-privilege actions</p>
         </div>
+        <NuxtLink
+          to="/admin"
+          class="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+        >
+          <i class="pi pi-table mr-2"></i>
+          Go to Admin Dashboard
+        </NuxtLink>
       </div>
 
       <!-- Stats Cards -->
@@ -43,6 +50,71 @@
         </div>
       </div>
 
+      <!-- Manage Admins & Districts -->
+      <div class="bg-white rounded-xl shadow-sm border p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold text-gray-900">Manage Admins & Districts</h2>
+        </div>
+        <form @submit.prevent="createAdmin" class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
+          <input v-model="newAdmin.fullName" placeholder="Full name" class="px-3 py-2 border rounded" />
+          <input v-model="newAdmin.email" placeholder="Email" class="px-3 py-2 border rounded" />
+          <input v-model="newAdmin.password" type="password" placeholder="Password" class="px-3 py-2 border rounded" />
+          <select v-model="newAdmin.role" class="px-3 py-2 border rounded">
+            <option value="admin">admin</option>
+            <option value="superadmin">superadmin</option>
+          </select>
+          <select v-model.number="newAdmin.assignedDistrictId" class="px-3 py-2 border rounded">
+            <option :value="undefined">No District</option>
+            <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
+          </select>
+          <div class="md:col-span-5">
+            <button @click="createAdmin" class="bg-green-600 text-white px-4 py-2 rounded">Create Admin</button>
+          </div>
+        </form>
+
+        <div class="flex items-center space-x-2 mb-4">
+          <input v-model="newDistrict" placeholder="New district name" class="px-3 py-2 border rounded" />
+          <button @click="addDistrict" class="bg-blue-600 text-white px-4 py-2 rounded">Add District</button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-2 text-left">Name</th>
+                <th class="px-4 py-2 text-left">Email</th>
+                <th class="px-4 py-2 text-left">Role</th>
+                <th class="px-4 py-2 text-left">District</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="a in admins" :key="a.id" class="border-b">
+                <td class="px-4 py-2">{{ a.fullName }}</td>
+                <td class="px-4 py-2">{{ a.email }}</td>
+                <td class="px-4 py-2">{{ a.role }}</td>
+                <td class="px-4 py-2">
+                  <select :value="a.assignedDistrictId || undefined" @change="onAssignDistrict(a.id, $event.target.value)" class="px-2 py-1 border rounded">
+                    <option :value="undefined">No District</option>
+                    <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Exports -->
+      <div class="bg-white rounded-xl shadow-sm border p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold text-gray-900">Exports</h2>
+        </div>
+        <div class="flex items-center space-x-3">
+          <button @click="downloadAllCsv" class="bg-indigo-600 text-white px-4 py-2 rounded"><i class="pi pi-download mr-2"/>Download All Assessments (CSV)</button>
+          <button @click="downloadAllPdfs" class="bg-indigo-600 text-white px-4 py-2 rounded"><i class="pi pi-download mr-2"/>Download All PDFs (ZIP)</button>
+        </div>
+      </div>
+
       <!-- Dangerous actions -->
       <div class="bg-white rounded-xl shadow-sm border p-6">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">Danger Zone</h2>
@@ -61,6 +133,11 @@ definePageMeta({ middleware: 'superadmin-auth' })
 const stats = reactive({ totalAssessments: 0, totalStudents: 0, totalSupervisors: 0, averageScore: 0 })
 const csvImportSummary = ref(null)
 
+const admins = ref([])
+const districts = ref([])
+const newDistrict = ref('')
+const newAdmin = ref({ fullName: '', email: '', password: '', role: 'admin', assignedDistrictId: undefined })
+
 const loadStats = async () => {
   try {
     const res = await $fetch('/api/assessments')
@@ -68,6 +145,19 @@ const loadStats = async () => {
     stats.totalStudents = res.statistics?.totalStudents || 0
     stats.totalSupervisors = res.statistics?.totalSupervisors || 0
     stats.averageScore = res.statistics?.averageScore || 0
+  } catch (e) {
+    // ignore
+  }
+}
+
+const loadDistrictsAdmins = async () => {
+  try {
+    const [d, a] = await Promise.all([
+      $fetch('/api/districts'),
+      $fetch('/api/admins'),
+    ])
+    districts.value = d.districts || []
+    admins.value = a.admins || []
   } catch (e) {
     // ignore
   }
@@ -89,6 +179,75 @@ const onImportStudentsCsv = async (e) => {
   }
 }
 
-onMounted(loadStats)
+const createAdmin = async (evt) => {
+  if (evt && evt.preventDefault) evt.preventDefault()
+  try {
+    const payload = { ...newAdmin.value }
+    const res = await $fetch('/api/admins', { method: 'POST', body: payload })
+    alert('Admin created')
+    newAdmin.value = { fullName: '', email: '', password: '', role: 'admin', assignedDistrictId: undefined }
+    await loadDistrictsAdmins()
+  } catch (e) {
+    alert('Failed to create admin')
+  }
+}
+
+const addDistrict = async () => {
+  if (!newDistrict.value.trim()) return
+  try {
+    await $fetch('/api/districts', { method: 'POST', body: { name: newDistrict.value.trim() } })
+    newDistrict.value = ''
+    await loadDistrictsAdmins()
+  } catch (e) {
+    alert('Failed to add district')
+  }
+}
+
+const onAssignDistrict = async (adminId, value) => {
+  try {
+    const districtId = value ? parseInt(String(value)) : undefined
+    if (!districtId) return
+    await $fetch('/api/admins/assign-district', { method: 'POST', body: { adminId, districtId } })
+    await loadDistrictsAdmins()
+  } catch (e) {
+    alert('Failed to assign district')
+  }
+}
+
+const downloadAllCsv = async () => {
+  try {
+    const response = await $fetch('/api/assessments/export-csv', { method: 'GET', responseType: 'blob' })
+    const blob = new Blob([response], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `assessments-${new Date().toISOString().split('T')[0]}.csv`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (e) {
+    alert('Failed to download CSV')
+  }
+}
+
+const downloadAllPdfs = async () => {
+  try {
+    const response = await $fetch('/api/assessments/export-pdf-all', { method: 'GET', responseType: 'blob' })
+    const blob = new Blob([response], { type: 'application/zip' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `assessments-${new Date().toISOString().split('T')[0]}.zip`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (e) {
+    alert('Failed to download PDFs')
+  }
+}
+
+onMounted(() => { loadStats(); loadDistrictsAdmins() })
 </script>
 

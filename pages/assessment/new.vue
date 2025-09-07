@@ -717,7 +717,29 @@ const onSupervisorImport = async (e) => {
       alert('No rows found in sheet')
       return
     }
-    const row = rows[0]
+    const rowRaw = rows[0]
+    // Normalize keys to be resilient to slight header variations
+    const simplifyKey = (k) => String(k || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+    const canon = {
+      fullname: 'fullName', sex: 'sex', candidateno: 'candidateNo', email: 'email', schoolname: 'schoolName', classname: 'className',
+      supervisorfullname: 'supervisorFullName', supervisornationalid: 'supervisorNationalId', supervisorphonenumber: 'supervisorPhoneNumber', supervisoremail: 'supervisorEmail',
+      assessmentdate: 'assessmentDate', subject: 'subject', topic: 'topic', formtype: 'formType',
+      preparationmark: 'preparationMark', preparationcomment: 'preparationComment',
+      lessonplanningmark: 'lessonPlanningMark', lessonplanningcomment: 'lessonPlanningComment',
+      environmentmark: 'environmentMark', environmentcomment: 'environmentComment',
+      documentsmark: 'documentsMark', documentscomment: 'documentsComment',
+      introductionmark: 'introductionMark', introductioncomment: 'introductionComment',
+      developmentmark: 'developmentMark', developmentcomment: 'developmentComment',
+      conclusionmark: 'conclusionMark', conclusioncomment: 'conclusionComment',
+      personaldimensionsmark: 'personalDimensionsMark', personaldimensionscomment: 'personalDimensionsComment',
+      communitymark: 'communityMark', communitycomment: 'communityComment',
+      overallcomment: 'overallComment',
+    }
+    const row = {}
+    Object.entries(rowRaw).forEach(([k, v]) => {
+      const t = canon[simplifyKey(k)]
+      row[t || k] = v
+    })
 
     // Prefill assessment type
     const ft = String(row.formType || '').toLowerCase()
@@ -755,6 +777,18 @@ const onSupervisorImport = async (e) => {
     if (num(row.personalDimensionsMark) !== undefined) form.value.personalDimensionsMark = num(row.personalDimensionsMark)
     if (num(row.communityMark) !== undefined) form.value.communityMark = num(row.communityMark)
     form.value.overallComment = String(row.overallComment || form.value.overallComment)
+
+    // Prefill all comment fields if present
+    const setIf = (field) => { if (row[field] !== undefined && row[field] !== null) form.value[field] = String(row[field]) }
+    setIf('preparationComment')
+    setIf('lessonPlanningComment')
+    setIf('environmentComment')
+    setIf('documentsComment')
+    setIf('introductionComment')
+    setIf('developmentComment')
+    setIf('conclusionComment')
+    setIf('personalDimensionsComment')
+    setIf('communityComment')
 
     alert('Form prefilled from Excel. Review and submit.')
   } catch (err) {

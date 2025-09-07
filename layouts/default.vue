@@ -65,7 +65,7 @@
                 Admin Login
               </NuxtLink>
             </template>
-            <template v-if="role === 'admin'">
+            <template v-if="role === 'admin' || role === 'superadmin'">
               <NuxtLink 
                 to="/admin" 
                 class="nav-link"
@@ -73,6 +73,14 @@
               >
                 <i class="pi pi-cog mr-2"></i>
                 Admin
+              </NuxtLink>
+              <NuxtLink 
+                to="/admin-students" 
+                class="nav-link"
+                :class="{ 'active': $route.path === '/admin-students' }"
+              >
+                <i class="pi pi-users mr-2"></i>
+                Students
               </NuxtLink>
             </template>
             <template v-if="role === 'superadmin'">

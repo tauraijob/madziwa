@@ -99,7 +99,7 @@
 
       <!-- Filters and Search -->
       <div class="bg-white rounded-xl shadow-sm border p-6 mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
             <input 
@@ -160,6 +160,16 @@
               <option value="ecd">Early Childhood Development</option>
             </select>
           </div>
+          <div v-if="isSuperadmin">
+            <label class="block text-sm font-medium text-gray-700 mb-2">District</label>
+            <select 
+              v-model="selectedDistrictId"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All Districts</option>
+              <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -172,6 +182,24 @@
               <span class="text-sm text-gray-500">
                 {{ filteredAssessments.length }} of {{ assessments.length }} assessments
               </span>
+              <button 
+                v-if="isSuperadmin"
+                @click="downloadAllCsv"
+                class="btn-secondary"
+                :disabled="loading"
+              >
+                <i class="pi pi-download mr-2"></i>
+                Export All CSV
+              </button>
+              <button 
+                v-if="isSuperadmin"
+                @click="downloadAllPdfs"
+                class="btn-secondary"
+                :disabled="loading"
+              >
+                <i class="pi pi-download mr-2"></i>
+                Export All PDFs
+              </button>
             </div>
           </div>
         </div>
@@ -269,6 +297,7 @@
                       <i class="pi pi-download"></i>
                     </button>
                     <button 
+                      v-if="isSuperadmin"
                       @click="editAssessment(assessment)"
                       class="text-yellow-600 hover:text-yellow-900"
                     >
@@ -375,7 +404,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 
 // Page meta
 definePageMeta({
@@ -393,6 +422,8 @@ const itemsPerPage = 10
 const importSummary = ref(null)
 const role = useCookie('role')
 const isSuperadmin = computed(() => role.value === 'superadmin')
+const districts = ref([])
+const selectedDistrictId = ref('')
 
 // Filters
 const filters = ref({
@@ -542,7 +573,16 @@ const fetchAssessments = async () => {
   loading.value = true
   try {
     // Simulate API call - replace with actual API endpoint
-    const response = await $fetch('/api/assessments')
+    const response = await $fetch('/api/assessments', {
+      params: {
+        districtId: selectedDistrictId.value || undefined,
+        search: filters.value.search,
+        subject: filters.value.subject,
+        dateRange: filters.value.dateRange,
+        scoreRange: filters.value.scoreRange,
+        formType: filters.value.formType
+      }
+    })
     assessments.value = response.assessments || []
     statistics.value = response.statistics || {
       totalAssessments: assessments.value.length,
@@ -560,6 +600,20 @@ const fetchAssessments = async () => {
     loading.value = false
   }
 }
+
+const loadDistricts = async () => {
+  if (!isSuperadmin.value) return
+  try {
+    const res = await $fetch('/api/districts')
+    districts.value = res.districts || []
+  } catch (e) {
+    districts.value = []
+  }
+}
+
+watch(() => selectedDistrictId.value, () => {
+  fetchAssessments()
+})
 
 const createSampleData = () => {
   // Create sample data for demonstration
@@ -722,6 +776,46 @@ const exportSelectedAsZip = async () => {
   }
 }
 
+const downloadAllCsv = async () => {
+  loading.value = true
+  try {
+    const response = await $fetch('/api/assessments/export-csv', { method: 'GET', responseType: 'blob' })
+    const blob = new Blob([response], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `assessments-${new Date().toISOString().split('T')[0]}.csv`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (e) {
+    alert('Failed to download CSV')
+  } finally {
+    loading.value = false
+  }
+}
+
+const downloadAllPdfs = async () => {
+  loading.value = true
+  try {
+    const response = await $fetch('/api/assessments/export-pdf-all', { method: 'GET', responseType: 'blob' })
+    const blob = new Blob([response], { type: 'application/zip' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `assessments-${new Date().toISOString().split('T')[0]}.zip`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (e) {
+    alert('Failed to download PDFs')
+  } finally {
+    loading.value = false
+  }
+}
+
 const previousPage = () => {
   if (currentPage.value > 1) {
     currentPage.value--
@@ -763,6 +857,7 @@ const logout = () => {
 // Lifecycle
 onMounted(() => {
   fetchAssessments()
+  loadDistricts()
 })
 </script>
 

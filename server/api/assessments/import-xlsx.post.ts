@@ -38,6 +38,61 @@ function parseDate(input: any): Date | null {
   return isNaN(d.getTime()) ? null : d
 }
 
+function simplifyKey(key: string): string {
+  return String(key || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+}
+
+function normalizeRow(row: ImportRow): ImportRow {
+  const canonical: Record<string, string> = {
+    fullname: 'fullName',
+    sex: 'sex',
+    candidateno: 'candidateNo',
+    email: 'email',
+    schoolname: 'schoolName',
+    classname: 'className',
+    supervisorfullname: 'supervisorFullName',
+    supervisoremail: 'supervisorEmail',
+    supervisorphonenumber: 'supervisorPhoneNumber',
+    supervisornationalid: 'supervisorNationalId',
+    assessmentdate: 'assessmentDate',
+    subject: 'subject',
+    topic: 'topic',
+    formtype: 'formType',
+    preparationmark: 'preparationMark',
+    preparationcomment: 'preparationComment',
+    lessonplanningmark: 'lessonPlanningMark',
+    lessonplanningcomment: 'lessonPlanningComment',
+    environmentmark: 'environmentMark',
+    environmentcomment: 'environmentComment',
+    documentsmark: 'documentsMark',
+    documentscomment: 'documentsComment',
+    documentmark: 'documentsMark',
+    documentcomment: 'documentsComment',
+    introductionmark: 'introductionMark',
+    introductioncomment: 'introductionComment',
+    developmentmark: 'developmentMark',
+    developmentcomment: 'developmentComment',
+    conclusionmark: 'conclusionMark',
+    conclusioncomment: 'conclusionComment',
+    personaldimensionsmark: 'personalDimensionsMark',
+    personaldimensionscomment: 'personalDimensionsComment',
+    personalmark: 'personalDimensionsMark',
+    personalcomment: 'personalDimensionsComment',
+    communitymark: 'communityMark',
+    communitycomment: 'communityComment',
+    overallcomment: 'overallComment',
+  }
+
+  const normalized: ImportRow = {}
+  for (const [k, v] of Object.entries(row)) {
+    const simp = simplifyKey(k)
+    const target = canonical[simp]
+    if (target) normalized[target] = v
+    else normalized[k] = v
+  }
+  return normalized
+}
+
 async function upsertSupervisor(row: ImportRow) {
   const email = String(row.supervisorEmail || '').trim()
   const nationalId = String(row.supervisorNationalId || '').trim()
@@ -118,11 +173,12 @@ function mapAssessmentData(row: ImportRow) {
 }
 
 async function handleRow(row: ImportRow, currentSupervisorId: number) {
+  const norm = normalizeRow(row)
   // Required identifiers
-  if (!row.fullName || !row.candidateNo) throw new Error('Student fullName and candidateNo are required')
+  if (!norm.fullName || !norm.candidateNo) throw new Error('Student fullName and candidateNo are required')
   // Supervisor fields in the sheet are ignored; we attach to the logged-in supervisor
-  const student = await upsertStudent(row)
-  const data = mapAssessmentData(row)
+  const student = await upsertStudent(norm)
+  const data = mapAssessmentData(norm)
 
   // Prevent obvious duplicates: same student + date + subject
   const existing = await prisma.assessment.findFirst({

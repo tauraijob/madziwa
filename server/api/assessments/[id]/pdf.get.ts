@@ -5,6 +5,10 @@ const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
   try {
+    const role = getCookie(event, 'role')
+    if (role !== 'superadmin' && role !== 'supervisor') {
+      throw createError({ statusCode: 403, statusMessage: 'Not allowed' })
+    }
     const id = getRouterParam(event, 'id')
     
     // Get assessment with related data
@@ -42,7 +46,8 @@ export default defineEventHandler(async (event) => {
     let pdfBuffer: Buffer | Uint8Array | null = null
     try {
       browser = await puppeteer.launch({ 
-        headless: 'new',
+        headless: true,
+        executablePath: puppeteer.executablePath(),
         args: [
           '--no-sandbox', 
           '--disable-setuid-sandbox',
