@@ -105,6 +105,9 @@
                     <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
                   </select>
                 </td>
+                <td class="px-4 py-2 text-right">
+                  <button @click="deleteAdmin(a.id)" class="px-3 py-1.5 text-sm bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -218,6 +221,16 @@ const onAssignDistrict = async (adminId, value) => {
     await loadDistrictsAdmins()
   } catch (e) {
     alert('Failed to assign district')
+  }
+}
+
+const deleteAdmin = async (id) => {
+  if (!confirm('Delete this admin?')) return
+  try {
+    await $fetch(`/api/admins/${id}`, { method: 'DELETE' })
+    await loadDistrictsAdmins()
+  } catch (e) {
+    alert('Failed to delete admin')
   }
 }
 
