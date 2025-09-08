@@ -44,6 +44,13 @@
             <input type="file" accept=".csv" class="hidden" @change="onImportStudentsCsv" />
           </label>
         </div>
+        <div class="text-sm text-gray-600 space-y-2">
+          <div class="font-medium">CSV header (comma-separated):</div>
+          <code class="block bg-gray-50 border border-gray-200 rounded p-2 overflow-x-auto">surname,names,sex,phone,email,district,schoolname,classname,candidateno</code>
+          <div>Example row:</div>
+          <code class="block bg-gray-50 border border-gray-200 rounded p-2 overflow-x-auto">Doe,Jane,Female,+263777000000,jane@example.com,Mudzi,Madziwa Primary,Grade 4 Blue,23/002/24</code>
+          <div>Full name is constructed as “surname + space + names”. All columns are required.</div>
+        </div>
         <div v-if="csvImportSummary" class="bg-gray-50 border border-gray-200 rounded p-4 text-sm text-gray-700">
           <div class="font-medium mb-1">Import Summary</div>
           <div>Created: {{ csvImportSummary.created }}, Updated: {{ csvImportSummary.updated }}, Errors: {{ csvImportSummary.errors }}</div>

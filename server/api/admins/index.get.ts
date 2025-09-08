@@ -11,15 +11,6 @@ export default defineEventHandler(async (event) => {
     const admins = await prisma.adminUser.findMany({
       orderBy: { createdAt: 'desc' },
       include: { assignedDistrict: true },
-      select: {
-        id: true,
-        fullName: true,
-        email: true,
-        role: true,
-        assignedDistrictId: true,
-        assignedDistrict: true,
-        createdAt: true,
-      }
     })
     return { admins }
   } catch (error) {

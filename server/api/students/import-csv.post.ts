@@ -20,6 +20,12 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 400, statusMessage: 'Missing file field' })
     }
 
+    // Only accept CSV files
+    const filename = (file as any).filename || ''
+    if (!filename.toLowerCase().endsWith('.csv')) {
+      throw createError({ statusCode: 400, statusMessage: 'Only .csv files are accepted' })
+    }
+
     // Parse CSV (simple parser)
     const text = file.data.toString('utf-8')
     const lines = text.split(/\r?\n/).filter(Boolean)
@@ -54,6 +60,11 @@ export default defineEventHandler(async (event) => {
       const key = aliasMap[h] || h
       idxMap[key] = i
     })
+    // Ensure required columns present
+    const missingCols = required.filter(col => idxMap[aliasMap[col] || col] === undefined)
+    if (missingCols.length) {
+      throw createError({ statusCode: 400, statusMessage: `Missing required columns: ${missingCols.join(', ')}` })
+    }
 
     const results: any[] = []
     let created = 0, updated = 0, errors = 0
@@ -73,7 +84,9 @@ export default defineEventHandler(async (event) => {
         const className = (row[idxMap['className']] || '').trim()
         const districtName = (row[idxMap['district']] || '').trim()
 
-        if (!fullName || !candidateNo) throw new Error('fullName and candidateNo required')
+        if (!fullName || !candidateNo || !sex || !email || !schoolName || !className || !phone || !districtName) {
+          throw new Error('Missing required student fields (ensure surname,names,sex,phone,email,district,schoolname,classname,candidateno)')
+        }
 
         // Ensure district exists if provided
         let districtId: number | undefined = undefined

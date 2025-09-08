@@ -9,7 +9,9 @@ export default defineEventHandler(async (event) => {
     const where: any = {}
 
     if (query.candidateNo && query.candidateNo.trim() !== '') {
-      where.candidateNo = query.candidateNo.trim()
+      const srn = query.candidateNo.trim()
+      // Allow partial/contains match so users can paste parts of SRN
+      where.candidateNo = { contains: srn }
     }
 
     if (query.surname && query.surname.trim() !== '') {
