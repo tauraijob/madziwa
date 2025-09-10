@@ -37,13 +37,13 @@
           </div>
           <div v-for="field in markFields" :key="field.key + '-c'">
             <label class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }} (Comment)</label>
-            <textarea v-model="form[field.comment]" rows="2" class="w-full px-3 py-2 border rounded" />
+            <textarea v-model="form[field.comment]" rows="2" class="w-full px-3 py-2 border rounded"></textarea>
           </div>
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Overall Comment</label>
-          <textarea v-model="form.overallComment" rows="3" class="w-full px-3 py-2 border rounded" />
+          <textarea v-model="form.overallComment" rows="3" class="w-full px-3 py-2 border rounded"></textarea>
         </div>
 
         <div class="flex justify-end space-x-3">
