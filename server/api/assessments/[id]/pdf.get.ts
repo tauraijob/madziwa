@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import puppeteer from 'puppeteer'
+import { buildPuppeteerLaunchOptions } from '../../../utils/resolveChromium'
 
 const prisma = new PrismaClient()
 
@@ -45,19 +46,7 @@ export default defineEventHandler(async (event) => {
     let browser
     let pdfBuffer: Buffer | Uint8Array | null = null
     try {
-      browser = await puppeteer.launch({ 
-        headless: true,
-        executablePath: puppeteer.executablePath(),
-        args: [
-          '--no-sandbox', 
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-gpu',
-          '--no-first-run',
-          '--no-zygote'
-        ],
-        timeout: 30000
-      })
+      browser = await puppeteer.launch(buildPuppeteerLaunchOptions())
       
       const page = await browser.newPage()
       await page.emulateMediaType('screen')

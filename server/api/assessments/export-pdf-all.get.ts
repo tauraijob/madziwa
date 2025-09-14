@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import puppeteer from 'puppeteer'
 import JSZip from 'jszip'
+import { buildPuppeteerLaunchOptions } from '../../utils/resolveChromium'
 
 const prisma = new PrismaClient()
 
@@ -31,12 +32,7 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 404, statusMessage: 'No assessments found' })
     }
 
-    const browser = await puppeteer.launch({
-      headless: true,
-      executablePath: puppeteer.executablePath(),
-      args: ['--no-sandbox','--disable-setuid-sandbox','--disable-dev-shm-usage','--disable-gpu','--no-first-run','--no-zygote'],
-      timeout: 60000,
-    })
+    const browser = await puppeteer.launch(buildPuppeteerLaunchOptions())
 
     const zip = new JSZip()
     try {

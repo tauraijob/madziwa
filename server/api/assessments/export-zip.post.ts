@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import puppeteer from 'puppeteer'
 import JSZip from 'jszip'
+import { buildPuppeteerLaunchOptions } from '../../utils/resolveChromium'
 
 const prisma = new PrismaClient()
 
@@ -44,19 +45,7 @@ export default defineEventHandler(async (event) => {
 
     // Create ZIP file
     const zip = new JSZip()
-    const browser = await puppeteer.launch({
-      headless: true,
-      executablePath: puppeteer.executablePath(),
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-gpu',
-        '--no-first-run',
-        '--no-zygote'
-      ],
-      timeout: 60000
-    })
+    const browser = await puppeteer.launch(buildPuppeteerLaunchOptions())
 
     try {
       // Generate PDF for each assessment
