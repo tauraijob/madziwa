@@ -45,8 +45,8 @@ async function main() {
   for (const s of supervisors) {
     await prisma.supervisor.upsert({
       where: { email: s.email },
-      update: s,
-      create: s,
+      update: { ...s, passwordHash: sha256('1234'), pinHash: sha256('1234') },
+      create: { ...s, passwordHash: sha256('1234'), pinHash: sha256('1234') },
     })
   }
 

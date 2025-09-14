@@ -14,8 +14,12 @@ model Supervisor {
   id          Int           @id @default(autoincrement())
   fullName    String        @map("fullName")
   email       String        @unique
+  passwordHash String?
+  pinHash     String?
   phoneNumber String        @map("phoneNumber")
   nationalId  String        @unique @map("nationalId")
+  districtId  Int?
+  district    District?     @relation(fields: [districtId], references: [id])
   createdAt   DateTime      @default(now()) @map("createdAt")
   updatedAt   DateTime      @updatedAt @map("updatedAt")
   assessments Assessment[]
@@ -83,6 +87,7 @@ model District {
   name      String    @unique
   students  Student[]
   admins    AdminUser[]
+  supervisors Supervisor[]
 
   @@map("districts")
 }

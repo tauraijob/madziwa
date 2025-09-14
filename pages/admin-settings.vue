@@ -224,7 +224,7 @@
 import { ref, computed, onMounted } from 'vue'
 
 definePageMeta({
-  middleware: 'admin-auth'
+  middleware: 'superadmin-auth'
 })
 
 const loading = ref(false)

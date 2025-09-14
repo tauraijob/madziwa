@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import crypto from 'crypto'
 
 const prisma = new PrismaClient()
 
@@ -17,9 +18,17 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 401, statusMessage: 'Invalid credentials' })
     }
 
-    const phone = supervisor.phoneNumber || ''
-    const last4 = phone.replace(/\D/g, '').slice(-4)
-    if (!last4 || last4 !== pin) {
+    const sha256 = (s: string) => crypto.createHash('sha256').update(s).digest('hex')
+    const providedHash = sha256(pin)
+    let valid = false
+    if (supervisor.pinHash) {
+      valid = supervisor.pinHash === providedHash
+    } else {
+      const phone = supervisor.phoneNumber || ''
+      const last4 = phone.replace(/\D/g, '').slice(-4)
+      valid = !!last4 && last4 === pin
+    }
+    if (!valid) {
       throw createError({ statusCode: 401, statusMessage: 'Invalid credentials' })
     }
 

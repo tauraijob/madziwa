@@ -9,13 +9,6 @@
             <p class="text-gray-600 mt-1">Manage assessments and generate reports</p>
           </div>
           <div class="flex items-center space-x-4">
-            <NuxtLink
-              to="/admin-settings"
-              class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
-            >
-              <i class="pi pi-cog mr-2"></i>
-              Settings
-            </NuxtLink>
             <button 
               @click="refreshData"
               class="btn-secondary"

@@ -686,10 +686,22 @@ const searchStudents = async () => {
   searching.value = true
   try {
     const params = new URLSearchParams()
-    if (studentSearch.value.srn) params.set('candidateNo', studentSearch.value.srn)
+    if (studentSearch.value.srn) {
+      const srn = String(studentSearch.value.srn).trim()
+      // Try exact and normalized contains in backend
+      params.set('candidateNo', srn)
+    }
     if (studentSearch.value.surname) params.set('surname', studentSearch.value.surname)
     const res = await $fetch(`/api/students/search?${params.toString()}`)
     studentsResults.value = res.students
+    // Fallback attempt: strip non-alphanumerics if nothing returned
+    if ((!studentsResults.value || !studentsResults.value.length) && studentSearch.value.srn) {
+      const fallback = String(studentSearch.value.srn).replace(/[^a-zA-Z0-9]/g, '')
+      if (fallback) {
+        const res2 = await $fetch(`/api/students/search?candidateNo=${encodeURIComponent(fallback)}`)
+        studentsResults.value = res2.students
+      }
+    }
   } catch (e) {
     console.error('Search failed', e)
     alert('Student search failed')
@@ -700,7 +712,14 @@ const searchStudents = async () => {
 
 const selectStudent = (s) => {
   selectedStudentId.value = s.id
-  student.value = { ...s }
+  student.value = { 
+    fullName: s.fullName,
+    sex: s.sex,
+    candidateNo: s.candidateNo,
+    email: s.email,
+    schoolName: s.schoolName,
+    className: s.className
+  }
 }
 
 const onSupervisorImport = async (e) => {

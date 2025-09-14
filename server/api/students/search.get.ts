@@ -18,12 +18,18 @@ export default defineEventHandler(async (event) => {
       where.fullName = { contains: query.surname.trim() }
     }
 
-    // District scoping for admins
+    // District scoping for admins and supervisors
     const role = getCookie(event, 'role')
     const adminDistrictIdCookie = getCookie(event, 'adminDistrictId')
     const adminDistrictId = adminDistrictIdCookie ? parseInt(String(adminDistrictIdCookie)) : null
+    const supervisorIdCookie = getCookie(event, 'supervisorId')
+    const supervisorId = supervisorIdCookie ? parseInt(String(supervisorIdCookie)) : null
     if (role === 'admin' && adminDistrictId) {
       where.districtId = adminDistrictId
+    } else if (role === 'supervisor' && supervisorId) {
+      const sup = await prisma.supervisor.findUnique({ where: { id: supervisorId } })
+      if (sup?.districtId) where.districtId = sup.districtId
+      else return { students: [] }
     }
 
     // If no filters provided, return empty list to avoid dumping all students
@@ -31,7 +37,7 @@ export default defineEventHandler(async (event) => {
       return { students: [] }
     }
 
-    const students = await prisma.student.findMany({ where, orderBy: { fullName: 'asc' } })
+    const students = await prisma.student.findMany({ where, include: { district: true }, orderBy: { fullName: 'asc' } })
 
     return { students }
   } catch (error) {

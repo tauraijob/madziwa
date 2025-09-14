@@ -5,17 +5,22 @@ const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
   try {
     const role = getCookie(event, 'role')
-    if (role !== 'admin' && role !== 'superadmin') {
+    if (role !== 'admin' && role !== 'superadmin' && role !== 'supervisor') {
       throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
-    }
-    if (role === 'admin') {
-      throw createError({ statusCode: 403, statusMessage: 'Admins are view-only. Downloads disabled.' })
     }
     const adminDistrictIdCookie = getCookie(event, 'adminDistrictId')
     const adminDistrictId = adminDistrictIdCookie ? parseInt(String(adminDistrictIdCookie)) : null
+    const supervisorIdCookie = getCookie(event, 'supervisorId')
+    const supervisorId = supervisorIdCookie ? parseInt(String(supervisorIdCookie)) : null
 
     const where: any = {}
-    // superadmin downloads all; admins blocked above
+    if (role === 'admin' && adminDistrictId) {
+      where.districtId = adminDistrictId
+    } else if (role === 'supervisor' && supervisorId) {
+      const sup = await prisma.supervisor.findUnique({ where: { id: supervisorId } })
+      if (sup?.districtId) where.districtId = sup.districtId
+      else where.id = -1
+    }
 
     const students = await prisma.student.findMany({
       where,

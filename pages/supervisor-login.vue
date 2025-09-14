@@ -16,7 +16,7 @@
             <input v-model="form.nationalId" type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="63-1234567X18" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Phone (last 4 digits)</label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">PIN</label>
             <input v-model="form.pin" type="password" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" placeholder="****" />
           </div>
 

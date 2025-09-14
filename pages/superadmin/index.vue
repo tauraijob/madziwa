@@ -114,6 +114,69 @@
         </div>
       </div>
 
+      <!-- Manage Supervisors -->
+      <div class="bg-white rounded-xl shadow-sm border p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold text-gray-900">Manage Supervisors</h2>
+          <NuxtLink to="/supervisors/new" class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700">Full Page</NuxtLink>
+        </div>
+        
+        <!-- Create New Supervisor -->
+        <div class="mb-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-3">Create New Supervisor</h3>
+          <form @submit.prevent="createSupervisor" class="grid grid-cols-1 md:grid-cols-7 gap-4">
+            <input v-model="newSupervisor.fullName" placeholder="Full name" class="px-3 py-2 border rounded" />
+            <input v-model="newSupervisor.email" type="email" placeholder="Email" class="px-3 py-2 border rounded" />
+            <input v-model="newSupervisor.phoneNumber" placeholder="Phone" class="px-3 py-2 border rounded" />
+            <input v-model="newSupervisor.nationalId" placeholder="National ID" class="px-3 py-2 border rounded" />
+            <input v-model="newSupervisor.pin" type="password" placeholder="PIN (4-6)" class="px-3 py-2 border rounded" />
+            <select v-model.number="newSupervisor.districtId" class="px-3 py-2 border rounded">
+              <option :value="undefined">Select District</option>
+              <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
+            </select>
+            <div>
+              <button @click="createSupervisor" class="bg-green-600 text-white px-4 py-2 rounded w-full">Create Supervisor</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Existing Supervisors -->
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 mb-3">Existing Supervisors</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-2 text-left">Name</th>
+                  <th class="px-4 py-2 text-left">Email</th>
+                  <th class="px-4 py-2 text-left">Phone</th>
+                  <th class="px-4 py-2 text-left">National ID</th>
+                  <th class="px-4 py-2 text-left">District</th>
+                  <th class="px-4 py-2 text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="s in supervisors" :key="s.id" class="border-b">
+                  <td class="px-4 py-2">{{ s.fullName }}</td>
+                  <td class="px-4 py-2">{{ s.email }}</td>
+                  <td class="px-4 py-2">{{ s.phoneNumber }}</td>
+                  <td class="px-4 py-2">{{ s.nationalId }}</td>
+                  <td class="px-4 py-2">
+                    <select :value="s.districtId || undefined" @change="onAssignSupervisorDistrict(s.id, $event.target.value)" class="px-2 py-1 border rounded">
+                      <option :value="undefined">No District</option>
+                      <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
+                    </select>
+                  </td>
+                  <td class="px-4 py-2 text-right">
+                    <button @click="deleteSupervisor(s.id)" class="px-3 py-1.5 text-sm bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <!-- Exports -->
       <div class="bg-white rounded-xl shadow-sm border p-6 mb-8">
         <div class="flex items-center justify-between mb-4">
@@ -144,9 +207,11 @@ const stats = reactive({ totalAssessments: 0, totalStudents: 0, totalSupervisors
 const csvImportSummary = ref(null)
 
 const admins = ref([])
+const supervisors = ref([])
 const districts = ref([])
 const newDistrict = ref('')
 const newAdmin = ref({ fullName: '', email: '', password: '', role: 'admin', assignedDistrictId: undefined })
+const newSupervisor = ref({ fullName: '', email: '', phoneNumber: '', nationalId: '', pin: '', districtId: undefined })
 
 const loadStats = async () => {
   try {
@@ -162,14 +227,51 @@ const loadStats = async () => {
 
 const loadDistrictsAdmins = async () => {
   try {
-    const [d, a] = await Promise.all([
+    const [d, a, s] = await Promise.all([
       $fetch('/api/districts'),
       $fetch('/api/admins'),
+      $fetch('/api/supervisors'),
     ])
     districts.value = d.districts || []
     admins.value = a.admins || []
+    supervisors.value = s.supervisors || []
   } catch (e) {
     // ignore
+  }
+}
+
+const createSupervisor = async (evt) => {
+  if (evt && evt.preventDefault) evt.preventDefault()
+  try {
+    const payload = { ...newSupervisor.value }
+    await $fetch('/api/supervisors', { method: 'POST', body: payload })
+    alert('Supervisor created')
+    newSupervisor.value = { fullName: '', email: '', phoneNumber: '', nationalId: '', pin: '', districtId: undefined }
+    await loadDistrictsAdmins()
+    await loadStats()
+  } catch (e) {
+    alert('Failed to create supervisor')
+  }
+}
+
+const onAssignSupervisorDistrict = async (supervisorId, value) => {
+  try {
+    const districtId = value ? parseInt(String(value)) : undefined
+    if (!districtId) return
+    await $fetch('/api/supervisors/assign-district', { method: 'POST', body: { supervisorId, districtId } })
+    await loadDistrictsAdmins()
+  } catch (e) {
+    alert('Failed to assign district')
+  }
+}
+
+const deleteSupervisor = async (id) => {
+  if (!confirm('Delete this supervisor?')) return
+  try {
+    await $fetch(`/api/supervisors/${id}`, { method: 'DELETE' })
+    await loadDistrictsAdmins()
+  } catch (e) {
+    alert('Failed to delete supervisor')
   }
 }
 
