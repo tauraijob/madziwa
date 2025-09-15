@@ -7,8 +7,8 @@ const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
   try {
     const role = getCookie(event, 'role')
-    if (role !== 'superadmin' && role !== 'supervisor') {
-      throw createError({ statusCode: 403, statusMessage: 'Not allowed' })
+    if (!role) {
+      throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
     }
     const id = getRouterParam(event, 'id')
     
@@ -26,6 +26,26 @@ export default defineEventHandler(async (event) => {
         statusCode: 404,
         statusMessage: 'Assessment not found'
       })
+    }
+
+    // Authorization rules
+    if (role === 'superadmin') {
+      // allowed
+    } else if (role === 'admin') {
+      const adminDistrictIdCookie = getCookie(event, 'adminDistrictId')
+      const adminDistrictId = adminDistrictIdCookie ? parseInt(String(adminDistrictIdCookie)) : null
+      if (!adminDistrictId || assessment.student.districtId !== adminDistrictId) {
+        throw createError({ statusCode: 403, statusMessage: 'Not allowed' })
+      }
+    } else if (role === 'supervisor') {
+      const supervisorIdCookie = getCookie(event, 'supervisorId')
+      const supervisorId = supervisorIdCookie ? parseInt(String(supervisorIdCookie)) : null
+      const assessmentSupervisorId = assessment.supervisor?.id ?? (assessment as any).supervisorId
+      if (!supervisorId || assessmentSupervisorId !== supervisorId) {
+        throw createError({ statusCode: 403, statusMessage: 'Not allowed' })
+      }
+    } else {
+      throw createError({ statusCode: 403, statusMessage: 'Not allowed' })
     }
 
     // Calculate total mark

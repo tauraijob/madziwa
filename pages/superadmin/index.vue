@@ -48,12 +48,32 @@
           <div class="font-medium">CSV header (comma-separated):</div>
           <code class="block bg-gray-50 border border-gray-200 rounded p-2 overflow-x-auto">surname,names,sex,phone,email,district,schoolname,classname,candidateno</code>
           <div>Example row:</div>
-          <code class="block bg-gray-50 border border-gray-200 rounded p-2 overflow-x-auto">Doe,Jane,Female,+263777000000,jane@example.com,Mudzi,Madziwa Primary,Grade 4 Blue,23/002/24</code>
+          <code class="block bg-gray-50 border border-gray-200 rounded p-2 overflow-x-auto">Banda,Jane,Female,+263777000000,jane@example.com,Shamva,Madziwa Primary,Grade 4 Blue,23/002/24</code>
           <div>Full name is constructed as “surname + space + names”. All columns are required.</div>
         </div>
         <div v-if="csvImportSummary" class="bg-gray-50 border border-gray-200 rounded p-4 text-sm text-gray-700">
           <div class="font-medium mb-1">Import Summary</div>
           <div>Created: {{ csvImportSummary.created }}, Updated: {{ csvImportSummary.updated }}, Errors: {{ csvImportSummary.errors }}</div>
+        </div>
+      </div>
+
+      <!-- Import Supervisors -->
+      <div class="bg-white rounded-xl shadow-sm border p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold text-gray-900">Import Supervisors (CSV)</h2>
+          <label class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer">
+            <i class="pi pi-upload mr-2"></i> Import CSV
+            <input type="file" accept=".csv" class="hidden" @change="onImportSupervisorsCsv" />
+          </label>
+        </div>
+        <div class="text-sm text-gray-600 space-y-2">
+          <div class="font-medium">CSV header (comma-separated):</div>
+          <code class="block bg-gray-50 border border-gray-200 rounded p-2 overflow-x-auto">fullname,email,phonenumber,nationalid</code>
+          <div>Passwords are derived automatically as the last 4 digits of the phone number.</div>
+        </div>
+        <div v-if="supImportSummary" class="bg-gray-50 border border-gray-200 rounded p-4 text-sm text-gray-700 mt-4">
+          <div class="font-medium mb-1">Import Summary</div>
+          <div>Created: {{ supImportSummary.created }}, Updated: {{ supImportSummary.updated }}, Errors: {{ supImportSummary.errors }}</div>
         </div>
       </div>
 
@@ -78,6 +98,16 @@
             <button @click="createAdmin" class="bg-green-600 text-white px-4 py-2 rounded">Create Admin</button>
           </div>
         </form>
+
+        <!-- Reset Admin Password -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+          <input v-model="resetForm.email" placeholder="Admin email (or leave blank to use ID)" class="px-3 py-2 border rounded" />
+          <input v-model.number="resetForm.id" type="number" placeholder="Admin ID (optional)" class="px-3 py-2 border rounded" />
+          <input v-model="resetForm.newPassword" type="password" placeholder="New password" class="px-3 py-2 border rounded" />
+          <div class="md:col-span-2 flex items-center">
+            <button @click="resetAdminPassword" class="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700">Reset Admin Password</button>
+          </div>
+        </div>
 
         <div class="flex items-center space-x-2 mb-4">
           <input v-model="newDistrict" placeholder="New district name" class="px-3 py-2 border rounded" />
@@ -125,6 +155,41 @@
         </div>
       </div>
 
+      <!-- Manage Supervisors -->
+      <div class="bg-white rounded-xl shadow-sm border p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold text-gray-900">Manage Supervisors</h2>
+          <button @click="loadSupervisors" class="bg-gray-700 text-white px-3 py-1.5 rounded">Refresh</button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-2 text-left">Name</th>
+                <th class="px-4 py-2 text-left">Email</th>
+                <th class="px-4 py-2 text-left">National ID</th>
+                <th class="px-4 py-2 text-left">Phone</th>
+                <th class="px-4 py-2 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="s in supervisors" :key="s.id" class="border-b">
+                <td class="px-4 py-2">{{ s.fullName }}</td>
+                <td class="px-4 py-2">{{ s.email }}</td>
+                <td class="px-4 py-2">{{ s.nationalId }}</td>
+                <td class="px-4 py-2">
+                  <input v-model="s.phoneNumber" class="px-2 py-1 border rounded w-48" />
+                </td>
+                <td class="px-4 py-2 text-right space-x-2">
+                  <button @click="saveSupervisorPhone(s)" class="px-3 py-1.5 text-sm bg-green-600 text-white rounded hover:bg-green-700">Save</button>
+                  <button @click="testSupervisorLogin(s)" class="px-3 py-1.5 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700">Test Login</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- Dangerous actions -->
       <div class="bg-white rounded-xl shadow-sm border p-6">
         <h2 class="text-xl font-semibold text-gray-900 mb-4">Danger Zone</h2>
@@ -142,11 +207,14 @@ definePageMeta({ middleware: 'superadmin-auth' })
 
 const stats = reactive({ totalAssessments: 0, totalStudents: 0, totalSupervisors: 0, averageScore: 0 })
 const csvImportSummary = ref(null)
+const supImportSummary = ref(null)
 
 const admins = ref([])
 const districts = ref([])
+const supervisors = ref([])
 const newDistrict = ref('')
 const newAdmin = ref({ fullName: '', email: '', password: '', role: 'admin', assignedDistrictId: undefined })
+const resetForm = ref({ id: undefined, email: '', newPassword: '' })
 
 const loadStats = async () => {
   try {
@@ -173,6 +241,15 @@ const loadDistrictsAdmins = async () => {
   }
 }
 
+const loadSupervisors = async () => {
+  try {
+    const res = await $fetch('/api/supervisors')
+    supervisors.value = res.supervisors || []
+  } catch (e) {
+    // ignore
+  }
+}
+
 const onImportStudentsCsv = async (e) => {
   const file = e.target.files?.[0]
   if (!file) return
@@ -182,6 +259,22 @@ const onImportStudentsCsv = async (e) => {
     const result = await $fetch('/api/students/import-csv', { method: 'POST', body: form })
     csvImportSummary.value = result
     alert(`Students import complete. Created: ${result.created}, Updated: ${result.updated}, Errors: ${result.errors}`)
+  } catch (err) {
+    alert('Import failed. Please verify the CSV and try again.')
+  } finally {
+    e.target.value = ''
+  }
+}
+
+const onImportSupervisorsCsv = async (e) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+  try {
+    const form = new FormData()
+    form.append('file', file)
+    const result = await $fetch('/api/supervisors/import-csv', { method: 'POST', body: form })
+    supImportSummary.value = result
+    alert(`Supervisors import complete. Created: ${result.created}, Updated: ${result.updated}, Errors: ${result.errors}`)
   } catch (err) {
     alert('Import failed. Please verify the CSV and try again.')
   } finally {
@@ -234,6 +327,52 @@ const deleteAdmin = async (id) => {
   }
 }
 
+const resetAdminPassword = async (evt) => {
+  if (evt && evt.preventDefault) evt.preventDefault()
+  try {
+    if (!resetForm.value.newPassword.trim()) {
+      alert('Enter a new password')
+      return
+    }
+    const payload = { newPassword: resetForm.value.newPassword }
+    if (resetForm.value.email && resetForm.value.email.trim()) payload.email = resetForm.value.email.trim().toLowerCase()
+    if (!payload.email && resetForm.value.id) payload.id = resetForm.value.id
+    if (!payload.email && !payload.id) {
+      alert('Provide email or ID to reset')
+      return
+    }
+    await $fetch('/api/admins/reset-password', { method: 'POST', body: payload })
+    alert('Password reset successful')
+    resetForm.value = { id: undefined, email: '', newPassword: '' }
+  } catch (e) {
+    alert('Failed to reset password')
+  }
+}
+
+const saveSupervisorPhone = async (s) => {
+  try {
+    await $fetch(`/api/supervisors/${s.id}`, { method: 'PUT', body: { phoneNumber: s.phoneNumber } })
+    alert('Phone updated')
+  } catch (e) {
+    alert('Failed to update phone')
+  }
+}
+
+const testSupervisorLogin = async (s) => {
+  try {
+    const last4 = (s.phoneNumber || '').replace(/\D/g, '').slice(-4)
+    if (!last4) {
+      alert('Supervisor phone must have at least 4 digits')
+      return
+    }
+    // Perform a test login request without navigating; this will set cookies in dev
+    await $fetch('/api/auth/supervisor-login', { method: 'POST', body: { nationalId: s.nationalId, pin: last4 } })
+    alert('Test login successful')
+  } catch (e) {
+    alert('Test login failed')
+  }
+}
+
 const downloadAllCsv = async () => {
   try {
     const response = await $fetch('/api/assessments/export-csv', { method: 'GET', responseType: 'blob' })
@@ -268,6 +407,6 @@ const downloadAllPdfs = async () => {
   }
 }
 
-onMounted(() => { loadStats(); loadDistrictsAdmins() })
+onMounted(() => { loadStats(); loadDistrictsAdmins(); loadSupervisors() })
 </script>
 

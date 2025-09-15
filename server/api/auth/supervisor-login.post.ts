@@ -5,14 +5,19 @@ const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event)
-    const nationalId = String(body.nationalId || '').trim()
+    const nationalIdInput = String(body.nationalId || '').trim()
+    const nationalId = nationalIdInput.replace(/[^a-z0-9]/gi, '').toUpperCase()
     const pin = String(body.pin || '').trim()
 
     if (!nationalId || !pin) {
       throw createError({ statusCode: 400, statusMessage: 'nationalId and pin required' })
     }
 
-    const supervisor = await prisma.supervisor.findUnique({ where: { nationalId } })
+    let supervisor = await prisma.supervisor.findUnique({ where: { nationalId } })
+    if (!supervisor && nationalIdInput) {
+      // Fallback: try exact, unnormalized match for legacy records
+      supervisor = await prisma.supervisor.findFirst({ where: { nationalId: nationalIdInput } })
+    }
     if (!supervisor) {
       throw createError({ statusCode: 401, statusMessage: 'Invalid credentials' })
     }
