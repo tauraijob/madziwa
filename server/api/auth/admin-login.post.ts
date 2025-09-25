@@ -17,33 +17,16 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 400, statusMessage: 'email and password required' })
     }
 
-    // Graceful fallback if Prisma client hasn't been regenerated yet
-    const anyClient: any = prisma as any
-    if (!anyClient.adminUser || typeof anyClient.adminUser.findUnique !== 'function') {
-      // Temporary fallback accounts until prisma generate/db push/seed are run
-      const fallback: Record<string, { password: string; role: 'admin' | 'superadmin'; assignedDistrictId?: number | null }> = {
-        'superadmin@example.com': { password: 'superadmin123', role: 'superadmin' },
-        'admin@example.com': { password: 'admin123', role: 'admin', assignedDistrictId: null },
-        // Legacy demo creds
-        'superadmin': { password: 'superadmin123', role: 'superadmin' },
-        'admin': { password: 'admin123', role: 'admin', assignedDistrictId: null },
-      }
-      const entry = fallback[email]
-      if (!entry || entry.password !== password) {
-        throw createError({ statusCode: 401, statusMessage: 'Invalid credentials' })
-      }
-      setCookie(event, 'role', entry.role, { httpOnly: false, sameSite: 'lax', path: '/' })
-      if (entry.role === 'admin' && entry.assignedDistrictId) {
-        setCookie(event, 'adminDistrictId', String(entry.assignedDistrictId), { httpOnly: false, sameSite: 'lax', path: '/' })
-      } else {
-        deleteCookie(event, 'adminDistrictId', { path: '/' })
-      }
-      return { ok: true, user: { id: 0, fullName: email, role: entry.role, assignedDistrictId: entry.assignedDistrictId ?? null } }
+    // Prefer real DB lookup; only use fallback if the lookup throws (e.g., client not generated)
+    let user: any = null
+    let lookupErrored = false
+    try {
+      user = await prisma.adminUser.findUnique({ where: { email } })
+    } catch (e) {
+      lookupErrored = true
     }
-
-    const user = await prisma.adminUser.findUnique({ where: { email } })
-    if (!user) {
-      // Fallback to built-in demo/seed creds when DB not seeded yet
+    if (!user && lookupErrored) {
+      // Temporary fallback accounts until prisma generate/db push/seed are run
       const fallback: Record<string, { password: string; role: 'admin' | 'superadmin'; assignedDistrictId?: number | null }> = {
         'superadmin@example.com': { password: 'superadmin123', role: 'superadmin' },
         'admin@example.com': { password: 'admin123', role: 'admin', assignedDistrictId: null },
@@ -62,6 +45,36 @@ export default defineEventHandler(async (event) => {
         deleteCookie(event, 'adminDistrictId', { path: '/' })
       }
       return { ok: true, user: { id: 0, fullName: email, role: demo.role, assignedDistrictId: demo.assignedDistrictId ?? null } }
+    }
+    // If lookup succeeded but user not found, allow demo fallback only if there are no admins yet (first-run/dev bootstrap)
+    if (!user) {
+      try {
+        const count = await prisma.adminUser.count()
+        if (count === 0) {
+          const fallback: Record<string, { password: string; role: 'admin' | 'superadmin'; assignedDistrictId?: number | null }> = {
+            'superadmin@example.com': { password: 'superadmin123', role: 'superadmin' },
+            'admin@example.com': { password: 'admin123', role: 'admin', assignedDistrictId: null },
+            'superadmin': { password: 'superadmin123', role: 'superadmin' },
+            'admin': { password: 'admin123', role: 'admin', assignedDistrictId: null },
+          }
+          const demo = fallback[email]
+          if (demo && demo.password === password) {
+            setCookie(event, 'role', demo.role, { httpOnly: false, sameSite: 'lax', path: '/' })
+            if (demo.role === 'admin' && demo.assignedDistrictId) {
+              setCookie(event, 'adminDistrictId', String(demo.assignedDistrictId), { httpOnly: false, sameSite: 'lax', path: '/' })
+            } else {
+              deleteCookie(event, 'adminDistrictId', { path: '/' })
+            }
+            return { ok: true, user: { id: 0, fullName: email, role: demo.role, assignedDistrictId: demo.assignedDistrictId ?? null } }
+          }
+        }
+      } catch (e) {
+        // ignore count errors
+      }
+    }
+    // If lookup succeeded but user not found, reject
+    if (!user) {
+      throw createError({ statusCode: 401, statusMessage: 'Invalid credentials' })
     }
 
     const isValid = user.passwordHash === sha256(password)
