@@ -912,12 +912,32 @@
             </div>
           </div>
 
-          <!-- Digital Signature Placeholder -->
+          <!-- Digital Signature Drawing Area -->
           <div class="mt-6">
             <label class="block text-sm font-medium text-gray-700 mb-2">Digital Signature</label>
-            <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-              <i class="pi pi-pen text-gray-400 text-2xl mb-2"></i>
-              <p class="text-gray-500">Digital signature will be captured here</p>
+            <div class="border-2 border-gray-300 rounded-lg p-4">
+              <canvas 
+                ref="signatureCanvas"
+                @mousedown="startDrawing"
+                @mousemove="draw"
+                @mouseup="stopDrawing"
+                @mouseleave="stopDrawing"
+                @touchstart="startDrawing"
+                @touchmove="draw"
+                @touchend="stopDrawing"
+                class="w-full h-32 border border-gray-200 rounded cursor-crosshair bg-white"
+                style="touch-action: none;"
+              ></canvas>
+              <div class="flex justify-between items-center mt-2">
+                <button 
+                  type="button"
+                  @click="clearSignature"
+                  class="px-3 py-1 text-sm text-red-600 hover:text-red-800 border border-red-300 rounded hover:bg-red-50"
+                >
+                  Clear Signature
+                </button>
+                <span class="text-xs text-gray-500">Draw your signature above</span>
+              </div>
             </div>
           </div>
         </div>
@@ -939,7 +959,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import * as XLSX from 'xlsx'
 
@@ -947,6 +967,12 @@ definePageMeta({ title: 'Create New Assessment', middleware: 'supervisor-auth' }
 
 const loading = ref(false)
 const searching = ref(false)
+
+// Signature drawing functionality
+const signatureCanvas = ref(null)
+const isDrawing = ref(false)
+const lastX = ref(0)
+const lastY = ref(0)
 
 // Supervisor model (registration)
 const supervisor = ref({ fullName: '', nationalId: '', phoneNumber: '', email: '' })
@@ -1018,6 +1044,7 @@ const form = ref({
   overallMark: 0,
   supervisorDesignation: '',
   materialsTotalPercentage: 0,
+  signatureData: '',
   overallComment: ''
 })
 
@@ -1339,9 +1366,17 @@ const submitAssessment = async () => {
     const supervisorId = await ensureSupervisor()
     const studentId = await ensureStudent()
 
+    // Get signature data
+    const signatureData = getSignatureData()
+
     await $fetch('/api/assessments', {
       method: 'POST',
-      body: { ...form.value, studentId, formType: assessmentType.value }
+      body: { 
+        ...form.value, 
+        studentId, 
+        formType: assessmentType.value,
+        signatureData: signatureData
+      }
     })
 
     alert('Assessment created successfully!')
@@ -1354,6 +1389,71 @@ const submitAssessment = async () => {
   }
 }
 
+// Signature drawing methods
+const startDrawing = (e) => {
+  isDrawing.value = true
+  const canvas = signatureCanvas.value
+  if (!canvas) return
+  
+  const rect = canvas.getBoundingClientRect()
+  const scaleX = canvas.width / rect.width
+  const scaleY = canvas.height / rect.height
+  
+  const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX
+  const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY
+  
+  lastX.value = (clientX - rect.left) * scaleX
+  lastY.value = (clientY - rect.top) * scaleY
+}
+
+const draw = (e) => {
+  if (!isDrawing.value) return
+  
+  const canvas = signatureCanvas.value
+  if (!canvas) return
+  
+  const ctx = canvas.getContext('2d')
+  const rect = canvas.getBoundingClientRect()
+  const scaleX = canvas.width / rect.width
+  const scaleY = canvas.height / rect.height
+  
+  const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX
+  const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY
+  
+  const currentX = (clientX - rect.left) * scaleX
+  const currentY = (clientY - rect.top) * scaleY
+  
+  ctx.beginPath()
+  ctx.moveTo(lastX.value, lastY.value)
+  ctx.lineTo(currentX, currentY)
+  ctx.strokeStyle = '#000000'
+  ctx.lineWidth = 2
+  ctx.lineCap = 'round'
+  ctx.stroke()
+  
+  lastX.value = currentX
+  lastY.value = currentY
+}
+
+const stopDrawing = () => {
+  isDrawing.value = false
+}
+
+const clearSignature = () => {
+  const canvas = signatureCanvas.value
+  if (!canvas) return
+  
+  const ctx = canvas.getContext('2d')
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+}
+
+const getSignatureData = () => {
+  const canvas = signatureCanvas.value
+  if (!canvas) return null
+  
+  return canvas.toDataURL('image/png')
+}
+
 onMounted(() => {
   loadSettings()
   const route = useRoute()
@@ -1361,5 +1461,18 @@ onMounted(() => {
   if (q === 'ecd' || q === 'secondary' || q === 'isen' || q === 'materials') {
     assessmentType.value = q
   }
+  
+  // Initialize signature canvas
+  nextTick(() => {
+    const canvas = signatureCanvas.value
+    if (canvas) {
+      const ctx = canvas.getContext('2d')
+      canvas.width = canvas.offsetWidth * 2
+      canvas.height = canvas.offsetHeight * 2
+      ctx.scale(2, 2)
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
+    }
+  })
 })
 </script> 
