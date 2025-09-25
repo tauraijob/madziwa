@@ -1,9 +1,19 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-8">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Create New Assessment</h1>
-        <p class="mt-2 text-gray-600">Supervisor registers, searches student, then completes assessment.</p>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header Section -->
+      <div class="bg-white rounded-xl shadow-sm border p-8 mb-8">
+        <div class="text-center">
+          <h1 class="text-2xl font-bold text-gray-900 mb-2">Work Integrated Learning Assessment Instrument</h1>
+          <h2 class="text-xl font-semibold text-gray-800 mb-4">MADZIWA TEACHERS COLLEGE</h2>
+          <h3 class="text-lg font-medium text-gray-700 mb-6">CENTRE FOR TEACHER EDUCATION AND MATERIALS DEVELOPMENT</h3>
+          <div class="text-base text-gray-600">
+            <div v-if="assessmentType === 'ecd'">DE: EXTERNAL EXAMINING INSTRUMENT: ECD & JUNIOR LEVELS</div>
+            <div v-else-if="assessmentType === 'secondary'">DIPLOMA IN EDUCATION<br>EXTERNAL EXAMINING INSTRUMENT: SECONDARY LEVEL</div>
+            <div v-else-if="assessmentType === 'isen'">FACULTY OF EDUCATION<br>CENTRE FOR TEACHER EDUCATION AND MATERIALS DEVELOPMENT<br>DIPLOMA IN EDUCATION<br>WORK INTEGRATED EXAMINING FORM<br>INCLUSION AND SPECIAL EDUCATIONAL NEEDS (ISEN)</div>
+            <div v-else-if="assessmentType === 'materials'">MATERIALS DEVELOPMENT ASSESSMENT INSTRUMENT</div>
+          </div>
+        </div>
       </div>
 
       <form @submit.prevent="submitAssessment" class="space-y-8">
@@ -26,23 +36,38 @@
         <!-- Assessment Type -->
         <div class="bg-white rounded-xl shadow-sm border p-6">
           <h2 class="text-xl font-semibold text-gray-900 mb-4">Assessment Type</h2>
-          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <span class="block text-sm font-medium text-gray-700">Form</span>
-              <span
-                class="inline-flex items-center mt-1 px-3 py-1 rounded-full text-sm font-medium"
-                :class="assessmentType==='junior' ? 'bg-primary-100 text-primary-800' : 'bg-rose-100 text-rose-800'"
-              >
-                {{ assessmentType==='junior' ? 'Junior Supervision' : 'Early Childhood Development' }}
-              </span>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div 
+              @click="assessmentType = 'ecd'"
+              class="p-4 border-2 rounded-lg cursor-pointer transition-colors"
+              :class="assessmentType === 'ecd' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
+            >
+              <h3 class="font-semibold text-gray-900 mb-2">ECD & Junior Levels</h3>
+              <p class="text-sm text-gray-600">Early Childhood Development and Junior Level assessment</p>
             </div>
-            <div class="text-sm text-gray-600 md:max-w-2xl">
-              <div v-if="assessmentType==='junior'">
-                Follows Education 5.0: Research-Teaching & Learning, Records Management, Environment, Community Engagement.
-              </div>
-              <div v-else>
-                Includes ECD-specific records and environment checks per Education 5.0.
-              </div>
+            <div 
+              @click="assessmentType = 'secondary'"
+              class="p-4 border-2 rounded-lg cursor-pointer transition-colors"
+              :class="assessmentType === 'secondary' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
+            >
+              <h3 class="font-semibold text-gray-900 mb-2">Secondary Level</h3>
+              <p class="text-sm text-gray-600">Secondary level teaching assessment</p>
+            </div>
+            <div 
+              @click="assessmentType = 'isen'"
+              class="p-4 border-2 rounded-lg cursor-pointer transition-colors"
+              :class="assessmentType === 'isen' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
+            >
+              <h3 class="font-semibold text-gray-900 mb-2">ISEN</h3>
+              <p class="text-sm text-gray-600">Inclusion and Special Educational Needs</p>
+            </div>
+            <div 
+              @click="assessmentType = 'materials'"
+              class="p-4 border-2 rounded-lg cursor-pointer transition-colors"
+              :class="assessmentType === 'materials' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
+            >
+              <h3 class="font-semibold text-gray-900 mb-2">Materials Development</h3>
+              <p class="text-sm text-gray-600">Educational materials and resources assessment</p>
             </div>
           </div>
         </div>
@@ -176,397 +201,725 @@
           </div>
         </div>
 
-        <!-- Scoring Categories -->
+        <!-- Education 5.0 Pillar Assessment -->
         <div class="bg-white rounded-xl shadow-sm border p-6">
-          <h2 class="text-xl font-semibold text-gray-900 mb-6">Scoring Categories</h2>
+          <h2 class="text-xl font-semibold text-gray-900 mb-6">Education 5.0 Pillar Assessment</h2>
           
-          <!-- Assessment Criteria Overview -->
-          <div class="mb-8">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Assessment Criteria Overview</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <!-- Preparation & Scheming -->
-              <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-                <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-2">
-                  <i class="pi pi-file text-white text-xl"></i>
-                </div>
-                <h4 class="font-medium text-blue-900 text-sm">Preparation & Scheming</h4>
-                <p class="text-xs text-blue-700 mb-1">Lesson preparation and scheme of work</p>
-                <span class="text-blue-600 font-bold text-sm">{{ settings.preparationMax }} pts</span>
-              </div>
-
-              <!-- Lesson Planning -->
-              <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-                <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-2">
-                  <i class="pi pi-calendar text-white text-xl"></i>
-                </div>
-                <h4 class="font-medium text-green-900 text-sm">Lesson Planning</h4>
-                <p class="text-xs text-green-700 mb-1">Detailed lesson planning and objectives</p>
-                <span class="text-green-600 font-bold text-sm">{{ settings.lessonPlanningMax }} pts</span>
-              </div>
-
-              <!-- Environment & Management -->
-              <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
-                <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-2">
-                  <i class="pi pi-users text-white text-xl"></i>
-                </div>
-                <h4 class="font-medium text-purple-900 text-sm">Environment & Management</h4>
-                <p class="text-xs text-purple-700 mb-1">Classroom environment and management</p>
-                <span class="text-purple-600 font-bold text-sm">{{ settings.environmentMax }} pts</span>
-              </div>
-
-              <!-- Learning Documents -->
-              <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
-                <div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center mx-auto mb-2">
-                  <i class="pi pi-folder text-white text-xl"></i>
-                </div>
-                <h4 class="font-medium text-orange-900 text-sm">Learning Documents</h4>
-                <p class="text-xs text-orange-700 mb-1">Work-related learning documents</p>
-                <span class="text-orange-600 font-bold text-sm">{{ settings.documentsMax }} pts</span>
-              </div>
-
-              <!-- Lesson Introduction -->
-              <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
-                <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center mx-auto mb-2">
-                  <i class="pi pi-play text-white text-xl"></i>
-                </div>
-                <h4 class="font-medium text-red-900 text-sm">Lesson Introduction</h4>
-                <p class="text-xs text-red-700 mb-1">Lesson introduction and engagement</p>
-                <span class="text-red-600 font-bold text-sm">{{ settings.introductionMax }} pts</span>
-              </div>
-
-              <!-- Lesson Development -->
-              <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-                <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-2">
-                  <i class="pi pi-cog text-white text-xl"></i>
-                </div>
-                <h4 class="font-medium text-blue-900 text-sm">Lesson Development</h4>
-                <p class="text-xs text-blue-700 mb-1">Main lesson development and delivery</p>
-                <span class="text-blue-600 font-bold text-sm">{{ settings.developmentMax }} pts</span>
-              </div>
-
-              <!-- Lesson Conclusion -->
-              <div class="bg-pink-50 border border-pink-200 rounded-lg p-4 text-center">
-                <div class="w-12 h-12 bg-pink-500 rounded-lg flex items-center justify-center mx-auto mb-2">
-                  <i class="pi pi-stop text-white text-xl"></i>
-                </div>
-                <h4 class="font-medium text-pink-900 text-sm">Lesson Conclusion</h4>
-                <p class="text-xs text-pink-700 mb-1">Lesson conclusion and summary</p>
-                <span class="text-pink-600 font-bold text-sm">{{ settings.conclusionMax }} pts</span>
-              </div>
-
-              <!-- Personal Dimensions -->
-              <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 text-center">
-                <div class="w-12 h-12 bg-teal-500 rounded-lg flex items-center justify-center mx-auto mb-2">
-                  <i class="pi pi-user text-white text-xl"></i>
-                </div>
-                <h4 class="font-medium text-teal-900 text-sm">Personal Dimensions</h4>
-                <p class="text-xs text-teal-700 mb-1">Personal and professional attributes</p>
-                <span class="text-teal-600 font-bold text-sm">{{ settings.personalDimensionsMax }} pts</span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="space-y-6">
-            <!-- Preparation & Scheming -->
-            <div class="border border-gray-200 rounded-lg p-4">
-              <h3 class="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
-                  <i class="pi pi-file text-white text-sm"></i>
-                </div>
-                1. Preparation & Scheming ({{ settings.preparationMax }} marks)
-              </h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-{{ settings.preparationMax }})</label>
-                  <input 
-                    v-model.number="form.preparationMark" 
-                    type="number" 
-                    step="1" 
-                    min="0" 
-                    :max="settings.preparationMax"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Comment</label>
-                  <textarea 
-                    v-model="form.preparationComment" 
-                    rows="2"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Enter your comment..."
-                  ></textarea>
-                </div>
-              </div>
-            </div>
-
-            <!-- Lesson Planning -->
-            <div class="border border-gray-200 rounded-lg p-4">
-              <h3 class="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mr-3">
-                  <i class="pi pi-calendar text-white text-sm"></i>
-                </div>
-                2. Lesson Planning ({{ settings.lessonPlanningMax }} marks)
-              </h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-{{ settings.lessonPlanningMax }})</label>
-                  <input 
-                    v-model.number="form.lessonPlanningMark" 
-                    type="number" 
-                    step="1" 
-                    min="0" 
-                    :max="settings.lessonPlanningMax"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                  >
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Comment</label>
-                  <textarea 
-                    v-model="form.lessonPlanningComment" 
-                    rows="2"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    placeholder="Enter your comment..."
-                  ></textarea>
-                </div>
-              </div>
-            </div>
-
-            <!-- Environment & Management -->
-            <div class="border border-gray-200 rounded-lg p-4">
-              <h3 class="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                <div class="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
-                  <i class="pi pi-users text-white text-sm"></i>
-                </div>
-                3. Environment & Management ({{ settings.environmentMax }} marks)
-              </h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-{{ settings.environmentMax }})</label>
-                  <input 
-                    v-model.number="form.environmentMark" 
-                    type="number" 
-                    step="1" 
-                    min="0" 
-                    :max="settings.environmentMax"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                  >
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Comment</label>
-                  <textarea 
-                    v-model="form.environmentComment" 
-                    rows="2"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                    placeholder="Enter your comment..."
-                  ></textarea>
-                </div>
-              </div>
-            </div>
-
-            <!-- Learning Documents -->
-            <div class="border border-gray-200 rounded-lg p-4">
-              <h3 class="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center mr-3">
-                  <i class="pi pi-folder text-white text-sm"></i>
-                </div>
-                4. Learning Documents ({{ settings.documentsMax }} marks)
-              </h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-{{ settings.documentsMax }})</label>
-                  <input 
-                    v-model.number="form.documentsMark" 
-                    type="number" 
-                    step="1" 
-                    min="0" 
-                    :max="settings.documentsMax"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                  >
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Comment</label>
-                  <textarea 
-                    v-model="form.documentsComment" 
-                    rows="2"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                    placeholder="Enter your comment..."
-                  ></textarea>
-                </div>
-              </div>
-            </div>
-
-            <!-- Lesson Introduction -->
-            <div class="border border-gray-200 rounded-lg p-4">
-              <h3 class="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                <div class="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center mr-3">
-                  <i class="pi pi-play text-white text-sm"></i>
-                </div>
-                5. Lesson Introduction ({{ settings.introductionMax }} marks)
-              </h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-{{ settings.introductionMax }})</label>
-                  <input 
-                    v-model.number="form.introductionMark" 
-                    type="number" 
-                    step="1" 
-                    min="0" 
-                    :max="settings.introductionMax"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                  >
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Comment</label>
-                  <textarea 
-                    v-model="form.introductionComment" 
-                    rows="2"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                    placeholder="Enter your comment..."
-                  ></textarea>
-                </div>
-              </div>
-            </div>
-
-            <!-- Lesson Development -->
-            <div class="border border-gray-200 rounded-lg p-4">
-              <h3 class="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
-                  <i class="pi pi-cog text-white text-sm"></i>
-                </div>
-                6. Lesson Development ({{ settings.developmentMax }} marks)
-              </h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-{{ settings.developmentMax }})</label>
-                  <input 
-                    v-model.number="form.developmentMark" 
-                    type="number" 
-                    step="1" 
-                    min="0" 
-                    :max="settings.developmentMax"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  >
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Comment</label>
-                  <textarea 
-                    v-model="form.developmentComment" 
-                    rows="2"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Enter your comment..."
-                  ></textarea>
-                </div>
-              </div>
-            </div>
-
-            <!-- Lesson Conclusion -->
-            <div class="border border-gray-200 rounded-lg p-4">
-              <h3 class="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                <div class="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center mr-3">
-                  <i class="pi pi-stop text-white text-sm"></i>
-                </div>
-                7. Lesson Conclusion ({{ settings.conclusionMax }} marks)
-              </h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-{{ settings.conclusionMax }})</label>
-                  <input 
-                    v-model.number="form.conclusionMark" 
-                    type="number" 
-                    step="1" 
-                    min="0" 
-                    :max="settings.conclusionMax"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-                  >
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Comment</label>
-                  <textarea 
-                    v-model="form.conclusionComment" 
-                    rows="2"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
-                    placeholder="Enter your comment..."
-                  ></textarea>
-                </div>
-              </div>
-            </div>
-
-            <!-- Personal Dimensions -->
-            <div class="border border-gray-200 rounded-lg p-4">
-              <h3 class="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                <div class="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center mr-3">
-                  <i class="pi pi-user text-white text-sm"></i>
-                </div>
-                8. Personal Dimensions ({{ settings.personalDimensionsMax }} marks)
-              </h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-{{ settings.personalDimensionsMax }})</label>
-                  <input 
-                    v-model.number="form.personalDimensionsMark" 
-                    type="number" 
-                    step="1" 
-                    min="0" 
-                    :max="settings.personalDimensionsMax"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                  >
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Comment</label>
-                  <textarea 
-                    v-model="form.personalDimensionsComment" 
-                    rows="2"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                    placeholder="Enter your comment..."
-                  ></textarea>
-                </div>
-              </div>
-            </div>
-
-            <!-- Community Engagement (Education 5.0) -->
-            <div class="border border-gray-200 rounded-lg p-4">
-              <h3 class="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                <div class="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center mr-3">
-                  <i class="pi pi-users text-white text-sm"></i>
-                </div>
-                9. Community Engagement (Education 5.0) (20 marks)
-              </h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Mark (0-20)</label>
-                  <input 
-                    v-model.number="form.communityMark" 
-                    type="number" 
-                    step="1" 
-                    min="0" 
-                    max="20"
-                    @input="clampField('communityMark', 20)"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                  >
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Observations</label>
-                  <textarea 
-                    v-model="form.communityComment" 
-                    rows="2"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-                    placeholder="Community engagement & provision of goods and services (CDP)"
-                  ></textarea>
-                </div>
-              </div>
+          <!-- ECD & Junior Level Form -->
+          <div v-if="assessmentType === 'ecd'" class="space-y-6">
+            <div class="overflow-x-auto">
+              <table class="min-w-full border border-gray-300">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Education 5.0 Pillar</th>
+                    <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Aspect</th>
+                    <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Observations</th>
+                    <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Mark</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Research-Teaching & Learning -->
+                  <tr>
+                    <td rowspan="4" class="border border-gray-300 px-4 py-2 align-top font-medium">Research-Teaching & Learning</td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <div class="font-medium">Preparation</div>
+                      <ul class="text-sm text-gray-600 mt-1">
+                        <li>• Portfolio of evidence</li>
+                        <li>• Scheming</li>
+                        <li>• Lesson planning</li>
+                        <li>• Evaluation</li>
+                      </ul>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <textarea v-model="form.preparationComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <input v-model.number="form.preparationMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" />
+                      <div class="text-xs text-gray-500 mt-1">15%</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <div class="font-medium">Lesson Facilitation</div>
+                      <ul class="text-sm text-gray-600 mt-1">
+                        <li>• Introduction</li>
+                        <li>• Questioning techniques and distribution</li>
+                        <li>• Sequencing of learning</li>
+                        <li>• Knowledge of content</li>
+                        <li>• Appropriate media use</li>
+                        <li>• Evidence of research</li>
+                        <li>• Assessment and feedback</li>
+                        <li>• Lesson conclusion</li>
+                      </ul>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <textarea v-model="form.lessonFacilitationComment" rows="4" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <input v-model.number="form.lessonFacilitationMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" />
+                      <div class="text-xs text-gray-500 mt-1">15%</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <div class="font-medium">Deportment</div>
+                      <ul class="text-sm text-gray-600 mt-1">
+                        <li>• Dress code</li>
+                        <li>• Voice projection</li>
+                        <li>• Language use</li>
+                      </ul>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <textarea v-model="form.deportmentComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <input v-model.number="form.deportmentMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                      <div class="text-xs text-gray-500 mt-1">5%</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <div class="font-medium">Records management</div>
+                      <ul class="text-sm text-gray-600 mt-1">
+                        <li>• Register</li>
+                        <li>• Progress Record</li>
+                        <li>• Individual Social Record, Remedial,</li>
+                        <li>• Extension work</li>
+                        <li>• Reading</li>
+                      </ul>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <textarea v-model="form.recordsComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <input v-model.number="form.recordsMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" />
+                      <div class="text-xs text-gray-500 mt-1">15%</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-300 px-4 py-2 font-medium">Teaching and learning environment</td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <ul class="text-sm text-gray-600">
+                        <li>• Classroom layout and conduciveness</li>
+                        <li>• Management of learning centres</li>
+                      </ul>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <textarea v-model="form.environmentComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <input v-model.number="form.environmentMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" />
+                      <div class="text-xs text-gray-500 mt-1">10%</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-300 px-4 py-2 font-medium">Research-based Community Service/ Research & Innovation/Research & Industrialisation</td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <div class="text-sm text-gray-600">[Tick Applicable]</div>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <textarea v-model="form.communityComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <input v-model.number="form.communityMark" type="number" min="0" max="30" class="w-20 px-2 py-1 border rounded text-center" />
+                      <div class="text-xs text-gray-500 mt-1">30%</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-300 px-4 py-2 font-medium">Remaining 2 pillars</td>
+                    <td class="border border-gray-300 px-4 py-2"></td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <textarea v-model="form.remainingPillarsComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <input v-model.number="form.remainingPillarsMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" />
+                      <div class="text-xs text-gray-500 mt-1">10%</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
 
-        <!-- Overall Comment -->
+        <!-- Secondary Level Form -->
+        <div v-if="assessmentType === 'secondary'" class="bg-white rounded-xl shadow-sm border p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-6">Secondary Level Assessment</h2>
+          <div class="overflow-x-auto">
+            <table class="min-w-full border border-gray-300">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Education 5.0 Pillar</th>
+                  <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Aspect</th>
+                  <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Observations</th>
+                  <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Mark</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td rowspan="3" class="border border-gray-300 px-4 py-2 align-top font-medium">Research-Teaching & Learning</td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">PREPARATION</div>
+                    <ul class="text-sm text-gray-600 mt-1">
+                      <li>• Portfolio of evidence</li>
+                      <li>• Scheming</li>
+                      <li>• Lesson planning</li>
+                      <li>• Evaluation</li>
+                    </ul>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.preparationComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.preparationMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">15%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">RECORDS MANAGEMENT</div>
+                    <ul class="text-sm text-gray-600 mt-1">
+                      <li>• Register</li>
+                      <li>• Progress Record</li>
+                      <li>• Individual Social Record, Remedial,</li>
+                      <li>• Extension work</li>
+                      <li>• Reading</li>
+                    </ul>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.recordsComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.recordsMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">15%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">LESSON FACILITATION</div>
+                    <ul class="text-sm text-gray-600 mt-1">
+                      <li>• Introduction</li>
+                      <li>• Questioning techniques and distribution</li>
+                      <li>• Sequencing of learning</li>
+                      <li>• Knowledge of content</li>
+                      <li>• Appropriate media use</li>
+                      <li>• Evidence of research</li>
+                      <li>• Assessment and feedback</li>
+                      <li>• Lesson conclusion</li>
+                    </ul>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.lessonFacilitationComment" rows="4" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.lessonFacilitationMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">15%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2 font-medium">Deportment</td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <ul class="text-sm text-gray-600">
+                      <li>• Dress code</li>
+                      <li>• Voice projection</li>
+                      <li>• Language use</li>
+                    </ul>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.deportmentComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.deportmentMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">5%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2 font-medium">Research-based Community Service/ Research & Innovation/Research & Industrialisation</td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="text-sm text-gray-600">[Tick Applicable]</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.communityComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.communityMark" type="number" min="0" max="30" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">30%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2 font-medium">Remaining 2 pillars</td>
+                  <td class="border border-gray-300 px-4 py-2"></td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.remainingPillarsComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.remainingPillarsMark" type="number" min="0" max="20" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">20%</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ISEN Form -->
+        <div v-if="assessmentType === 'isen'" class="bg-white rounded-xl shadow-sm border p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-6">ISEN Assessment</h2>
+          <div class="overflow-x-auto">
+            <table class="min-w-full border border-gray-300">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Education 5.0 Pillar</th>
+                  <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Aspect</th>
+                  <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Observations</th>
+                  <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Mark</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td rowspan="3" class="border border-gray-300 px-4 py-2 align-top font-medium">Research-Teaching & Learning</td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">PREPARATION</div>
+                    <ul class="text-sm text-gray-600 mt-1">
+                      <li>• Portfolio of evidence</li>
+                      <li>• Scheming</li>
+                      <li>• Lesson planning</li>
+                      <li>• Evaluation</li>
+                    </ul>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.preparationComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.preparationMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">15%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">RECORDS MANAGEMENT</div>
+                    <ul class="text-sm text-gray-600 mt-1">
+                      <li>• Register</li>
+                      <li>• Progress Record</li>
+                      <li>• Individual Social Record, Remedial,</li>
+                      <li>• Extension work</li>
+                      <li>• Reading</li>
+                    </ul>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.recordsComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.recordsMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">15%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">LESSON FACILITATION</div>
+                    <ul class="text-sm text-gray-600 mt-1">
+                      <li>• Introduction</li>
+                      <li>• Questioning techniques and distribution</li>
+                      <li>• Sequencing of learning</li>
+                      <li>• Knowledge of content</li>
+                      <li>• Appropriate media use</li>
+                      <li>• Evidence of research</li>
+                      <li>• Assessment and feedback</li>
+                      <li>• Lesson conclusion</li>
+                    </ul>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.lessonFacilitationComment" rows="4" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.lessonFacilitationMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">15%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2 font-medium">DEPORTMENT</td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <ul class="text-sm text-gray-600">
+                      <li>• Dress code</li>
+                      <li>• Voice projection</li>
+                      <li>• Language use</li>
+                    </ul>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.deportmentComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.deportmentMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">5%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2 font-medium">LEARNING ENVIRONMENT</td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <ul class="text-sm text-gray-600">
+                      <li>• Classroom layout and conduciveness</li>
+                      <li>• Management of learning centres</li>
+                    </ul>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.environmentComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.environmentMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">10%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2 font-medium">Research-based Community engagement</td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="text-sm text-gray-600">[Tick Applicable]</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.communityComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.communityMark" type="number" min="0" max="30" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">30%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2 font-medium">Remaining 2 pillars</td>
+                  <td class="border border-gray-300 px-4 py-2"></td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.remainingPillarsComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.remainingPillarsMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">10%</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Materials Development Form -->
+        <div v-if="assessmentType === 'materials'" class="bg-white rounded-xl shadow-sm border p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-6">Materials Development Assessment</h2>
+          <div class="overflow-x-auto">
+            <table class="min-w-full border border-gray-300">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Category</th>
+                  <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Aspect</th>
+                  <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Observations</th>
+                  <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Mark</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td rowspan="2" class="border border-gray-300 px-4 py-2 align-top font-medium">CONTENT</td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">Relevance to curriculum</div>
+                    <div class="text-sm text-gray-600">Alignment with curriculum objectives and learning outcomes</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.contentComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.contentRelevanceMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">10%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">Organization and structure</div>
+                    <div class="text-sm text-gray-600">Logical flow and clear organization of content</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.contentComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.contentOrganizationMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">10%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td rowspan="4" class="border border-gray-300 px-4 py-2 align-top font-medium">PEDAGOGICAL VALUE</td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">Alignment with teaching methods</div>
+                    <div class="text-sm text-gray-600">Compatibility with effective teaching strategies</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.pedagogicalComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.pedagogicalAlignmentMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">5%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">Student engagement</div>
+                    <div class="text-sm text-gray-600">Potential to engage and motivate students</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.pedagogicalComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.pedagogicalEngagementMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">5%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">Connection to real-world</div>
+                    <div class="text-sm text-gray-600">Relevance to practical applications</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.pedagogicalComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.pedagogicalConnectionMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">5%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">Inclusive design</div>
+                    <div class="text-sm text-gray-600">Accessibility and inclusivity considerations</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.pedagogicalComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.pedagogicalInclusiveMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">5%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td rowspan="4" class="border border-gray-300 px-4 py-2 align-top font-medium">DESIGN AND LAYOUT</td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">Visual appeal</div>
+                    <div class="text-sm text-gray-600">Aesthetic quality and visual design</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.designComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.designVisualMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">5%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">Navigation and usability</div>
+                    <div class="text-sm text-gray-600">Ease of use and navigation</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.designComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.designNavigationMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">5%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">Quality of production</div>
+                    <div class="text-sm text-gray-600">Technical quality and finish</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.designComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.designQualityMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">5%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">Consistency</div>
+                    <div class="text-sm text-gray-600">Consistent design elements and branding</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.designComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.designConsistencyMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">5%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td rowspan="2" class="border border-gray-300 px-4 py-2 align-top font-medium">INNOVATION AND CREATIVITY</td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">Originality</div>
+                    <div class="text-sm text-gray-600">Uniqueness and creative approach</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.innovationComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.innovationOriginalityMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">10%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">Technology integration</div>
+                    <div class="text-sm text-gray-600">Effective use of technology</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.innovationComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.innovationTechnologyMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">10%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td rowspan="4" class="border border-gray-300 px-4 py-2 align-top font-medium">EDUCATION 5.0 COMPLIANCE</td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">Local relevance</div>
+                    <div class="text-sm text-gray-600">Alignment with local context and needs</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.educationComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.educationLocalMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">5%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">Heritage preservation</div>
+                    <div class="text-sm text-gray-600">Cultural heritage integration</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.educationComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.educationHeritageMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">5%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">Problem-solving focus</div>
+                    <div class="text-sm text-gray-600">Addressing real-world problems</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.educationComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.educationProblemMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">5%</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <div class="font-medium">Commercial viability</div>
+                    <div class="text-sm text-gray-600">Potential for commercialization</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <textarea v-model="form.educationComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.educationCommercialMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                    <div class="text-xs text-gray-500 mt-1">5%</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Media Bag Warning -->
+          <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div class="flex items-center">
+              <i class="pi pi-exclamation-triangle text-yellow-600 mr-2"></i>
+              <span class="font-medium text-yellow-800">Media Bag Warning</span>
+            </div>
+            <p class="text-sm text-yellow-700 mt-1">
+              Ensure all materials are properly packaged and labeled for distribution. Check for completeness and quality before final submission.
+            </p>
+          </div>
+        </div>
+
+        <!-- General Comment -->
         <div class="bg-white rounded-xl shadow-sm border p-6">
-          <h2 class="text-xl font-semibold text-gray-900 mb-4">Overall Comment</h2>
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">General Comment</h2>
           <textarea 
             v-model="form.overallComment" 
             rows="4"
             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Enter overall assessment comment..."
+            placeholder="Enter your general comment..."
           ></textarea>
+        </div>
+
+        <!-- Signature Section -->
+        <div class="bg-white rounded-xl shadow-sm border p-6">
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Examiner Information</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Examiner Name</label>
+              <input 
+                v-model="form.examinerName" 
+                type="text"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter examiner name"
+              >
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+              <input 
+                v-model="form.examinerDate" 
+                type="date"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+            </div>
+          </div>
+          
+          <!-- ISEN Overall Mark -->
+          <div v-if="assessmentType === 'isen'" class="mt-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Overall Mark</label>
+            <input 
+              v-model.number="form.overallMark" 
+              type="number" 
+              min="0" 
+              max="100"
+              class="w-32 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Overall mark"
+            >
+          </div>
+
+          <!-- Materials Development specific fields -->
+          <div v-if="assessmentType === 'materials'" class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Supervisor Designation</label>
+              <input 
+                v-model="form.supervisorDesignation" 
+                type="text"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter supervisor designation"
+              >
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Total Percentage</label>
+              <input 
+                v-model.number="form.materialsTotalPercentage" 
+                type="number" 
+                min="0" 
+                max="100"
+                class="w-32 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="%"
+              >
+            </div>
+          </div>
+
+          <!-- Digital Signature Placeholder -->
+          <div class="mt-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Digital Signature</label>
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+              <i class="pi pi-pen text-gray-400 text-2xl mb-2"></i>
+              <p class="text-gray-500">Digital signature will be captured here</p>
+            </div>
+          </div>
         </div>
 
         <!-- Total Score Display -->
@@ -607,32 +960,64 @@ const student = ref({ fullName: '', sex: '', candidateNo: '', email: '', schoolN
 // Settings
 const { settings, loadSettings } = useAssessmentSettings()
 
-// Selected assessment type (from query). Default to junior
-const assessmentType = ref('junior')
+// Selected assessment type (from query). Default to ecd
+const assessmentType = ref('ecd')
 
 // Assessment fields (scores/comments)
 const form = ref({
   subject: '',
   topic: '',
   assessmentDate: new Date().toISOString().slice(0, 16),
+  assessmentTime: '',
+  // ECD & Junior Level fields
   preparationMark: 0,
   preparationComment: '',
-  lessonPlanningMark: 0,
-  lessonPlanningComment: '',
+  lessonFacilitationMark: 0,
+  lessonFacilitationComment: '',
+  deportmentMark: 0,
+  deportmentComment: '',
+  recordsMark: 0,
+  recordsComment: '',
   environmentMark: 0,
   environmentComment: '',
-  documentsMark: 0,
-  documentsComment: '',
-  introductionMark: 0,
-  introductionComment: '',
-  developmentMark: 0,
-  developmentComment: '',
-  conclusionMark: 0,
-  conclusionComment: '',
-  personalDimensionsMark: 0,
-  personalDimensionsComment: '',
   communityMark: 0,
   communityComment: '',
+  remainingPillarsMark: 0,
+  remainingPillarsComment: '',
+  // Materials Development fields
+  contentRelevanceMark: 0,
+  contentOrganizationMark: 0,
+  contentTotalMark: 0,
+  contentComment: '',
+  pedagogicalAlignmentMark: 0,
+  pedagogicalEngagementMark: 0,
+  pedagogicalConnectionMark: 0,
+  pedagogicalInclusiveMark: 0,
+  pedagogicalTotalMark: 0,
+  pedagogicalComment: '',
+  designVisualMark: 0,
+  designNavigationMark: 0,
+  designQualityMark: 0,
+  designConsistencyMark: 0,
+  designTotalMark: 0,
+  designComment: '',
+  innovationOriginalityMark: 0,
+  innovationTechnologyMark: 0,
+  innovationTotalMark: 0,
+  innovationComment: '',
+  educationLocalMark: 0,
+  educationHeritageMark: 0,
+  educationProblemMark: 0,
+  educationCommercialMark: 0,
+  educationTotalMark: 0,
+  educationComment: '',
+  materialsTotalMark: 0,
+  // Signature fields
+  examinerName: '',
+  examinerDate: new Date().toISOString().slice(0, 10),
+  overallMark: 0,
+  supervisorDesignation: '',
+  materialsTotalPercentage: 0,
   overallComment: ''
 })
 
@@ -651,28 +1036,75 @@ const clampField = (field, max) => {
 
 // Deep watch: clamp any time a mark changes (covers paste, wheel, programmatic)
 watch(form, () => {
-  clampField('preparationMark', settings.value.preparationMax)
-  clampField('lessonPlanningMark', settings.value.lessonPlanningMax)
-  clampField('environmentMark', settings.value.environmentMax)
-  clampField('documentsMark', settings.value.documentsMax)
-  clampField('introductionMark', settings.value.introductionMax)
-  clampField('developmentMark', settings.value.developmentMax)
-  clampField('conclusionMark', settings.value.conclusionMax)
-  clampField('personalDimensionsMark', settings.value.personalDimensionsMax)
-  clampField('communityMark', 20)
+  if (assessmentType.value === 'materials') {
+    // Materials Development specific clamping
+    clampField('contentRelevanceMark', 10)
+    clampField('contentOrganizationMark', 10)
+    clampField('contentTotalMark', 20)
+    clampField('pedagogicalAlignmentMark', 5)
+    clampField('pedagogicalEngagementMark', 5)
+    clampField('pedagogicalConnectionMark', 5)
+    clampField('pedagogicalInclusiveMark', 5)
+    clampField('pedagogicalTotalMark', 20)
+    clampField('designVisualMark', 5)
+    clampField('designNavigationMark', 5)
+    clampField('designQualityMark', 5)
+    clampField('designConsistencyMark', 5)
+    clampField('designTotalMark', 20)
+    clampField('innovationOriginalityMark', 10)
+    clampField('innovationTechnologyMark', 10)
+    clampField('innovationTotalMark', 20)
+    clampField('educationLocalMark', 5)
+    clampField('educationHeritageMark', 5)
+    clampField('educationProblemMark', 5)
+    clampField('educationCommercialMark', 5)
+    clampField('educationTotalMark', 20)
+    clampField('materialsTotalMark', 100)
+  } else {
+    // ECD, Secondary, ISEN specific clamping
+    clampField('preparationMark', 15)
+    clampField('lessonFacilitationMark', 15)
+    clampField('deportmentMark', 5)
+    clampField('recordsMark', 15)
+    clampField('environmentMark', 10)
+    clampField('communityMark', 30)
+    clampField('remainingPillarsMark', 10)
+  }
 }, { deep: true })
 
-const totalScore = computed(() => (
-  form.value.preparationMark +
-  form.value.lessonPlanningMark +
-  form.value.environmentMark +
-  form.value.documentsMark +
-  form.value.introductionMark +
-  form.value.developmentMark +
-  form.value.conclusionMark +
-  form.value.personalDimensionsMark +
-  form.value.communityMark
-))
+const totalScore = computed(() => {
+  if (assessmentType.value === 'ecd') {
+    return form.value.preparationMark +
+           form.value.lessonFacilitationMark +
+           form.value.deportmentMark +
+           form.value.recordsMark +
+           form.value.environmentMark +
+           form.value.communityMark +
+           form.value.remainingPillarsMark
+  } else if (assessmentType.value === 'secondary') {
+    return form.value.preparationMark +
+           form.value.recordsMark +
+           form.value.lessonFacilitationMark +
+           form.value.deportmentMark +
+           form.value.communityMark +
+           form.value.remainingPillarsMark
+  } else if (assessmentType.value === 'isen') {
+    return form.value.preparationMark +
+           form.value.recordsMark +
+           form.value.lessonFacilitationMark +
+           form.value.deportmentMark +
+           form.value.environmentMark +
+           form.value.communityMark +
+           form.value.remainingPillarsMark
+  } else if (assessmentType.value === 'materials') {
+    return form.value.contentTotalMark +
+           form.value.pedagogicalTotalMark +
+           form.value.designTotalMark +
+           form.value.innovationTotalMark +
+           form.value.educationTotalMark
+  }
+  return 0
+})
 
 const getGrade = (score) => {
   if (score >= 80) return '1'
@@ -869,15 +1301,40 @@ const submitAssessment = async () => {
     }
 
     // Final clamp before submit to guarantee marks never exceed maxima
-    clampField('preparationMark', settings.value.preparationMax)
-    clampField('lessonPlanningMark', settings.value.lessonPlanningMax)
-    clampField('environmentMark', settings.value.environmentMax)
-    clampField('documentsMark', settings.value.documentsMax)
-    clampField('introductionMark', settings.value.introductionMax)
-    clampField('developmentMark', settings.value.developmentMax)
-    clampField('conclusionMark', settings.value.conclusionMax)
-    clampField('personalDimensionsMark', settings.value.personalDimensionsMax)
-    clampField('communityMark', 20)
+    if (assessmentType.value === 'materials') {
+      // Materials Development specific clamping
+      clampField('contentRelevanceMark', 10)
+      clampField('contentOrganizationMark', 10)
+      clampField('contentTotalMark', 20)
+      clampField('pedagogicalAlignmentMark', 5)
+      clampField('pedagogicalEngagementMark', 5)
+      clampField('pedagogicalConnectionMark', 5)
+      clampField('pedagogicalInclusiveMark', 5)
+      clampField('pedagogicalTotalMark', 20)
+      clampField('designVisualMark', 5)
+      clampField('designNavigationMark', 5)
+      clampField('designQualityMark', 5)
+      clampField('designConsistencyMark', 5)
+      clampField('designTotalMark', 20)
+      clampField('innovationOriginalityMark', 10)
+      clampField('innovationTechnologyMark', 10)
+      clampField('innovationTotalMark', 20)
+      clampField('educationLocalMark', 5)
+      clampField('educationHeritageMark', 5)
+      clampField('educationProblemMark', 5)
+      clampField('educationCommercialMark', 5)
+      clampField('educationTotalMark', 20)
+      clampField('materialsTotalMark', 100)
+    } else {
+      // ECD, Secondary, ISEN specific clamping
+      clampField('preparationMark', 15)
+      clampField('lessonFacilitationMark', 15)
+      clampField('deportmentMark', 5)
+      clampField('recordsMark', 15)
+      clampField('environmentMark', 10)
+      clampField('communityMark', 30)
+      clampField('remainingPillarsMark', 10)
+    }
 
     const supervisorId = await ensureSupervisor()
     const studentId = await ensureStudent()
@@ -901,7 +1358,7 @@ onMounted(() => {
   loadSettings()
   const route = useRoute()
   const q = String(route.query.type || '').toLowerCase()
-  if (q === 'ecd' || q === 'junior') {
+  if (q === 'ecd' || q === 'secondary' || q === 'isen' || q === 'materials') {
     assessmentType.value = q
   }
 })
