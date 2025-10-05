@@ -36,40 +36,61 @@ export default defineEventHandler(async (event) => {
 
     const zip = new JSZip()
     try {
-      for (const assessment of assessments) {
-        // Calculate total mark
-        const totalMark = assessment.preparationMark + 
-                         assessment.lessonPlanningMark + 
-                         assessment.environmentMark + 
-                         assessment.documentsMark + 
-                         assessment.introductionMark + 
-                         assessment.developmentMark + 
-                         assessment.conclusionMark + 
-                         assessment.personalDimensionsMark + 
-                         (assessment.communityMark || 0)
+      // Group assessments by student SRN (candidateNo)
+      const assessmentsBySRN = assessments.reduce((groups, assessment) => {
+        const srn = assessment.student.candidateNo
+        if (!groups[srn]) {
+          groups[srn] = {
+            student: assessment.student,
+            assessments: []
+          }
+        }
+        groups[srn].assessments.push(assessment)
+        return groups
+      }, {} as Record<string, { student: any, assessments: any[] }>)
 
-        // Generate HTML content for PDF using the same function as individual PDFs
-        const htmlContent = generateAssessmentHTML(assessment, totalMark)
+      // Create folders for each SRN and generate PDFs
+      for (const [srn, { student, assessments: studentAssessments }] of Object.entries(assessmentsBySRN)) {
+        // Create a folder for this SRN
+        const srnFolder = zip.folder(`SRN_${srn}_${student.fullName.replace(/[^a-zA-Z0-9]/g, '_')}`)
         
-        const page = await browser.newPage()
-        await page.emulateMediaType('screen')
-        await page.setContent(htmlContent, { waitUntil: 'domcontentloaded' })
-        
-        const pdf = await page.pdf({
-          format: 'A4',
-          margin: {
-            top: '20mm',
-            right: '20mm',
-            bottom: '20mm',
-            left: '20mm'
-          },
-          printBackground: true,
-          preferCSSPageSize: true
-        })
-        await page.close()
-        
-        const fileName = `assessment-${assessment.student.fullName.replace(/[^a-zA-Z0-9]/g, '_')}-${assessment.subject.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`
-        zip.file(fileName, pdf)
+        for (const assessment of studentAssessments) {
+          // Calculate total mark
+          const totalMark = assessment.preparationMark + 
+                           assessment.lessonPlanningMark + 
+                           assessment.environmentMark + 
+                           assessment.documentsMark + 
+                           assessment.introductionMark + 
+                           assessment.developmentMark + 
+                           assessment.conclusionMark + 
+                           assessment.personalDimensionsMark + 
+                           (assessment.communityMark || 0)
+
+          // Generate HTML content for PDF using the same function as individual PDFs
+          const htmlContent = generateAssessmentHTML(assessment, totalMark)
+          
+          const page = await browser.newPage()
+          await page.emulateMediaType('screen')
+          await page.setContent(htmlContent, { waitUntil: 'domcontentloaded' })
+          
+          const pdf = await page.pdf({
+            format: 'A4',
+            margin: {
+              top: '20mm',
+              right: '20mm',
+              bottom: '20mm',
+              left: '20mm'
+            },
+            printBackground: true,
+            preferCSSPageSize: true
+          })
+          await page.close()
+          
+          // Create filename with assessment type and subject
+          const assessmentType = assessment.formType || 'ECD'
+          const fileName = `${assessmentType}_${assessment.subject.replace(/[^a-zA-Z0-9]/g, '_')}_${assessment.topic.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`
+          srnFolder.file(fileName, pdf)
+        }
       }
     } finally {
       try { await browser.close() } catch {}
