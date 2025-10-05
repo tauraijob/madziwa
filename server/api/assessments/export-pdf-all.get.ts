@@ -55,16 +55,29 @@ export default defineEventHandler(async (event) => {
         const srnFolder = zip.folder(`SRN_${srn}_${student.fullName.replace(/[^a-zA-Z0-9]/g, '_')}`)
         
         for (const assessment of studentAssessments) {
-          // Calculate total mark
-          const totalMark = assessment.preparationMark + 
-                           assessment.lessonPlanningMark + 
-                           assessment.environmentMark + 
-                           assessment.documentsMark + 
-                           assessment.introductionMark + 
-                           assessment.developmentMark + 
-                           assessment.conclusionMark + 
-                           assessment.personalDimensionsMark + 
-                           (assessment.communityMark || 0)
+          // Calculate total mark with clamping for ECD/Junior assessments
+          let totalMark
+          if (assessment.formType === 'ecd' || assessment.formType === 'junior' || !assessment.formType) {
+            // For ECD/Junior, use clamped values to prevent exceeding maximums
+            totalMark = Math.min(assessment.preparationMark, 15) + 
+                       Math.min(assessment.lessonPlanningMark, 15) + 
+                       Math.min(assessment.environmentMark, 10) + 
+                       Math.min(assessment.documentsMark, 15) + 
+                       Math.min(assessment.introductionMark, 5) + 
+                       Math.min(assessment.developmentMark, 30) + 
+                       Math.min(assessment.conclusionMark, 10)
+          } else {
+            // For other assessment types, use original calculation
+            totalMark = assessment.preparationMark + 
+                       assessment.lessonPlanningMark + 
+                       assessment.environmentMark + 
+                       assessment.documentsMark + 
+                       assessment.introductionMark + 
+                       assessment.developmentMark + 
+                       assessment.conclusionMark + 
+                       assessment.personalDimensionsMark + 
+                       (assessment.communityMark || 0)
+          }
 
           // Generate HTML content for PDF using the same function as individual PDFs
           const htmlContent = generateAssessmentHTML(assessment, totalMark)
@@ -116,11 +129,11 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
   }
 
   const getGrade = (score: number) => {
-    if (score >= 90) return 'A+ (Excellent)'
-    if (score >= 80) return 'A (Very Good)'
-    if (score >= 70) return 'B (Good)'
-    if (score >= 60) return 'C (Satisfactory)'
-    return 'D (Needs Improvement)'
+    if (score >= 90) return '1 (Excellent)'
+    if (score >= 80) return '2.1 (Very Good)'
+    if (score >= 70) return '2.2 (Good)'
+    if (score >= 60) return '3 (Satisfactory)'
+    return 'F (Fail)'
   }
 
   return `
@@ -368,45 +381,45 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
             ` : (assessment.formType === 'ecd' || assessment.formType === 'junior' || !assessment.formType) ? `
             <tr>
               <td><strong>Research-Teaching & Learning</strong><br/>Preparation</td>
-              <td>${assessment.preparationMark}</td>
+              <td>${Math.min(assessment.preparationMark, 15)}</td>
               <td>15</td>
-              <td>${Math.round(assessment.preparationMark / 15 * 100)}%</td>
+              <td>${Math.round(Math.min(assessment.preparationMark, 15) / 15 * 100)}%</td>
             </tr>
             <tr>
               <td><strong>Research-Teaching & Learning</strong><br/>Lesson Facilitation</td>
-              <td>${assessment.lessonPlanningMark}</td>
+              <td>${Math.min(assessment.lessonPlanningMark, 15)}</td>
               <td>15</td>
-              <td>${Math.round(assessment.lessonPlanningMark / 15 * 100)}%</td>
+              <td>${Math.round(Math.min(assessment.lessonPlanningMark, 15) / 15 * 100)}%</td>
             </tr>
             <tr>
               <td><strong>Research-Teaching & Learning</strong><br/>Deportment</td>
-              <td>${assessment.introductionMark}</td>
+              <td>${Math.min(assessment.introductionMark, 5)}</td>
               <td>5</td>
-              <td>${Math.round(assessment.introductionMark / 5 * 100)}%</td>
+              <td>${Math.round(Math.min(assessment.introductionMark, 5) / 5 * 100)}%</td>
             </tr>
             <tr>
               <td><strong>Research-Teaching & Learning</strong><br/>Records Management</td>
-              <td>${assessment.documentsMark}</td>
+              <td>${Math.min(assessment.documentsMark, 15)}</td>
               <td>15</td>
-              <td>${Math.round(assessment.documentsMark / 15 * 100)}%</td>
+              <td>${Math.round(Math.min(assessment.documentsMark, 15) / 15 * 100)}%</td>
             </tr>
             <tr>
               <td><strong>Teaching and Learning Environment</strong></td>
-              <td>${assessment.environmentMark}</td>
+              <td>${Math.min(assessment.environmentMark, 10)}</td>
               <td>10</td>
-              <td>${Math.round(assessment.environmentMark / 10 * 100)}%</td>
+              <td>${Math.round(Math.min(assessment.environmentMark, 10) / 10 * 100)}%</td>
             </tr>
             <tr>
               <td><strong>Research-based Community Service/Research & Innovation/Research & Industrialisation</strong></td>
-              <td>${assessment.developmentMark}</td>
+              <td>${Math.min(assessment.developmentMark, 30)}</td>
               <td>30</td>
-              <td>${Math.round(assessment.developmentMark / 30 * 100)}%</td>
+              <td>${Math.round(Math.min(assessment.developmentMark, 30) / 30 * 100)}%</td>
             </tr>
             <tr>
               <td><strong>Remaining 2 Pillars</strong></td>
-              <td>${assessment.conclusionMark}</td>
+              <td>${Math.min(assessment.conclusionMark, 10)}</td>
               <td>10</td>
-              <td>${Math.round(assessment.conclusionMark / 10 * 100)}%</td>
+              <td>${Math.round(Math.min(assessment.conclusionMark, 10) / 10 * 100)}%</td>
             </tr>
             ` : `
             <tr>
