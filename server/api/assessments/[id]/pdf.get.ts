@@ -277,6 +277,12 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
         <h1>Madziwa College</h1>
         <p>Teaching Practice Assessment Report</p>
         <p>Generated on ${new Date().toLocaleDateString()}</p>
+        ${assessment.formType ? `<p><strong>${
+          assessment.formType === 'secondary' ? 'Secondary level teaching assessment' :
+          assessment.formType === 'isen' ? 'Inclusion and Special Educational Needs' :
+          assessment.formType === 'materials' ? 'Educational materials and resources assessment' :
+          'ECD & Junior Levels'
+        }</strong></p>` : ''}
       </div>
 
       <div class="section">
@@ -357,6 +363,81 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
             </tr>
           </thead>
           <tbody>
+            ${assessment.formType === 'materials' ? `
+            <tr>
+              <td>Content</td>
+              <td>${assessment.preparationMark}</td>
+              <td>20</td>
+              <td>${Math.round((assessment.preparationMark / 20) * 100)}%</td>
+            </tr>
+            <tr>
+              <td>Pedagogical Value</td>
+              <td>${assessment.lessonPlanningMark}</td>
+              <td>20</td>
+              <td>${Math.round((assessment.lessonPlanningMark / 20) * 100)}%</td>
+            </tr>
+            <tr>
+              <td>Design & Layout</td>
+              <td>${assessment.environmentMark}</td>
+              <td>20</td>
+              <td>${Math.round((assessment.environmentMark / 20) * 100)}%</td>
+            </tr>
+            <tr>
+              <td>Innovation & Creativity</td>
+              <td>${assessment.documentsMark}</td>
+              <td>20</td>
+              <td>${Math.round((assessment.documentsMark / 20) * 100)}%</td>
+            </tr>
+            <tr>
+              <td>Education 5.0 Compliance</td>
+              <td>${assessment.introductionMark}</td>
+              <td>20</td>
+              <td>${Math.round((assessment.introductionMark / 20) * 100)}%</td>
+            </tr>
+            ` : (assessment.formType === 'ecd' || assessment.formType === 'junior' || !assessment.formType) ? `
+            <tr>
+              <td><strong>Research-Teaching & Learning</strong><br/>Preparation</td>
+              <td>${assessment.preparationMark}</td>
+              <td>15</td>
+              <td>${Math.round(assessment.preparationMark / 15 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Research-Teaching & Learning</strong><br/>Lesson Facilitation</td>
+              <td>${assessment.lessonPlanningMark}</td>
+              <td>15</td>
+              <td>${Math.round(assessment.lessonPlanningMark / 15 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Research-Teaching & Learning</strong><br/>Deportment</td>
+              <td>${assessment.introductionMark}</td>
+              <td>5</td>
+              <td>${Math.round(assessment.introductionMark / 5 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Research-Teaching & Learning</strong><br/>Records Management</td>
+              <td>${assessment.documentsMark}</td>
+              <td>15</td>
+              <td>${Math.round(assessment.documentsMark / 15 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Teaching and Learning Environment</strong></td>
+              <td>${assessment.environmentMark}</td>
+              <td>10</td>
+              <td>${Math.round(assessment.environmentMark / 10 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Research-based Community Service/Research & Innovation/Research & Industrialisation</strong></td>
+              <td>${assessment.developmentMark}</td>
+              <td>30</td>
+              <td>${Math.round(assessment.developmentMark / 30 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Remaining 2 Pillars</strong></td>
+              <td>${assessment.conclusionMark}</td>
+              <td>10</td>
+              <td>${Math.round(assessment.conclusionMark / 10 * 100)}%</td>
+            </tr>
+            ` : `
             <tr>
               <td>Preparation & Scheming</td>
               <td>${assessment.preparationMark}</td>
@@ -411,6 +492,7 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
               <td>20</td>
               <td>${Math.round(((assessment.communityMark || 0) / 20) * 100)}%</td>
             </tr>
+            `}
           </tbody>
         </table>
       </div>
@@ -421,14 +503,143 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
         <div class="grade">${getGrade(totalMark)}</div>
       </div>
 
+      ${assessment.formType === 'materials' ? `
       <div class="comment-section">
+        <h3>Comments Breakdown (Materials)</h3>
+        <table class="score-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Comments</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Content</td>
+              <td>${assessment.preparationComment || ''}</td>
+            </tr>
+            <tr>
+              <td>Pedagogical Value</td>
+              <td>${assessment.lessonPlanningComment || ''}</td>
+            </tr>
+            <tr>
+              <td>Design & Layout</td>
+              <td>${assessment.environmentComment || ''}</td>
+            </tr>
+            <tr>
+              <td>Innovation & Creativity</td>
+              <td>${assessment.documentsComment || ''}</td>
+            </tr>
+            <tr>
+              <td>Education 5.0</td>
+              <td>${assessment.introductionComment || ''}</td>
+            </tr>
+          </tbody>
+        </table>
         <h3>Overall Comment</h3>
-        <p>${assessment.overallComment}</p>
+        <p>${assessment.overallComment || ''}</p>
       </div>
+      ` : (assessment.formType === 'ecd' || assessment.formType === 'junior' || !assessment.formType) ? `
+       <div class="comment-section">
+         <h3>Comments Breakdown</h3>
+         <table class="score-table">
+           <thead>
+             <tr>
+               <th>Category</th>
+               <th>Comments</th>
+             </tr>
+           </thead>
+           <tbody>
+             <tr>
+               <td><strong>Research-Teaching & Learning</strong><br/>Preparation</td>
+               <td>${assessment.preparationComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Research-Teaching & Learning</strong><br/>Lesson Facilitation</td>
+               <td>${assessment.lessonPlanningComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Research-Teaching & Learning</strong><br/>Deportment</td>
+               <td>${assessment.introductionComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Research-Teaching & Learning</strong><br/>Records Management</td>
+               <td>${assessment.documentsComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Teaching and Learning Environment</strong></td>
+               <td>${assessment.environmentComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Research-based Community Service/Research & Innovation/Research & Industrialisation</strong></td>
+               <td>${assessment.developmentComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Remaining 2 Pillars</strong></td>
+               <td>${assessment.conclusionComment || ''}</td>
+             </tr>
+           </tbody>
+         </table>
+         <h3>Overall Comment</h3>
+         <p>${assessment.overallComment || ''}</p>
+       </div>
+      ` : `
+       <div class="comment-section">
+         <h3>Comments Breakdown</h3>
+         <table class="score-table">
+           <thead>
+             <tr>
+               <th>Category</th>
+               <th>Comments</th>
+             </tr>
+           </thead>
+           <tbody>
+             <tr>
+               <td>Preparation & Scheming</td>
+               <td>${assessment.preparationComment || ''}</td>
+             </tr>
+             <tr>
+               <td>Lesson Planning</td>
+               <td>${assessment.lessonPlanningComment || ''}</td>
+             </tr>
+             <tr>
+               <td>Learning Environment & Management</td>
+               <td>${assessment.environmentComment || ''}</td>
+             </tr>
+             <tr>
+               <td>Other Work-Related Learning Documents</td>
+               <td>${assessment.documentsComment || ''}</td>
+             </tr>
+             <tr>
+               <td>Lesson Presentation: Introduction</td>
+               <td>${assessment.introductionComment || ''}</td>
+             </tr>
+             <tr>
+               <td>Lesson Presentation: Development</td>
+               <td>${assessment.developmentComment || ''}</td>
+             </tr>
+             <tr>
+               <td>Lesson Presentation: Conclusion</td>
+               <td>${assessment.conclusionComment || ''}</td>
+             </tr>
+             <tr>
+               <td>Personal Dimensions</td>
+               <td>${assessment.personalDimensionsComment || ''}</td>
+             </tr>
+             <tr>
+               <td>Community Engagement (Education 5.0)</td>
+               <td>${assessment.communityComment || ''}</td>
+             </tr>
+           </tbody>
+         </table>
+         <h3>Overall Comment</h3>
+         <p>${assessment.overallComment || ''}</p>
+       </div>
+      `}
 
       <div class="footer">
         <p>This report was generated by the Madziwa College TP Assessment Platform</p>
-        <p>Contact: +27 61 629 1608 | Email: info@madziwacollege.edu.zw</p>
+        <p>Contact: +263 772 145 972 | Email: madziwatc@gmail.com</p>
       </div>
     </body>
     </html>

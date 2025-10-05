@@ -117,11 +117,12 @@
             </h3>
           </div>
           
-          <div class="divide-y divide-gray-200">
-            <!-- Preparation & Scheming -->
+          <!-- Materials Development categories -->
+          <div v-if="assessment.formType === 'materials'" class="divide-y divide-gray-200">
+            <!-- Content (20) -->
             <div class="px-6 py-4">
               <div class="flex items-center justify-between mb-2">
-                <h4 class="font-medium text-gray-900">Preparation & Scheming</h4>
+                <h4 class="font-medium text-gray-900">Content</h4>
                 <span class="text-lg font-semibold text-blue-600">{{ assessment.preparationMark }}/20</span>
               </div>
               <div class="bg-gray-200 rounded-full h-2 mb-2">
@@ -133,16 +134,94 @@
               <p class="text-sm text-gray-600">{{ assessment.preparationComment }}</p>
             </div>
 
-            <!-- Lesson Planning -->
+            <!-- Pedagogical Value (20) -->
             <div class="px-6 py-4">
               <div class="flex items-center justify-between mb-2">
-                <h4 class="font-medium text-gray-900">Lesson Planning</h4>
+                <h4 class="font-medium text-gray-900">Pedagogical Value</h4>
                 <span class="text-lg font-semibold text-blue-600">{{ assessment.lessonPlanningMark }}/20</span>
               </div>
               <div class="bg-gray-200 rounded-full h-2 mb-2">
                 <div 
                   class="bg-blue-600 h-2 rounded-full"
                   :style="{ width: (assessment.lessonPlanningMark / 20 * 100) + '%' }"
+                ></div>
+              </div>
+              <p class="text-sm text-gray-600">{{ assessment.lessonPlanningComment }}</p>
+            </div>
+
+            <!-- Design & Layout (20) -->
+            <div class="px-6 py-4">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-medium text-gray-900">Design & Layout</h4>
+                <span class="text-lg font-semibold text-blue-600">{{ assessment.environmentMark }}/20</span>
+              </div>
+              <div class="bg-gray-200 rounded-full h-2 mb-2">
+                <div 
+                  class="bg-blue-600 h-2 rounded-full"
+                  :style="{ width: (assessment.environmentMark / 20 * 100) + '%' }"
+                ></div>
+              </div>
+              <p class="text-sm text-gray-600">{{ assessment.environmentComment }}</p>
+            </div>
+
+            <!-- Innovation & Creativity (20) -->
+            <div class="px-6 py-4">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-medium text-gray-900">Innovation & Creativity</h4>
+                <span class="text-lg font-semibold text-blue-600">{{ assessment.documentsMark }}/20</span>
+              </div>
+              <div class="bg-gray-200 rounded-full h-2 mb-2">
+                <div 
+                  class="bg-blue-600 h-2 rounded-full"
+                  :style="{ width: (assessment.documentsMark / 20 * 100) + '%' }"
+                ></div>
+              </div>
+              <p class="text-sm text-gray-600">{{ assessment.documentsComment }}</p>
+            </div>
+
+            <!-- Education 5.0 Compliance (20) -->
+            <div class="px-6 py-4">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-medium text-gray-900">Education 5.0 Compliance</h4>
+                <span class="text-lg font-semibold text-blue-600">{{ assessment.introductionMark }}/20</span>
+              </div>
+              <div class="bg-gray-200 rounded-full h-2 mb-2">
+                <div 
+                  class="bg-blue-600 h-2 rounded-full"
+                  :style="{ width: (assessment.introductionMark / 20 * 100) + '%' }"
+                ></div>
+              </div>
+              <p class="text-sm text-gray-600">{{ assessment.introductionComment }}</p>
+            </div>
+          </div>
+
+          <!-- ECD / Junior breakdown -->
+          <div v-else class="divide-y divide-gray-200">
+            <!-- Research-Teaching & Learning - Preparation -->
+            <div class="px-6 py-4">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-medium text-gray-900">Research-Teaching & Learning - Preparation</h4>
+                <span class="text-lg font-semibold text-blue-600">{{ assessment.preparationMark }}/15</span>
+              </div>
+              <div class="bg-gray-200 rounded-full h-2 mb-2">
+                <div 
+                  class="bg-blue-600 h-2 rounded-full"
+                  :style="{ width: (assessment.preparationMark / 15 * 100) + '%' }"
+                ></div>
+              </div>
+              <p class="text-sm text-gray-600">{{ assessment.preparationComment }}</p>
+            </div>
+
+            <!-- Research-Teaching & Learning - Lesson Facilitation -->
+            <div class="px-6 py-4">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-medium text-gray-900">Research-Teaching & Learning - Lesson Facilitation</h4>
+                <span class="text-lg font-semibold text-blue-600">{{ assessment.lessonPlanningMark }}/15</span>
+              </div>
+              <div class="bg-gray-200 rounded-full h-2 mb-2">
+                <div 
+                  class="bg-blue-600 h-2 rounded-full"
+                  :style="{ width: (assessment.lessonPlanningMark / 15 * 100) + '%' }"
                 ></div>
               </div>
               <p class="text-sm text-gray-600">{{ assessment.lessonPlanningComment }}</p>
@@ -208,34 +287,19 @@
               <p class="text-sm text-gray-600">{{ assessment.developmentComment }}</p>
             </div>
 
-            <!-- Lesson Presentation: Conclusion -->
+            <!-- Remaining 2 Pillars -->
             <div class="px-6 py-4">
               <div class="flex items-center justify-between mb-2">
-                <h4 class="font-medium text-gray-900">Lesson Presentation: Conclusion</h4>
-                <span class="text-lg font-semibold text-blue-600">{{ assessment.conclusionMark }}/3</span>
+                <h4 class="font-medium text-gray-900">Remaining 2 Pillars</h4>
+                <span class="text-lg font-semibold text-blue-600">{{ assessment.conclusionMark }}/10</span>
               </div>
               <div class="bg-gray-200 rounded-full h-2 mb-2">
                 <div 
                   class="bg-blue-600 h-2 rounded-full"
-                  :style="{ width: (assessment.conclusionMark / 3 * 100) + '%' }"
+                  :style="{ width: (assessment.conclusionMark / 10 * 100) + '%' }"
                 ></div>
               </div>
               <p class="text-sm text-gray-600">{{ assessment.conclusionComment }}</p>
-            </div>
-
-            <!-- Personal Dimensions -->
-            <div class="px-6 py-4">
-              <div class="flex items-center justify-between mb-2">
-                <h4 class="font-medium text-gray-900">Personal Dimensions</h4>
-                <span class="text-lg font-semibold text-blue-600">{{ assessment.personalMark }}/4</span>
-              </div>
-              <div class="bg-gray-200 rounded-full h-2 mb-2">
-                <div 
-                  class="bg-blue-600 h-2 rounded-full"
-                  :style="{ width: (assessment.personalMark / 4 * 100) + '%' }"
-                ></div>
-              </div>
-              <p class="text-sm text-gray-600">{{ assessment.personalComment }}</p>
             </div>
           </div>
         </div>

@@ -354,58 +354,46 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
           </thead>
           <tbody>
             <tr>
-              <td>Preparation & Scheming</td>
+              <td><strong>Research-Teaching & Learning</strong><br/>Preparation</td>
               <td>${assessment.preparationMark}</td>
-              <td>20</td>
-              <td>${Math.round(assessment.preparationMark / 20 * 100)}%</td>
+              <td>15</td>
+              <td>${Math.round(assessment.preparationMark / 15 * 100)}%</td>
             </tr>
             <tr>
-              <td>Lesson Planning</td>
+              <td><strong>Research-Teaching & Learning</strong><br/>Lesson Facilitation</td>
               <td>${assessment.lessonPlanningMark}</td>
-              <td>20</td>
-              <td>${Math.round(assessment.lessonPlanningMark / 20 * 100)}%</td>
+              <td>15</td>
+              <td>${Math.round(assessment.lessonPlanningMark / 15 * 100)}%</td>
             </tr>
             <tr>
-              <td>Learning Environment & Management</td>
+              <td><strong>Research-Teaching & Learning</strong><br/>Deportment</td>
+              <td>${assessment.introductionMark}</td>
+              <td>5</td>
+              <td>${Math.round(assessment.introductionMark / 5 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Research-Teaching & Learning</strong><br/>Records Management</td>
+              <td>${assessment.documentsMark}</td>
+              <td>15</td>
+              <td>${Math.round(assessment.documentsMark / 15 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Teaching and Learning Environment</strong></td>
               <td>${assessment.environmentMark}</td>
               <td>10</td>
               <td>${Math.round(assessment.environmentMark / 10 * 100)}%</td>
             </tr>
             <tr>
-              <td>Other Work-Related Learning Documents</td>
-              <td>${assessment.documentsMark}</td>
-              <td>10</td>
-              <td>${Math.round(assessment.documentsMark / 10 * 100)}%</td>
-            </tr>
-            <tr>
-              <td>Lesson Presentation: Introduction</td>
-              <td>${assessment.introductionMark}</td>
-              <td>3</td>
-              <td>${Math.round(assessment.introductionMark / 3 * 100)}%</td>
-            </tr>
-            <tr>
-              <td>Lesson Presentation: Development</td>
+              <td><strong>Research-based Community Service/Research & Innovation/Research & Industrialisation</strong></td>
               <td>${assessment.developmentMark}</td>
               <td>30</td>
               <td>${Math.round(assessment.developmentMark / 30 * 100)}%</td>
             </tr>
             <tr>
-              <td>Lesson Presentation: Conclusion</td>
+              <td><strong>Remaining 2 Pillars</strong></td>
               <td>${assessment.conclusionMark}</td>
-              <td>3</td>
-              <td>${Math.round(assessment.conclusionMark / 3 * 100)}%</td>
-            </tr>
-            <tr>
-              <td>Personal Dimensions</td>
-              <td>${assessment.personalDimensionsMark}</td>
-              <td>4</td>
-              <td>${Math.round(assessment.personalDimensionsMark / 4 * 100)}%</td>
-            </tr>
-            <tr>
-              <td>Community Engagement (Education 5.0)</td>
-              <td>${assessment.communityMark || 0}</td>
-              <td>20</td>
-              <td>${Math.round(((assessment.communityMark || 0) / 20) * 100)}%</td>
+              <td>10</td>
+              <td>${Math.round(assessment.conclusionMark / 10 * 100)}%</td>
             </tr>
           </tbody>
         </table>
@@ -418,13 +406,23 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
       </div>
 
       <div class="comment-section">
+        <h3>Comments Breakdown</h3>
+        <ul>
+          <li><strong>Research-Teaching & Learning - Preparation:</strong> ${assessment.preparationComment || ''}</li>
+          <li><strong>Research-Teaching & Learning - Lesson Facilitation:</strong> ${assessment.lessonPlanningComment || ''}</li>
+          <li><strong>Research-Teaching & Learning - Deportment:</strong> ${assessment.introductionComment || ''}</li>
+          <li><strong>Research-Teaching & Learning - Records Management:</strong> ${assessment.documentsComment || ''}</li>
+          <li><strong>Teaching and Learning Environment:</strong> ${assessment.environmentComment || ''}</li>
+          <li><strong>Research-based Community Service/Research & Innovation/Research & Industrialisation:</strong> ${assessment.developmentComment || ''}</li>
+          <li><strong>Remaining 2 Pillars:</strong> ${assessment.conclusionComment || ''}</li>
+        </ul>
         <h3>Overall Comment</h3>
-        <p>${assessment.overallComment}</p>
+        <p>${assessment.overallComment || ''}</p>
       </div>
 
       <div class="footer">
         <p>This report was generated by the Madziwa College TP Assessment Platform</p>
-        <p>Contact: +27 61 629 1608 | Email: info@madziwacollege.edu.zw</p>
+        <p>Contact: +263 772 145 972 | Email: madziwatc@gmail.com</p>
       </div>
     </body>
     </html>

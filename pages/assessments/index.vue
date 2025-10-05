@@ -87,6 +87,24 @@
                 </button>
               </div>
             </div>
+          
+          <!-- Comments Breakdown (collapsed preview) -->
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
+            <div>
+              <div class="font-medium text-gray-900">Comments</div>
+              <ul class="list-disc list-inside space-y-1">
+                <li v-if="assessment.preparationComment"><span class="text-gray-500">Preparation:</span> {{ assessment.preparationComment }}</li>
+                <li v-if="assessment.lessonPlanningComment"><span class="text-gray-500">Lesson Planning:</span> {{ assessment.lessonPlanningComment }}</li>
+                <li v-if="assessment.environmentComment"><span class="text-gray-500">Environment:</span> {{ assessment.environmentComment }}</li>
+                <li v-if="assessment.documentsComment"><span class="text-gray-500">Documents:</span> {{ assessment.documentsComment }}</li>
+                <li v-if="assessment.introductionComment"><span class="text-gray-500">Introduction:</span> {{ assessment.introductionComment }}</li>
+                <li v-if="assessment.developmentComment"><span class="text-gray-500">Development:</span> {{ assessment.developmentComment }}</li>
+                <li v-if="assessment.conclusionComment"><span class="text-gray-500">Conclusion:</span> {{ assessment.conclusionComment }}</li>
+                <li v-if="assessment.personalDimensionsComment"><span class="text-gray-500">Personal Dimensions:</span> {{ assessment.personalDimensionsComment }}</li>
+                <li v-if="assessment.communityComment"><span class="text-gray-500">Community Engagement:</span> {{ assessment.communityComment }}</li>
+              </ul>
+            </div>
+          </div>
           </div>
         </div>
       </div>

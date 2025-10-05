@@ -16,7 +16,7 @@
         </div>
       </div>
 
-      <form @submit.prevent="submitAssessment" class="space-y-8">
+      <form @submit.prevent="submitAssessment" novalidate class="space-y-8">
         <!-- Offline Import -->
         <div class="bg-white rounded-xl shadow-sm border p-6">
           <h2 class="text-xl font-semibold text-gray-900 mb-4">Offline Import</h2>
@@ -619,7 +619,7 @@
                     <div class="text-sm text-gray-600">Alignment with curriculum objectives and learning outcomes</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.contentComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.contentRelevanceComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
                     <input v-model.number="form.contentRelevanceMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" />
@@ -632,7 +632,7 @@
                     <div class="text-sm text-gray-600">Logical flow and clear organization of content</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.contentComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.contentOrganizationComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
                     <input v-model.number="form.contentOrganizationMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" />
@@ -646,7 +646,7 @@
                     <div class="text-sm text-gray-600">Compatibility with effective teaching strategies</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.pedagogicalComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.pedagogicalAlignmentComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
                     <input v-model.number="form.pedagogicalAlignmentMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
@@ -659,7 +659,7 @@
                     <div class="text-sm text-gray-600">Potential to engage and motivate students</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.pedagogicalComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.pedagogicalEngagementComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
                     <input v-model.number="form.pedagogicalEngagementMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
@@ -672,7 +672,7 @@
                     <div class="text-sm text-gray-600">Relevance to practical applications</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.pedagogicalComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.pedagogicalConnectionComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
                     <input v-model.number="form.pedagogicalConnectionMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
@@ -685,7 +685,7 @@
                     <div class="text-sm text-gray-600">Accessibility and inclusivity considerations</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.pedagogicalComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.pedagogicalInclusiveComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
                     <input v-model.number="form.pedagogicalInclusiveMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
@@ -699,7 +699,7 @@
                     <div class="text-sm text-gray-600">Aesthetic quality and visual design</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.designComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.designVisualComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
                     <input v-model.number="form.designVisualMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
@@ -712,7 +712,7 @@
                     <div class="text-sm text-gray-600">Ease of use and navigation</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.designComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.designNavigationComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
                     <input v-model.number="form.designNavigationMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
@@ -725,7 +725,7 @@
                     <div class="text-sm text-gray-600">Technical quality and finish</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.designComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.designQualityComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
                     <input v-model.number="form.designQualityMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
@@ -738,7 +738,7 @@
                     <div class="text-sm text-gray-600">Consistent design elements and branding</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.designComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.designConsistencyComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
                     <input v-model.number="form.designConsistencyMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
@@ -752,7 +752,7 @@
                     <div class="text-sm text-gray-600">Uniqueness and creative approach</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.innovationComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.innovationOriginalityComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
                     <input v-model.number="form.innovationOriginalityMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" />
@@ -765,7 +765,7 @@
                     <div class="text-sm text-gray-600">Effective use of technology</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.innovationComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.innovationTechnologyComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
                     <input v-model.number="form.innovationTechnologyMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" />
@@ -779,7 +779,7 @@
                     <div class="text-sm text-gray-600">Alignment with local context and needs</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.educationComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.educationLocalComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
                     <input v-model.number="form.educationLocalMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
@@ -792,7 +792,7 @@
                     <div class="text-sm text-gray-600">Cultural heritage integration</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.educationComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.educationHeritageComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
                     <input v-model.number="form.educationHeritageMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
@@ -805,7 +805,7 @@
                     <div class="text-sm text-gray-600">Addressing real-world problems</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.educationComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.educationProblemComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
                     <input v-model.number="form.educationProblemMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
@@ -818,7 +818,7 @@
                     <div class="text-sm text-gray-600">Potential for commercialization</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.educationComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.educationCommercialComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
                     <input v-model.number="form.educationCommercialMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
@@ -902,12 +902,13 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Total Percentage</label>
               <input 
-                v-model.number="form.materialsTotalPercentage" 
+                :value="form.materialsTotalPercentage" 
                 type="number" 
                 min="0" 
                 max="100"
-                class="w-32 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="%"
+                class="w-32 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50"
+                placeholder="% (auto)"
+                readonly
               >
             </div>
           </div>
@@ -1014,29 +1015,40 @@ const form = ref({
   contentRelevanceMark: 0,
   contentOrganizationMark: 0,
   contentTotalMark: 0,
-  contentComment: '',
+  contentRelevanceComment: '',
+  contentOrganizationComment: '',
   pedagogicalAlignmentMark: 0,
   pedagogicalEngagementMark: 0,
   pedagogicalConnectionMark: 0,
   pedagogicalInclusiveMark: 0,
   pedagogicalTotalMark: 0,
-  pedagogicalComment: '',
+  pedagogicalAlignmentComment: '',
+  pedagogicalEngagementComment: '',
+  pedagogicalConnectionComment: '',
+  pedagogicalInclusiveComment: '',
   designVisualMark: 0,
   designNavigationMark: 0,
   designQualityMark: 0,
   designConsistencyMark: 0,
   designTotalMark: 0,
-  designComment: '',
+  designVisualComment: '',
+  designNavigationComment: '',
+  designQualityComment: '',
+  designConsistencyComment: '',
   innovationOriginalityMark: 0,
   innovationTechnologyMark: 0,
   innovationTotalMark: 0,
-  innovationComment: '',
+  innovationOriginalityComment: '',
+  innovationTechnologyComment: '',
   educationLocalMark: 0,
   educationHeritageMark: 0,
   educationProblemMark: 0,
   educationCommercialMark: 0,
   educationTotalMark: 0,
-  educationComment: '',
+  educationLocalComment: '',
+  educationHeritageComment: '',
+  educationProblemComment: '',
+  educationCommercialComment: '',
   materialsTotalMark: 0,
   // Signature fields
   examinerName: '',
@@ -1067,26 +1079,60 @@ watch(form, () => {
     // Materials Development specific clamping
     clampField('contentRelevanceMark', 10)
     clampField('contentOrganizationMark', 10)
-    clampField('contentTotalMark', 20)
+    form.value.contentTotalMark = clamp(
+      (Number(form.value.contentRelevanceMark) || 0) +
+      (Number(form.value.contentOrganizationMark) || 0),
+      0, 20
+    )
     clampField('pedagogicalAlignmentMark', 5)
     clampField('pedagogicalEngagementMark', 5)
     clampField('pedagogicalConnectionMark', 5)
     clampField('pedagogicalInclusiveMark', 5)
-    clampField('pedagogicalTotalMark', 20)
+    form.value.pedagogicalTotalMark = clamp(
+      (Number(form.value.pedagogicalAlignmentMark) || 0) +
+      (Number(form.value.pedagogicalEngagementMark) || 0) +
+      (Number(form.value.pedagogicalConnectionMark) || 0) +
+      (Number(form.value.pedagogicalInclusiveMark) || 0),
+      0, 20
+    )
     clampField('designVisualMark', 5)
     clampField('designNavigationMark', 5)
     clampField('designQualityMark', 5)
     clampField('designConsistencyMark', 5)
-    clampField('designTotalMark', 20)
+    form.value.designTotalMark = clamp(
+      (Number(form.value.designVisualMark) || 0) +
+      (Number(form.value.designNavigationMark) || 0) +
+      (Number(form.value.designQualityMark) || 0) +
+      (Number(form.value.designConsistencyMark) || 0),
+      0, 20
+    )
     clampField('innovationOriginalityMark', 10)
     clampField('innovationTechnologyMark', 10)
-    clampField('innovationTotalMark', 20)
+    form.value.innovationTotalMark = clamp(
+      (Number(form.value.innovationOriginalityMark) || 0) +
+      (Number(form.value.innovationTechnologyMark) || 0),
+      0, 20
+    )
     clampField('educationLocalMark', 5)
     clampField('educationHeritageMark', 5)
     clampField('educationProblemMark', 5)
     clampField('educationCommercialMark', 5)
-    clampField('educationTotalMark', 20)
-    clampField('materialsTotalMark', 100)
+    form.value.educationTotalMark = clamp(
+      (Number(form.value.educationLocalMark) || 0) +
+      (Number(form.value.educationHeritageMark) || 0) +
+      (Number(form.value.educationProblemMark) || 0) +
+      (Number(form.value.educationCommercialMark) || 0),
+      0, 20
+    )
+    form.value.materialsTotalMark = clamp(
+      (Number(form.value.contentTotalMark) || 0) +
+      (Number(form.value.pedagogicalTotalMark) || 0) +
+      (Number(form.value.designTotalMark) || 0) +
+      (Number(form.value.innovationTotalMark) || 0) +
+      (Number(form.value.educationTotalMark) || 0),
+      0, 100
+    )
+    form.value.materialsTotalPercentage = form.value.materialsTotalMark
   } else {
     // ECD, Secondary, ISEN specific clamping
     clampField('preparationMark', 15)
@@ -1279,13 +1325,21 @@ const onSupervisorImport = async (e) => {
 }
 
 const ensureSupervisor = async () => {
-  // try find by nationalId or email, otherwise create
+  // Fetch the currently logged-in supervisor; creation is not permitted here
   try {
-    const existing = await $fetch('/api/supervisors')
-    const found = existing.supervisors.find((x) => x.nationalId === supervisor.value.nationalId || x.email === supervisor.value.email)
-    if (found) return found.id
-    const created = await $fetch('/api/supervisors', { method: 'POST', body: supervisor.value })
-    return created.supervisor.id
+    const me = await $fetch('/api/supervisors/me')
+    if (me?.supervisor?.id) return me.supervisor.id
+
+    // As a fallback for older APIs, attempt filtered lookup allowed for non-admin roles
+    const email = supervisor.value.email?.toLowerCase() || ''
+    const nationalId = supervisor.value.nationalId || ''
+    if (email || nationalId) {
+      const existing = await $fetch(`/api/supervisors?${new URLSearchParams({ email, nationalId }).toString()}`)
+      const found = (existing.supervisors || [])[0]
+      if (found?.id) return found.id
+    }
+
+    throw new Error('Supervisor session missing. Please log in again.')
   } catch (e) {
     console.error('Ensure supervisor failed', e)
     throw e

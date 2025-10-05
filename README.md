@@ -203,8 +203,8 @@ NODE_ENV=production
 ## 📞 Support
 
 For support and questions:
-- **Phone**: +27 61 629 1608
-- **Email**: info@madziwacollege.edu.zw
+- **Phone**: +263 772 145 972
+- **Email**: madziwatc@gmail.com
 
 ## 📄 License
 
@@ -338,8 +338,8 @@ NODE_ENV="production"
 ## 📞 Support
 
 For support and questions:
-- **Phone**: +27616291608
-- **Email**: [Your email]
+- **Phone**: +263 772 145 972
+- **Email**: madziwatc@gmail.com
 - **College**: Madziwa College
 
 ## 📄 License
