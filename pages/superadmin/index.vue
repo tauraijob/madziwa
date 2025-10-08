@@ -16,7 +16,7 @@
       </div>
 
       <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
         <div class="bg-white rounded-xl shadow-sm border p-6">
           <div class="text-sm text-gray-600">Total Assessments</div>
           <div class="text-3xl font-bold text-gray-900 mt-1">{{ stats.totalAssessments }}</div>
@@ -32,6 +32,10 @@
         <div class="bg-white rounded-xl shadow-sm border p-6">
           <div class="text-sm text-gray-600">Average Score</div>
           <div class="text-3xl font-bold text-gray-900 mt-1">{{ stats.averageScore }}%</div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border p-6">
+          <div class="text-sm text-gray-600">CSV Imported Students</div>
+          <div class="text-3xl font-bold text-gray-900 mt-1">{{ stats.csvImportedStudents }}</div>
         </div>
       </div>
 
@@ -197,7 +201,8 @@
                       <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
                     </select>
                   </td>
-                  <td class="px-4 py-2 text-right">
+                  <td class="px-4 py-2 text-right space-x-2">
+                    <button @click="openPasswordModal(s)" class="px-3 py-1.5 text-sm bg-yellow-600 text-white rounded hover:bg-yellow-700">Edit Password</button>
                     <button @click="deleteSupervisor(s.id)" class="px-3 py-1.5 text-sm bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
                   </td>
                 </tr>
@@ -262,13 +267,56 @@
         </NuxtLink>
       </div>
     </div>
+
+    <!-- Password Reset Modal -->
+    <div v-if="showPasswordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Reset Supervisor Password</h3>
+        <div class="mb-4">
+          <p class="text-sm text-gray-600 mb-2">Supervisor: <strong>{{ selectedSupervisor?.fullName }}</strong></p>
+          <p class="text-sm text-gray-600">Email: <strong>{{ selectedSupervisor?.email }}</strong></p>
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+          <input 
+            v-model="passwordForm.newPassword" 
+            type="password" 
+            placeholder="Enter new password" 
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+          <input 
+            v-model="passwordForm.confirmPassword" 
+            type="password" 
+            placeholder="Confirm new password" 
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div class="flex justify-end space-x-3">
+          <button 
+            @click="closePasswordModal" 
+            class="px-4 py-2 text-gray-600 bg-gray-200 rounded-md hover:bg-gray-300"
+          >
+            Cancel
+          </button>
+          <button 
+            @click="resetSupervisorPassword" 
+            class="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700"
+          >
+            Reset Password
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 definePageMeta({ middleware: 'superadmin-auth' })
 
-const stats = reactive({ totalAssessments: 0, totalStudents: 0, totalSupervisors: 0, averageScore: 0 })
+const stats = reactive({ totalAssessments: 0, totalStudents: 0, totalSupervisors: 0, averageScore: 0, csvImportedStudents: 0 })
 const csvImportSummary = ref(null)
 const supImportSummary = ref(null)
 
@@ -280,13 +328,22 @@ const newAdmin = ref({ fullName: '', email: '', password: '', role: 'admin', ass
 const newSupervisor = ref({ fullName: '', email: '', phoneNumber: '', nationalId: '', pin: '', districtId: undefined })
 const resetForm = ref({ id: undefined, email: '', newPassword: '' })
 
+// Password reset modal
+const showPasswordModal = ref(false)
+const selectedSupervisor = ref(null)
+const passwordForm = ref({ newPassword: '', confirmPassword: '' })
+
 const loadStats = async () => {
   try {
-    const res = await $fetch('/api/assessments')
-    stats.totalAssessments = res.statistics?.totalAssessments || 0
-    stats.totalStudents = res.statistics?.totalStudents || 0
-    stats.totalSupervisors = res.statistics?.totalSupervisors || 0
-    stats.averageScore = res.statistics?.averageScore || 0
+    const [assessmentsRes, csvCountRes] = await Promise.all([
+      $fetch('/api/assessments'),
+      $fetch('/api/students/csv-imported-count')
+    ])
+    stats.totalAssessments = assessmentsRes.statistics?.totalAssessments || 0
+    stats.totalStudents = assessmentsRes.statistics?.totalStudents || 0
+    stats.totalSupervisors = assessmentsRes.statistics?.totalSupervisors || 0
+    stats.averageScore = assessmentsRes.statistics?.averageScore || 0
+    stats.csvImportedStudents = csvCountRes.csvImportedStudents || 0
   } catch (e) {
     // ignore
   }
@@ -471,6 +528,48 @@ const testSupervisorLogin = async (s) => {
     alert('Test login successful')
   } catch (e) {
     alert('Test login failed')
+  }
+}
+
+const openPasswordModal = (supervisor) => {
+  selectedSupervisor.value = supervisor
+  passwordForm.value = { newPassword: '', confirmPassword: '' }
+  showPasswordModal.value = true
+}
+
+const closePasswordModal = () => {
+  showPasswordModal.value = false
+  selectedSupervisor.value = null
+  passwordForm.value = { newPassword: '', confirmPassword: '' }
+}
+
+const resetSupervisorPassword = async () => {
+  try {
+    if (!passwordForm.value.newPassword.trim()) {
+      alert('Enter a new password')
+      return
+    }
+    
+    if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
+      alert('Passwords do not match')
+      return
+    }
+    
+    if (passwordForm.value.newPassword.length < 4) {
+      alert('Password must be at least 4 characters long')
+      return
+    }
+    
+    const payload = {
+      supervisorId: selectedSupervisor.value.id,
+      newPassword: passwordForm.value.newPassword
+    }
+    
+    await $fetch('/api/supervisors/reset-password', { method: 'POST', body: payload })
+    alert('Supervisor password updated successfully')
+    closePasswordModal()
+  } catch (e) {
+    alert('Failed to update password: ' + (e.data?.message || e.message || 'Unknown error'))
   }
 }
 

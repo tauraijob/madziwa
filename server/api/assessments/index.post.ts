@@ -56,6 +56,7 @@ export default defineEventHandler(async (event) => {
       personalDimensionsComment: body.personalDimensionsComment || '',
       communityMark: clamp(toInt(body.communityMark), 20),
       communityComment: body.communityComment || '',
+      selectedResearchCategory: body.selectedResearchCategory || null,
       formType: (['ecd','junior','secondary','isen','materials'].includes(String(body.formType)) ? String(body.formType) : 'junior'),
       overallComment: body.overallComment || '',
       supervisorId: supervisorId,

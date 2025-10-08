@@ -201,12 +201,12 @@
             <div class="px-6 py-4">
               <div class="flex items-center justify-between mb-2">
                 <h4 class="font-medium text-gray-900">Research-Teaching & Learning - Preparation</h4>
-                <span class="text-lg font-semibold text-blue-600">{{ assessment.preparationMark }}/15</span>
+                <span class="text-lg font-semibold text-blue-600">{{ Math.min(assessment.preparationMark, 15) }}/15</span>
               </div>
               <div class="bg-gray-200 rounded-full h-2 mb-2">
                 <div 
                   class="bg-blue-600 h-2 rounded-full"
-                  :style="{ width: (assessment.preparationMark / 15 * 100) + '%' }"
+                  :style="{ width: (Math.min(assessment.preparationMark, 15) / 15 * 100) + '%' }"
                 ></div>
               </div>
               <p class="text-sm text-gray-600">{{ assessment.preparationComment }}</p>
@@ -216,12 +216,12 @@
             <div class="px-6 py-4">
               <div class="flex items-center justify-between mb-2">
                 <h4 class="font-medium text-gray-900">Research-Teaching & Learning - Lesson Facilitation</h4>
-                <span class="text-lg font-semibold text-blue-600">{{ assessment.lessonPlanningMark }}/15</span>
+                <span class="text-lg font-semibold text-blue-600">{{ Math.min(assessment.lessonPlanningMark, 15) }}/15</span>
               </div>
               <div class="bg-gray-200 rounded-full h-2 mb-2">
                 <div 
                   class="bg-blue-600 h-2 rounded-full"
-                  :style="{ width: (assessment.lessonPlanningMark / 15 * 100) + '%' }"
+                  :style="{ width: (Math.min(assessment.lessonPlanningMark, 15) / 15 * 100) + '%' }"
                 ></div>
               </div>
               <p class="text-sm text-gray-600">{{ assessment.lessonPlanningComment }}</p>
@@ -231,12 +231,12 @@
             <div class="px-6 py-4">
               <div class="flex items-center justify-between mb-2">
                 <h4 class="font-medium text-gray-900">Learning Environment & Management</h4>
-                <span class="text-lg font-semibold text-blue-600">{{ assessment.environmentMark }}/10</span>
+                <span class="text-lg font-semibold text-blue-600">{{ Math.min(assessment.environmentMark, 10) }}/10</span>
               </div>
               <div class="bg-gray-200 rounded-full h-2 mb-2">
                 <div 
                   class="bg-blue-600 h-2 rounded-full"
-                  :style="{ width: (assessment.environmentMark / 10 * 100) + '%' }"
+                  :style="{ width: (Math.min(assessment.environmentMark, 10) / 10 * 100) + '%' }"
                 ></div>
               </div>
               <p class="text-sm text-gray-600">{{ assessment.environmentComment }}</p>
@@ -246,12 +246,12 @@
             <div class="px-6 py-4">
               <div class="flex items-center justify-between mb-2">
                 <h4 class="font-medium text-gray-900">Other Work-Related Learning Documents</h4>
-                <span class="text-lg font-semibold text-blue-600">{{ assessment.documentsMark }}/10</span>
+                <span class="text-lg font-semibold text-blue-600">{{ Math.min(assessment.documentsMark, 15) }}/15</span>
               </div>
               <div class="bg-gray-200 rounded-full h-2 mb-2">
                 <div 
                   class="bg-blue-600 h-2 rounded-full"
-                  :style="{ width: (assessment.documentsMark / 10 * 100) + '%' }"
+                  :style="{ width: (Math.min(assessment.documentsMark, 15) / 15 * 100) + '%' }"
                 ></div>
               </div>
               <p class="text-sm text-gray-600">{{ assessment.documentsComment }}</p>
@@ -261,12 +261,12 @@
             <div class="px-6 py-4">
               <div class="flex items-center justify-between mb-2">
                 <h4 class="font-medium text-gray-900">Lesson Presentation: Introduction</h4>
-                <span class="text-lg font-semibold text-blue-600">{{ assessment.introductionMark }}/3</span>
+                <span class="text-lg font-semibold text-blue-600">{{ Math.min(assessment.introductionMark, 5) }}/5</span>
               </div>
               <div class="bg-gray-200 rounded-full h-2 mb-2">
                 <div 
                   class="bg-blue-600 h-2 rounded-full"
-                  :style="{ width: (assessment.introductionMark / 3 * 100) + '%' }"
+                  :style="{ width: (Math.min(assessment.introductionMark, 5) / 5 * 100) + '%' }"
                 ></div>
               </div>
               <p class="text-sm text-gray-600">{{ assessment.introductionComment }}</p>
@@ -276,12 +276,12 @@
             <div class="px-6 py-4">
               <div class="flex items-center justify-between mb-2">
                 <h4 class="font-medium text-gray-900">Lesson Presentation: Development</h4>
-                <span class="text-lg font-semibold text-blue-600">{{ assessment.developmentMark }}/30</span>
+                <span class="text-lg font-semibold text-blue-600">{{ Math.min(assessment.developmentMark, 30) }}/30</span>
               </div>
               <div class="bg-gray-200 rounded-full h-2 mb-2">
                 <div 
                   class="bg-blue-600 h-2 rounded-full"
-                  :style="{ width: (assessment.developmentMark / 30 * 100) + '%' }"
+                  :style="{ width: (Math.min(assessment.developmentMark, 30) / 30 * 100) + '%' }"
                 ></div>
               </div>
               <p class="text-sm text-gray-600">{{ assessment.developmentComment }}</p>
@@ -291,12 +291,12 @@
             <div class="px-6 py-4">
               <div class="flex items-center justify-between mb-2">
                 <h4 class="font-medium text-gray-900">Remaining 2 Pillars</h4>
-                <span class="text-lg font-semibold text-blue-600">{{ assessment.conclusionMark }}/10</span>
+                <span class="text-lg font-semibold text-blue-600">{{ Math.min(assessment.conclusionMark, 10) }}/10</span>
               </div>
               <div class="bg-gray-200 rounded-full h-2 mb-2">
                 <div 
                   class="bg-blue-600 h-2 rounded-full"
-                  :style="{ width: (assessment.conclusionMark / 10 * 100) + '%' }"
+                  :style="{ width: (Math.min(assessment.conclusionMark, 10) / 10 * 100) + '%' }"
                 ></div>
               </div>
               <p class="text-sm text-gray-600">{{ assessment.conclusionComment }}</p>

@@ -315,25 +315,58 @@
                   <tr>
                     <td class="border border-gray-300 px-4 py-2 font-medium">Research-based Community Service/ Research & Innovation/Research & Industrialisation</td>
                     <td class="border border-gray-300 px-4 py-2">
-                      <div class="text-sm text-gray-600">[Tick Applicable]</div>
+                      <div class="space-y-2">
+                        <label class="flex items-center text-sm">
+                          <input v-model="form.selectedResearchCategory" type="radio" value="community_service" class="mr-2" />
+                          Research-based Community Service
+                        </label>
+                        <label class="flex items-center text-sm">
+                          <input v-model="form.selectedResearchCategory" type="radio" value="innovation" class="mr-2" />
+                          Research & Innovation
+                        </label>
+                        <label class="flex items-center text-sm">
+                          <input v-model="form.selectedResearchCategory" type="radio" value="industrialisation" class="mr-2" />
+                          Research & Industrialisation
+                        </label>
+                      </div>
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
-                      <textarea v-model="form.communityComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                      <textarea v-model="form.communityComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" placeholder="Enter observations..." :disabled="!form.selectedResearchCategory"></textarea>
+                      <div v-if="!form.selectedResearchCategory" class="text-xs text-gray-500 mt-1">Select a category above to enable</div>
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
-                      <input v-model.number="form.communityMark" type="number" min="0" max="30" class="w-20 px-2 py-1 border rounded text-center" />
-                      <div class="text-xs text-gray-500 mt-1">30%</div>
+                      <input v-model.number="form.communityMark" type="number" min="0" max="30" class="w-20 px-2 py-1 border rounded text-center" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" :disabled="!form.selectedResearchCategory" />
+                      <div class="text-xs text-gray-500 mt-1">30% (Selected Category)</div>
+                      <div v-if="!form.selectedResearchCategory" class="text-xs text-gray-500 mt-1">Select a category above to enable</div>
                     </td>
                   </tr>
                   <tr>
                     <td class="border border-gray-300 px-4 py-2 font-medium">Remaining 2 pillars</td>
-                    <td class="border border-gray-300 px-4 py-2"></td>
                     <td class="border border-gray-300 px-4 py-2">
-                      <textarea v-model="form.remainingPillarsComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                      <div v-if="form.selectedResearchCategory" class="text-sm text-gray-600">
+                        <div v-if="form.selectedResearchCategory === 'community_service'">
+                          <div>• Research & Innovation</div>
+                          <div>• Research & Industrialisation</div>
+                        </div>
+                        <div v-else-if="form.selectedResearchCategory === 'innovation'">
+                          <div>• Research-based Community Service</div>
+                          <div>• Research & Industrialisation</div>
+                        </div>
+                        <div v-else-if="form.selectedResearchCategory === 'industrialisation'">
+                          <div>• Research-based Community Service</div>
+                          <div>• Research & Innovation</div>
+                        </div>
+                      </div>
+                      <div v-else class="text-sm text-gray-500">Select a category above to see remaining pillars</div>
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
-                      <input v-model.number="form.remainingPillarsMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" />
-                      <div class="text-xs text-gray-500 mt-1">10%</div>
+                      <textarea v-model="form.remainingPillarsComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" placeholder="Enter observations..." :disabled="!form.selectedResearchCategory"></textarea>
+                      <div v-if="!form.selectedResearchCategory" class="text-xs text-gray-500 mt-1">Select a category above to enable</div>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <input v-model.number="form.remainingPillarsMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" :disabled="!form.selectedResearchCategory" />
+                      <div class="text-xs text-gray-500 mt-1">10% (5% each for remaining 2 categories)</div>
+                      <div v-if="!form.selectedResearchCategory" class="text-xs text-gray-500 mt-1">Select a category above to enable</div>
                     </td>
                   </tr>
                 </tbody>
@@ -436,25 +469,58 @@
                 <tr>
                   <td class="border border-gray-300 px-4 py-2 font-medium">Research-based Community Service/ Research & Innovation/Research & Industrialisation</td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <div class="text-sm text-gray-600">[Tick Applicable]</div>
+                    <div class="space-y-2">
+                      <label class="flex items-center text-sm">
+                        <input v-model="form.selectedResearchCategory" type="radio" value="community_service" class="mr-2" />
+                        Research-based Community Service
+                      </label>
+                      <label class="flex items-center text-sm">
+                        <input v-model="form.selectedResearchCategory" type="radio" value="innovation" class="mr-2" />
+                        Research & Innovation
+                      </label>
+                      <label class="flex items-center text-sm">
+                        <input v-model="form.selectedResearchCategory" type="radio" value="industrialisation" class="mr-2" />
+                        Research & Industrialisation
+                      </label>
+                    </div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.communityComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <textarea v-model="form.communityComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" placeholder="Enter observations..." :disabled="!form.selectedResearchCategory"></textarea>
+                    <div v-if="!form.selectedResearchCategory" class="text-xs text-gray-500 mt-1">Select a category above to enable</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <input v-model.number="form.communityMark" type="number" min="0" max="30" class="w-20 px-2 py-1 border rounded text-center" />
-                    <div class="text-xs text-gray-500 mt-1">30%</div>
+                    <input v-model.number="form.communityMark" type="number" min="0" max="30" class="w-20 px-2 py-1 border rounded text-center" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" :disabled="!form.selectedResearchCategory" />
+                    <div class="text-xs text-gray-500 mt-1">30% (Selected Category)</div>
+                    <div v-if="!form.selectedResearchCategory" class="text-xs text-gray-500 mt-1">Select a category above to enable</div>
                   </td>
                 </tr>
                 <tr>
                   <td class="border border-gray-300 px-4 py-2 font-medium">Remaining 2 pillars</td>
-                  <td class="border border-gray-300 px-4 py-2"></td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <textarea v-model="form.remainingPillarsComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    <div v-if="form.selectedResearchCategory" class="text-sm text-gray-600">
+                      <div v-if="form.selectedResearchCategory === 'community_service'">
+                        <div>• Research & Innovation</div>
+                        <div>• Research & Industrialisation</div>
+                      </div>
+                      <div v-else-if="form.selectedResearchCategory === 'innovation'">
+                        <div>• Research-based Community Service</div>
+                        <div>• Research & Industrialisation</div>
+                      </div>
+                      <div v-else-if="form.selectedResearchCategory === 'industrialisation'">
+                        <div>• Research-based Community Service</div>
+                        <div>• Research & Innovation</div>
+                      </div>
+                    </div>
+                    <div v-else class="text-sm text-gray-500">Select a category above to see remaining pillars</div>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
-                    <input v-model.number="form.remainingPillarsMark" type="number" min="0" max="20" class="w-20 px-2 py-1 border rounded text-center" />
-                    <div class="text-xs text-gray-500 mt-1">20%</div>
+                    <textarea v-model="form.remainingPillarsComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" placeholder="Enter observations..." :disabled="!form.selectedResearchCategory"></textarea>
+                    <div v-if="!form.selectedResearchCategory" class="text-xs text-gray-500 mt-1">Select a category above to enable</div>
+                  </td>
+                  <td class="border border-gray-300 px-4 py-2">
+                    <input v-model.number="form.remainingPillarsMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" :disabled="!form.selectedResearchCategory" />
+                    <div class="text-xs text-gray-500 mt-1">10% (5% each for remaining 2 categories)</div>
+                    <div v-if="!form.selectedResearchCategory" class="text-xs text-gray-500 mt-1">Select a category above to enable</div>
                   </td>
                 </tr>
               </tbody>
@@ -952,7 +1018,12 @@
 
         <!-- Submit Button -->
         <div class="flex justify-end">
-          <button type="submit" :disabled="loading" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">{{ loading ? 'Submitting...' : 'Submit Assessment' }}</button>
+          <button type="submit" :disabled="loading || !canSubmitAssessment" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
+            {{ loading ? 'Submitting...' : 'Submit Assessment' }}
+          </button>
+          <div v-if="!isResearchCategoryValid" class="text-red-600 text-sm mt-2">
+            Please select a research category before submitting.
+          </div>
         </div>
       </form>
     </div>
@@ -1011,6 +1082,8 @@ const form = ref({
   communityComment: '',
   remainingPillarsMark: 0,
   remainingPillarsComment: '',
+  // Research category selection
+  selectedResearchCategory: '',
   // Materials Development fields
   contentRelevanceMark: 0,
   contentOrganizationMark: 0,
@@ -1187,29 +1260,45 @@ const getGrade = (score) => {
   return 'F'
 }
 
+// Validation for research category selection
+const isResearchCategoryValid = computed(() => {
+  if (assessmentType.value === 'ecd' || assessmentType.value === 'secondary') {
+    return form.value.selectedResearchCategory && form.value.selectedResearchCategory.trim() !== ''
+  }
+  return true
+})
+
+const canSubmitAssessment = computed(() => {
+  return isResearchCategoryValid.value && form.value.subject && form.value.topic
+})
+
 const searchStudents = async () => {
   searching.value = true
   try {
     const params = new URLSearchParams()
     if (studentSearch.value.srn) {
       const srn = String(studentSearch.value.srn).trim()
-      // Try exact and normalized contains in backend
       params.set('candidateNo', srn)
     }
-    if (studentSearch.value.surname) params.set('surname', studentSearch.value.surname)
+    if (studentSearch.value.surname) {
+      const surname = String(studentSearch.value.surname).trim()
+      params.set('surname', surname)
+    }
+    
     const res = await $fetch(`/api/students/search?${params.toString()}`)
-    studentsResults.value = res.students
+    studentsResults.value = res.students || []
+    
     // Fallback attempt: strip non-alphanumerics if nothing returned
     if ((!studentsResults.value || !studentsResults.value.length) && studentSearch.value.srn) {
       const fallback = String(studentSearch.value.srn).replace(/[^a-zA-Z0-9]/g, '')
       if (fallback) {
         const res2 = await $fetch(`/api/students/search?candidateNo=${encodeURIComponent(fallback)}`)
-        studentsResults.value = res2.students
+        studentsResults.value = res2.students || []
       }
     }
   } catch (e) {
     console.error('Search failed', e)
-    alert('Student search failed')
+    alert(`Student search failed: ${e.message || 'Unknown error'}`)
   } finally {
     searching.value = false
   }

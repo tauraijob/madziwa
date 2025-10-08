@@ -165,6 +165,28 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
     return 'F (Fail)'
   }
 
+  // Function to get the remaining 2 pillars based on selected research category
+  const getRemainingPillars = (selectedCategory: string) => {
+    const allPillars = [
+      'Research-based Community Service',
+      'Research & Innovation', 
+      'Research & Industrialisation'
+    ]
+    
+    if (!selectedCategory) return allPillars
+    
+    return allPillars.filter(pillar => {
+      if (selectedCategory === 'community_service') return pillar !== 'Research-based Community Service'
+      if (selectedCategory === 'innovation') return pillar !== 'Research & Innovation'
+      if (selectedCategory === 'industrialisation') return pillar !== 'Research & Industrialisation'
+      return true
+    })
+  }
+
+  // Get the remaining pillars for display
+  const remainingPillars = getRemainingPillars(assessment.selectedResearchCategory)
+  const remainingPillarsText = remainingPillars.length > 0 ? remainingPillars.join(' & ') : 'Remaining 2 Pillars'
+
   return `
     <!DOCTYPE html>
     <html>
@@ -331,18 +353,6 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
             <label>Full Name:</label>
             <p>${assessment.supervisor.fullName}</p>
           </div>
-          <div class="info-item">
-            <label>Email:</label>
-            <p>${assessment.supervisor.email}</p>
-          </div>
-          <div class="info-item">
-            <label>Phone Number:</label>
-            <p>${assessment.supervisor.phoneNumber}</p>
-          </div>
-          <div class="info-item">
-            <label>National ID:</label>
-            <p>${assessment.supervisor.nationalId}</p>
-          </div>
         </div>
       </div>
 
@@ -439,13 +449,19 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
               <td>${Math.round(Math.min(assessment.environmentMark, 10) / 10 * 100)}%</td>
             </tr>
             <tr>
-              <td><strong>Research-based Community Service/Research & Innovation/Research & Industrialisation</strong></td>
+              <td><strong>Research-based Community Service/Research & Innovation/Research & Industrialisation</strong><br/>
+                  <em>Selected: ${assessment.selectedResearchCategory === 'community_service' ? 'Research-based Community Service' : 
+                                  assessment.selectedResearchCategory === 'innovation' ? 'Research & Innovation' : 
+                                  assessment.selectedResearchCategory === 'industrialisation' ? 'Research & Industrialisation' : 'Not Selected'}</em>
+              </td>
               <td>${Math.min(assessment.developmentMark, 30)}</td>
               <td>30</td>
               <td>${Math.round(Math.min(assessment.developmentMark, 30) / 30 * 100)}%</td>
             </tr>
             <tr>
-              <td><strong>Remaining 2 Pillars</strong></td>
+              <td><strong>${remainingPillarsText}</strong><br/>
+                  <em>Remaining 2 pillars (5% each)</em>
+              </td>
               <td>${Math.min(assessment.conclusionMark, 10)}</td>
               <td>10</td>
               <td>${Math.round(Math.min(assessment.conclusionMark, 10) / 10 * 100)}%</td>
