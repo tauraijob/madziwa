@@ -129,10 +129,10 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
   }
 
   const getGrade = (score: number) => {
-    if (score >= 90) return '1 (Excellent)'
-    if (score >= 80) return '2.1 (Very Good)'
-    if (score >= 70) return '2.2 (Good)'
-    if (score >= 60) return '3 (Satisfactory)'
+    if (score >= 80) return '1 (Excellent)'
+    if (score >= 70) return '2.1 (Very Good)'
+    if (score >= 60) return '2.2 (Good)'
+    if (score >= 50) return '3 (Satisfactory)'
     return 'F (Fail)'
   }
 
