@@ -1,6 +1,6 @@
-# Madziwa Teachers College WIL Assessment Platform
+# Madziwa College TP Assessment Platform
 
-A comprehensive web-based application for WIL assessment management at Madziwa Teachers College. Built with Nuxt 4 (Nitro 2), Vue 3, PrimeVue 4, Tailwind CSS 3, Prisma 6, and MySQL. PDF export via Puppeteer and batch ZIP via JSZip.
+A comprehensive web-based application for Teaching Practice (TP) assessment management at Madziwa College. Built with Nuxt 4 (Nitro 2), Vue 3, PrimeVue 4, Tailwind CSS 3, Prisma 6, and MySQL. PDF export via Puppeteer and batch ZIP via JSZip.
 
 ## 🚀 Features
 
@@ -23,7 +23,7 @@ A comprehensive web-based application for WIL assessment management at Madziwa T
 - **Backend**: Nuxt Server API routes (Nitro 2)
 - **Database**: MySQL (XAMPP)
 - **ORM**: Prisma 6
-- **Styling**: Tailwind CSS 3 via `@nuxtjs/tailwindcss` + PrimeIcons 7
+- **Styling**: Tailwind CSS 3 via @nuxtjs/tailwindcss + PrimeIcons 7
 - **HTTP Client**: Axios
 - **PDF Generation**: Puppeteer 24
 - **ZIP Creation**: JSZip 3
@@ -41,8 +41,8 @@ A comprehensive web-based application for WIL assessment management at Madziwa T
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repo-url>
-cd madziwa-tp-platform
+git clone https://github.com/manuhwa/MATCO-WIL.git
+cd MATCO-WIL
 ```
 
 ### 2. Install Dependencies
@@ -53,19 +53,19 @@ npm install
 
 ### 3. Set Up Database
 
-1. **Start XAMPP**:
-   - Open XAMPP Control Panel
-   - Start Apache and MySQL services
+**Start XAMPP:**
+- Open XAMPP Control Panel
+- Start Apache and MySQL services
 
-2. **Create Database**:
-   - Open phpMyAdmin (http://localhost/phpmyadmin)
-   - Create a new database named `madziwa_tp`
+**Create Database:**
+- Open phpMyAdmin (http://localhost/phpmyadmin)
+- Create a new database named `madziwa_tp`
 
-3. **Configure Environment**:
-   - Create a `.env` file in the project root:
-   ```env
-   DATABASE_URL="mysql://root:@localhost:3306/madziwa_tp"
-   ```
+**Configure Environment:**
+Create a `.env` file in the project root:
+```env
+DATABASE_URL="mysql://root:@localhost:3306/madziwa_tp"
+```
 
 ### 4. Set Up Prisma
 
@@ -83,7 +83,7 @@ npm run db:push
 npm run dev
 ```
 
-The application will be available at [http://localhost:3000](http://localhost:3000)
+The application will be available at http://localhost:3000
 
 ## 🔐 Admin Access
 
@@ -92,6 +92,7 @@ The application will be available at [http://localhost:3000](http://localhost:30
 - **Password**: `admin123`
 
 ## 📁 Project Structure
+
 ```
 madziwa-tp-platform/
 ├── assets/
@@ -102,21 +103,60 @@ madziwa-tp-platform/
 ├── layouts/
 │   └── default.vue              # Main layout with navigation
 ├── middleware/
-│   └── admin-auth.ts            # Admin authentication middleware
+│   ├── admin-auth.ts            # Admin authentication middleware
+│   ├── supervisor-auth.ts       # Supervisor authentication middleware
+│   └── superadmin-auth.ts       # Super admin authentication middleware
 ├── pages/
 │   ├── index.vue                # Home page
 │   ├── admin.vue                # Admin dashboard
-│   └── admin-login.vue          # Admin login page
+│   ├── admin-login.vue          # Admin login page
+│   ├── supervisor-login.vue     # Supervisor login page
+│   ├── assessment/
+│   │   ├── index.vue            # Assessment listing
+│   │   ├── new.vue              # Create new assessment
+│   │   └── edit/[id].vue        # Edit assessment
+│   ├── students/
+│   │   └── new.vue              # Add new student
+│   ├── supervisors/
+│   │   └── new.vue              # Add new supervisor
+│   └── superadmin/
+│       └── index.vue            # Super admin dashboard
 ├── server/
 │   └── api/
-│       └── assessments/
-│           ├── index.get.ts      # Get all assessments
-│           ├── [id].delete.ts    # Delete assessment
-│           ├── [id]/pdf.get.ts   # Generate PDF
-│           └── export-zip.post.ts # Export ZIP
+│       ├── assessments/
+│       │   ├── index.get.ts      # Get all assessments
+│       │   ├── index.post.ts     # Create assessment
+│       │   ├── [id].get.ts       # Get single assessment
+│       │   ├── [id].put.ts       # Update assessment
+│       │   ├── [id].delete.ts    # Delete assessment
+│       │   ├── [id]/pdf.get.ts   # Generate PDF
+│       │   ├── export-csv.get.ts # Export CSV
+│       │   ├── export-pdf-all.get.ts # Export all PDFs
+│       │   └── export-zip.post.ts # Export ZIP
+│       ├── students/
+│       │   ├── index.get.ts      # Get all students
+│       │   ├── index.post.ts     # Create student
+│       │   ├── search.get.ts     # Search students
+│       │   └── import-csv.post.ts # Import CSV
+│       ├── supervisors/
+│       │   ├── index.get.ts      # Get all supervisors
+│       │   ├── index.post.ts     # Create supervisor
+│       │   └── me.get.ts         # Get current supervisor
+│       └── auth/
+│           ├── admin-login.post.ts # Admin login
+│           └── supervisor-login.post.ts # Supervisor login
 ├── prisma/
-│   └── schema.prisma            # Database schema
-└── nuxt.config.ts               # Nuxt configuration
+│   ├── schema.prisma            # Database schema
+│   ├── migrations/              # Database migrations
+│   └── seed.ts                  # Database seeding
+├── scripts/
+│   ├── backup-database.js       # Database backup
+│   ├── database-maintenance.js  # Database maintenance
+│   └── seed-initial-data.js     # Initial data seeding
+├── ecosystem.config.cjs         # PM2 production configuration
+├── nuxt.config.ts               # Nuxt configuration
+├── tailwind.config.js           # Tailwind CSS config
+└── package.json
 ```
 
 ## 🎯 Admin Dashboard Features
@@ -158,75 +198,11 @@ madziwa-tp-platform/
 - Loading states and progress indicators
 - Color-coded score indicators
 
-## 🛡️ Security Features
-
+### 🛡️ Security Features
 - Admin authentication middleware
 - Protected admin routes
 - Input validation and sanitization
 - Secure file downloads
-
-## 📱 Responsive Design
-
-The admin dashboard is fully responsive and works seamlessly on:
-- Desktop computers
-- Tablets
-- Mobile phones
-
-## 🚀 Deployment
-
-### Production Build
-
-```bash
-# Build the application
-npm run build
-
-# Start production server
-npm run preview
-```
-
-### Environment Variables
-
-For production, set the following environment variables:
-```env
-DATABASE_URL="your-production-database-url"
-NODE_ENV=production
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📞 Support
-
-For support and questions:
-- **Phone**: +263 772 145 972
-- **Email**: madziwatc@gmail.com
-
-## 📄 License
-
-This project is licensed under the MIT License.
-│   └── admin-login.vue          # Admin login page
-├── server/
-│   └── api/
-│       └── assessments/         # API endpoints
-│           ├── index.get.ts     # Get all assessments
-│           ├── index.post.ts    # Create assessment
-│           ├── [id].get.ts      # Get single assessment
-│           ├── [id].delete.ts   # Delete assessment
-│           ├── [id]/download.get.ts # Download PDF
-│           └── download-all.get.ts # Download all as ZIP
-├── middleware/
-│   └── admin-auth.ts            # Admin authentication middleware
-├── prisma/
-│   └── schema.prisma            # Database schema
-├── nuxt.config.ts               # Nuxt configuration
-├── tailwind.config.js           # Tailwind CSS config
-└── package.json
-```
 
 ## 🗄️ Database Schema
 
@@ -235,15 +211,6 @@ This project is licensed under the MIT License.
 - **Supervisor**: Full name, email, phone, national ID
 - **Student**: Full name, sex, candidate number, email, school, class
 - **Assessment**: Complete assessment data with 100-point scoring system
-
-## 🔐 Admin Authentication
-
-The admin dashboard is protected with basic authentication:
-
-- **Username**: `admin`
-- **Password**: `admin123`
-
-**Note**: This is a demo authentication system. In production, implement proper authentication with secure password hashing and user management.
 
 ### Assessment Categories (100 points total)
 
@@ -281,6 +248,7 @@ npm run db:generate      # Generate Prisma client
 npm run db:push          # Push schema to database
 npm run db:migrate       # Run database migrations
 npm run db:studio        # Open Prisma Studio
+npm run db:seed          # Seed database with initial data
 ```
 
 ## 🌐 API Endpoints
@@ -288,13 +256,19 @@ npm run db:studio        # Open Prisma Studio
 - `GET /api/assessments` - Get all assessments
 - `POST /api/assessments` - Create new assessment
 - `GET /api/assessments/:id` - Get single assessment
+- `PUT /api/assessments/:id` - Update assessment
 - `DELETE /api/assessments/:id` - Delete assessment
-- `GET /api/assessments/:id/download` - Download assessment as PDF
-- `GET /api/assessments/download-all` - Download all assessments as ZIP
+- `GET /api/assessments/:id/pdf` - Download assessment as PDF
+- `POST /api/assessments/export-zip` - Download multiple assessments as ZIP
+- `GET /api/students` - Get all students
+- `POST /api/students` - Create student
+- `GET /api/supervisors` - Get all supervisors
+- `POST /api/supervisors` - Create supervisor
 
 ## 📱 Responsive Design
 
 The platform is fully responsive and works on:
+
 - Desktop computers
 - Tablets
 - Mobile phones
@@ -305,6 +279,7 @@ The platform is fully responsive and works on:
 - SQL injection protection via Prisma
 - XSS protection
 - CSRF protection
+- Authentication middleware for protected routes
 
 ## 🚀 Deployment
 
@@ -316,6 +291,22 @@ npm run build
 
 # Start production server
 npm run preview
+```
+
+### PM2 Production Deployment
+
+```bash
+# Install PM2 globally
+npm install -g pm2
+
+# Start with PM2
+pm2 start ecosystem.config.cjs --env production
+
+# Save PM2 configuration
+pm2 save
+
+# Setup PM2 to start on boot
+pm2 startup
 ```
 
 ### Environment Variables
@@ -338,9 +329,10 @@ NODE_ENV="production"
 ## 📞 Support
 
 For support and questions:
+
 - **Phone**: +263 772 145 972
 - **Email**: madziwatc@gmail.com
-- **College**: Madziwa Teachers College
+- **College**: Madziwa College
 
 ## 📄 License
 
@@ -348,11 +340,11 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🙏 Acknowledgments
 
-- Madziwa Teachers College for the WIL assessment requirements
+- Madziwa College for the Teaching Practice assessment requirements
 - PrimeVue team for the excellent UI components
 - Nuxt.js team for the amazing framework
 - Prisma team for the modern database toolkit
 
 ---
 
-**Built with ❤️ for Madziwa Teachers College WIL Assessment** 
+**Built with ❤️ for Madziwa College Teaching Practice Assessment**
