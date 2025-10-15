@@ -8,7 +8,7 @@
             <i class="pi pi-graduation-cap text-white text-4xl"></i>
           </div>
           <h1 class="text-5xl font-bold text-gray-900 mb-6">
-            Madziwa College
+            Madziwa Teachers College
             <span class="block text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-emerald-600">
               WIL Assessment Platform
             </span>
@@ -92,6 +92,6 @@
 <script setup>
 // Page meta
 definePageMeta({
-  title: 'Home - Madziwa College TP Assessment Platform'
+  title: 'Home - Madziwa Teachers College WIL Assessment Platform'
 })
 </script> 

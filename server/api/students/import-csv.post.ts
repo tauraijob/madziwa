@@ -26,15 +26,37 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 400, statusMessage: 'Only .csv files are accepted' })
     }
 
-    // Parse CSV (simple parser)
+    // Parse CSV with better handling
     const text = file.data.toString('utf-8')
-    const lines = text.split(/\r?\n/).filter(Boolean)
+    const lines = text.split(/\r?\n/).filter(line => line.trim() !== '')
     if (lines.length < 2) {
       throw createError({ statusCode: 400, statusMessage: 'CSV has no data rows' })
     }
-    const header = lines[0].split(',').map(h => h.trim().toLowerCase())
+    
+    // Simple CSV parser that handles quoted fields
+    function parseCSVLine(line: string): string[] {
+      const result = []
+      let current = ''
+      let inQuotes = false
+      
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i]
+        if (char === '"') {
+          inQuotes = !inQuotes
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim())
+          current = ''
+        } else {
+          current += char
+        }
+      }
+      result.push(current.trim())
+      return result
+    }
+    
+    const header = parseCSVLine(lines[0]).map(h => h.replace(/"/g, '').trim().toLowerCase())
     if (!header.length) throw createError({ statusCode: 400, statusMessage: 'Invalid CSV header' })
-    const required = ['surname','names','sex','phone','email','district','schoolname','classname','candidateno']
+    const required = ['surname','names','sex','email','district','schoolname','classname','candidateno']
     // Accept flexible headers; map to expected fields
     const aliasMap: Record<string,string> = {
       surname: 'surname',
@@ -70,7 +92,7 @@ export default defineEventHandler(async (event) => {
     let created = 0, updated = 0, errors = 0
 
     for (let r = 1; r < lines.length; r++) {
-      const row = lines[r].split(',')
+      const row = parseCSVLine(lines[r])
       if (row.length === 1 && row[0].trim() === '') continue
       try {
         const surname = (row[idxMap['surname']] || '').trim()
@@ -84,8 +106,8 @@ export default defineEventHandler(async (event) => {
         const className = (row[idxMap['className']] || '').trim()
         const districtName = (row[idxMap['district']] || '').trim()
 
-        if (!fullName || !candidateNo || !sex || !email || !schoolName || !className || !phone || !districtName) {
-          throw new Error('Missing required student fields (ensure surname,names,sex,phone,email,district,schoolname,classname,candidateno)')
+        if (!fullName || !candidateNo || !sex || !email || !schoolName || !className || !districtName) {
+          throw new Error('Missing required student fields (ensure surname,names,sex,email,district,schoolname,classname,candidateno). Phone is optional.')
         }
 
         // Ensure district exists if provided
@@ -98,7 +120,8 @@ export default defineEventHandler(async (event) => {
           districtId = district.id
         }
 
-        const data: any = { fullName, sex, candidateNo, email, schoolName, className, phoneNumber: phone }
+        const data: any = { fullName, sex, candidateNo, email, schoolName, className }
+        if (phone) data.phoneNumber = phone
         if (districtId) data.districtId = districtId
 
         let existing = await prisma.student.findUnique({ where: { candidateNo } })
@@ -113,7 +136,9 @@ export default defineEventHandler(async (event) => {
         }
       } catch (err: any) {
         errors++
-        results.push({ row: r + 1, status: 'error', error: err?.message || String(err) })
+        const errorMsg = err?.message || String(err)
+        console.error(`Error processing row ${r + 1}:`, errorMsg)
+        results.push({ row: r + 1, status: 'error', error: errorMsg })
       }
     }
 

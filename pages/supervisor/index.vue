@@ -18,7 +18,22 @@
           <NuxtLink to="/assessment" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
             <i class="pi pi-plus mr-2"></i> New Assessment
           </NuxtLink>
-          <label class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 cursor-pointer">
+          <div class="flex items-center space-x-2">
+            <select v-model="selectedTemplateType" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="junior">Junior/Primary</option>
+              <option value="ecd">ECD</option>
+              <option value="secondary">Secondary</option>
+              <option value="isen">ISEN</option>
+              <option value="materials">Materials Development</option>
+            </select>
+            <a
+              :href="`/api/assessments/template?type=${selectedTemplateType}`"
+              class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 inline-flex items-center"
+            >
+              <i class="pi pi-file mr-2"></i> Download Template
+            </a>
+          </div>
+          <label class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer">
             <i class="pi pi-upload mr-2"></i> Upload Excel
             <input type="file" accept=".xlsx,.xls,.csv" class="hidden" @change="onSupervisorImport" />
           </label>
@@ -118,6 +133,7 @@ const loading = ref(false)
 const assessments = ref([])
 const showDetailModal = ref(false)
 const selectedAssessment = ref(null)
+const selectedTemplateType = ref('junior')
 
 const fetchMine = async () => {
   loading.value = true
@@ -179,10 +195,28 @@ const onSupervisorImport = async (e) => {
     const formData = new FormData()
     formData.append('file', file)
     const result = await $fetch('/api/assessments/import-xlsx', { method: 'POST', body: formData })
-    alert(`Imported. Created: ${result.created}, Updated: ${result.updated}, Errors: ${result.errors}`)
+    
+    // Show detailed results
+    const message = `Import completed!\n\n` +
+      `Total rows: ${result.total}\n` +
+      `Created: ${result.created}\n` +
+      `Updated: ${result.updated}\n` +
+      `Errors: ${result.errors}`
+    
+    if (result.errors > 0) {
+      const errorDetails = result.results
+        .filter(r => r.status === 'error')
+        .map(r => `Row ${r.row}: ${r.error}`)
+        .join('\n')
+      alert(message + '\n\nError details:\n' + errorDetails)
+    } else {
+      alert(message)
+    }
+    
     await fetchMine()
   } catch (err) {
-    alert('Import failed')
+    console.error('Import error:', err)
+    alert(`Import failed: ${err.data?.message || err.message || 'Unknown error'}`)
   } finally {
     loading.value = false
     e.target.value = ''

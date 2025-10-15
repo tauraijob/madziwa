@@ -48,12 +48,16 @@
             <input type="file" accept=".csv" class="hidden" @change="onImportStudentsCsv" />
           </label>
         </div>
-        <div class="text-sm text-gray-600 space-y-2">
+          <div class="text-sm text-gray-600 space-y-2">
           <div class="font-medium">CSV header (comma-separated):</div>
           <code class="block bg-gray-50 border border-gray-200 rounded p-2 overflow-x-auto">surname,names,sex,phone,email,district,schoolname,classname,candidateno</code>
           <div>Example row:</div>
           <code class="block bg-gray-50 border border-gray-200 rounded p-2 overflow-x-auto">Banda,Jane,Female,+263777000000,jane@example.com,Shamva,Madziwa Primary,Grade 4 Blue,23/002/24</code>
-          <div>Full name is constructed as “surname + space + names”. All columns are required.</div>
+          <div class="text-xs text-gray-500">
+            <strong>Required:</strong> surname, names, sex, email, district, schoolname, classname, candidateno<br/>
+            <strong>Optional:</strong> phone<br/>
+            Full name is constructed as "surname + space + names"
+          </div>
         </div>
         <div v-if="csvImportSummary" class="bg-gray-50 border border-gray-200 rounded p-4 text-sm text-gray-700">
           <div class="font-medium mb-1">Import Summary</div>
@@ -416,9 +420,14 @@ const onImportStudentsCsv = async (e) => {
     form.append('file', file)
     const result = await $fetch('/api/students/import-csv', { method: 'POST', body: form })
     csvImportSummary.value = result
-    alert(`Students import complete. Created: ${result.created}, Updated: ${result.updated}, Errors: ${result.errors}`)
+    if (result.errors > 0) {
+      alert(`Students import completed with errors. Created: ${result.created}, Updated: ${result.updated}, Errors: ${result.errors}. Check console for details.`)
+    } else {
+      alert(`Students import successful! Created: ${result.created}, Updated: ${result.updated}`)
+    }
   } catch (err) {
-    alert('Import failed. Please verify the CSV and try again.')
+    console.error('CSV import error:', err)
+    alert(`Import failed: ${err.data?.statusMessage || err.message || 'Please verify the CSV format and try again.'}`)
   } finally {
     e.target.value = ''
   }

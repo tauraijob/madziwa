@@ -40,7 +40,33 @@ export default defineEventHandler(async (event) => {
     ]
 
     const rows = assessments.map(a => {
-      const total = a.preparationMark + a.lessonPlanningMark + a.environmentMark + a.documentsMark + a.introductionMark + a.developmentMark + a.conclusionMark + a.personalDimensionsMark + (a.communityMark || 0)
+      // Calculate total mark with proper clamping for consistency
+      let totalMark
+      if (a.formType === 'ecd' || a.formType === 'junior' || !a.formType) {
+        // For ECD/Junior, use clamped values to prevent exceeding maximums
+        totalMark = Math.min(a.preparationMark || 0, 15) + 
+                   Math.min(a.lessonPlanningMark || 0, 15) + 
+                   Math.min(a.environmentMark || 0, 10) + 
+                   Math.min(a.documentsMark || 0, 15) + 
+                   Math.min(a.introductionMark || 0, 5) + 
+                   Math.min(a.developmentMark || 0, 30) + 
+                   Math.min(a.conclusionMark || 0, 10)
+      } else {
+        // For other assessment types, use standard calculation
+        totalMark = (a.preparationMark || 0) + 
+                   (a.lessonPlanningMark || 0) + 
+                   (a.environmentMark || 0) + 
+                   (a.documentsMark || 0) + 
+                   (a.introductionMark || 0) + 
+                   (a.developmentMark || 0) + 
+                   (a.conclusionMark || 0) + 
+                   (a.personalDimensionsMark || 0) + 
+                   (a.communityMark || 0)
+      }
+      
+      // Cap total mark at 100
+      const total = Math.min(totalMark, 100)
+      
       return [
         a.student.fullName,
         a.student.candidateNo,

@@ -129,8 +129,7 @@ export default defineEventHandler(async (event) => {
         // Ensure unused fields are zeroed to avoid double counting
         data.personalDimensionsMark = 0
         data.personalDimensionsComment = ''
-        data.communityMark = 0
-        data.communityComment = ''
+        // Note: communityMark is already mapped to developmentMark above, so we don't set it here
       }
     }
 

@@ -1,6 +1,6 @@
-# Madziwa College TP Assessment Platform
+# Madziwa Teachers College WIL Assessment Platform
 
-A comprehensive web-based application for Teaching Practice (TP) assessment management at Madziwa College. Built with Nuxt 4 (Nitro 2), Vue 3, PrimeVue 4, Tailwind CSS 3, Prisma 6, and MySQL. PDF export via Puppeteer and batch ZIP via JSZip.
+A comprehensive web-based application for WIL assessment management at Madziwa Teachers College. Built with Nuxt 4 (Nitro 2), Vue 3, PrimeVue 4, Tailwind CSS 3, Prisma 6, and MySQL. PDF export via Puppeteer and batch ZIP via JSZip.
 
 ## 🚀 Features
 
@@ -340,7 +340,7 @@ NODE_ENV="production"
 For support and questions:
 - **Phone**: +263 772 145 972
 - **Email**: madziwatc@gmail.com
-- **College**: Madziwa College
+- **College**: Madziwa Teachers College
 
 ## 📄 License
 
@@ -348,11 +348,11 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 🙏 Acknowledgments
 
-- Madziwa College for the Teaching Practice assessment requirements
+- Madziwa Teachers College for the WIL assessment requirements
 - PrimeVue team for the excellent UI components
 - Nuxt.js team for the amazing framework
 - Prisma team for the modern database toolkit
 
 ---
 
-**Built with ❤️ for Madziwa College Teaching Practice Assessment** 
+**Built with ❤️ for Madziwa Teachers College WIL Assessment** 

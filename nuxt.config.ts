@@ -25,5 +25,14 @@ export default defineNuxtConfig({
         experimental: {
             wasm: true
         }
+    },
+    vite: {
+        server: {
+            allowedHosts: [
+                'paleethnological-unextinguishable-donte.ngrok-free.dev',
+                '.ngrok-free.dev',
+                '.ngrok.io'
+            ]
+        }
     }
 }) 

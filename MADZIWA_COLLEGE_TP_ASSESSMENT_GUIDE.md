@@ -1,7 +1,7 @@
-# Madziwa College TP Assessment Platform - Development Guide
+# Madziwa Teachers College WIL Assessment Platform - Development Guide
 
 ## Project Overview
-A comprehensive web-based application for Teaching Practice (TP) assessment management at Madziwa College. Built with React frontend, Django backend, and PrimeVue UI components.
+A comprehensive web-based application for WIL assessment management at Madziwa Teachers College. Built with React frontend, Django backend, and PrimeVue UI components.
 
 ## Technology Stack
 
@@ -294,4 +294,4 @@ npm run build
 
 ---
 
-This guide provides a comprehensive foundation for building the Madziwa College TP Assessment Platform with modern web technologies and best practices. 
+This guide provides a comprehensive foundation for building the Madziwa Teachers College WIL Assessment Platform with modern web technologies and best practices. 

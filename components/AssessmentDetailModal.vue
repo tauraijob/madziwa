@@ -382,11 +382,11 @@ const formatDate = (dateString) => {
 }
 
 const getGrade = (score) => {
-  if (score >= 90) return 'A+ (Excellent)'
-  if (score >= 80) return 'A (Very Good)'
-  if (score >= 70) return 'B (Good)'
-  if (score >= 60) return 'C (Satisfactory)'
-  return 'D (Needs Improvement)'
+  if (score >= 80) return '1'
+  if (score >= 70) return '2.1'
+  if (score >= 60) return '2.2'
+  if (score >= 50) return '3'
+  return 'F'
 }
 </script>
 

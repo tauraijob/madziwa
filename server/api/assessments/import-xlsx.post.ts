@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import type { H3Event } from 'h3'
+import { createError, getCookie, readMultipartFormData, defineEventHandler } from 'h3'
 import * as XLSX from 'xlsx/xlsx.mjs'
 
 const prisma = new PrismaClient()
@@ -166,6 +167,8 @@ function normalizeRow(row: ImportRow): ImportRow {
     materialstotalmark: 'materialsTotalMark',
     materialstotalpercentage: 'materialsTotalPercentage',
     supervisordesignation: 'supervisorDesignation',
+    selectedresearchcategory: 'selectedResearchCategory',
+    researchcategory: 'selectedResearchCategory',
     overallcomment: 'overallComment',
   }
 
@@ -229,30 +232,20 @@ function mapAssessmentData(row: ImportRow) {
   const assessmentDate = parseDate(row.assessmentDate)
   if (!assessmentDate) throw new Error('Invalid assessmentDate')
 
+  // Only include fields that actually exist in the database schema
   const base = {
     assessmentDate,
     subject: String(row.subject || '').trim(),
     topic: String(row.topic || '').trim(),
     formType: String(row.formType || 'junior'),
     overallComment: String(row.overallComment || '').trim(),
-    // ECD/Junior/Secondary/ISEN fields
+    // Only the fields that exist in the database
     preparationMark: clampNumber(row.preparationMark, MAX.preparationMark),
     preparationComment: String(row.preparationComment || '').trim(),
-    lessonFacilitationMark: clampNumber(row.lessonFacilitationMark, MAX.lessonFacilitationMark),
-    lessonFacilitationComment: String(row.lessonFacilitationComment || '').trim(),
-    deportmentMark: clampNumber(row.deportmentMark, MAX.deportmentMark),
-    deportmentComment: String(row.deportmentComment || '').trim(),
-    recordsMark: clampNumber(row.recordsMark, MAX.recordsMark),
-    recordsComment: String(row.recordsComment || '').trim(),
-    environmentMark: clampNumber(row.environmentMark, MAX.environmentMark),
-    environmentComment: String(row.environmentComment || '').trim(),
-    communityMark: clampNumber(row.communityMark, MAX.communityMark),
-    communityComment: String(row.communityComment || '').trim(),
-    remainingPillarsMark: clampNumber(row.remainingPillarsMark, MAX.remainingPillarsMark),
-    remainingPillarsComment: String(row.remainingPillarsComment || '').trim(),
-    // Secondary/ISEN specific fields
     lessonPlanningMark: clampNumber(row.lessonPlanningMark, MAX.lessonPlanningMark),
     lessonPlanningComment: String(row.lessonPlanningComment || '').trim(),
+    environmentMark: clampNumber(row.environmentMark, MAX.environmentMark),
+    environmentComment: String(row.environmentComment || '').trim(),
     documentsMark: clampNumber(row.documentsMark, MAX.documentsMark),
     documentsComment: String(row.documentsComment || '').trim(),
     introductionMark: clampNumber(row.introductionMark, MAX.introductionMark),
@@ -263,52 +256,9 @@ function mapAssessmentData(row: ImportRow) {
     conclusionComment: String(row.conclusionComment || '').trim(),
     personalDimensionsMark: clampNumber(row.personalDimensionsMark, MAX.personalDimensionsMark),
     personalDimensionsComment: String(row.personalDimensionsComment || '').trim(),
-    // Materials Development fields
-    contentRelevanceMark: clampNumber(row.contentRelevanceMark, MAX.contentRelevanceMark),
-    contentRelevanceComment: String(row.contentRelevanceComment || '').trim(),
-    contentOrganizationMark: clampNumber(row.contentOrganizationMark, MAX.contentOrganizationMark),
-    contentOrganizationComment: String(row.contentOrganizationComment || '').trim(),
-    contentTotalMark: clampNumber(row.contentTotalMark, MAX.contentTotalMark),
-    contentComment: String(row.contentComment || '').trim(),
-    pedagogicalAlignmentMark: clampNumber(row.pedagogicalAlignmentMark, MAX.pedagogicalAlignmentMark),
-    pedagogicalAlignmentComment: String(row.pedagogicalAlignmentComment || '').trim(),
-    pedagogicalEngagementMark: clampNumber(row.pedagogicalEngagementMark, MAX.pedagogicalEngagementMark),
-    pedagogicalEngagementComment: String(row.pedagogicalEngagementComment || '').trim(),
-    pedagogicalConnectionMark: clampNumber(row.pedagogicalConnectionMark, MAX.pedagogicalConnectionMark),
-    pedagogicalConnectionComment: String(row.pedagogicalConnectionComment || '').trim(),
-    pedagogicalInclusiveMark: clampNumber(row.pedagogicalInclusiveMark, MAX.pedagogicalInclusiveMark),
-    pedagogicalInclusiveComment: String(row.pedagogicalInclusiveComment || '').trim(),
-    pedagogicalTotalMark: clampNumber(row.pedagogicalTotalMark, MAX.pedagogicalTotalMark),
-    pedagogicalComment: String(row.pedagogicalComment || '').trim(),
-    designVisualMark: clampNumber(row.designVisualMark, MAX.designVisualMark),
-    designVisualComment: String(row.designVisualComment || '').trim(),
-    designNavigationMark: clampNumber(row.designNavigationMark, MAX.designNavigationMark),
-    designNavigationComment: String(row.designNavigationComment || '').trim(),
-    designQualityMark: clampNumber(row.designQualityMark, MAX.designQualityMark),
-    designQualityComment: String(row.designQualityComment || '').trim(),
-    designConsistencyMark: clampNumber(row.designConsistencyMark, MAX.designConsistencyMark),
-    designConsistencyComment: String(row.designConsistencyComment || '').trim(),
-    designTotalMark: clampNumber(row.designTotalMark, MAX.designTotalMark),
-    designComment: String(row.designComment || '').trim(),
-    innovationOriginalityMark: clampNumber(row.innovationOriginalityMark, MAX.innovationOriginalityMark),
-    innovationOriginalityComment: String(row.innovationOriginalityComment || '').trim(),
-    innovationTechnologyMark: clampNumber(row.innovationTechnologyMark, MAX.innovationTechnologyMark),
-    innovationTechnologyComment: String(row.innovationTechnologyComment || '').trim(),
-    innovationTotalMark: clampNumber(row.innovationTotalMark, MAX.innovationTotalMark),
-    innovationComment: String(row.innovationComment || '').trim(),
-    educationLocalMark: clampNumber(row.educationLocalMark, MAX.educationLocalMark),
-    educationLocalComment: String(row.educationLocalComment || '').trim(),
-    educationHeritageMark: clampNumber(row.educationHeritageMark, MAX.educationHeritageMark),
-    educationHeritageComment: String(row.educationHeritageComment || '').trim(),
-    educationProblemMark: clampNumber(row.educationProblemMark, MAX.educationProblemMark),
-    educationProblemComment: String(row.educationProblemComment || '').trim(),
-    educationCommercialMark: clampNumber(row.educationCommercialMark, MAX.educationCommercialMark),
-    educationCommercialComment: String(row.educationCommercialComment || '').trim(),
-    educationTotalMark: clampNumber(row.educationTotalMark, MAX.educationTotalMark),
-    educationComment: String(row.educationComment || '').trim(),
-    materialsTotalMark: clampNumber(row.materialsTotalMark, MAX.materialsTotalMark),
-    materialsTotalPercentage: clampNumber(row.materialsTotalPercentage, MAX.materialsTotalPercentage),
-    supervisorDesignation: String(row.supervisorDesignation || '').trim(),
+    communityMark: clampNumber(row.communityMark, MAX.communityMark),
+    communityComment: String(row.communityComment || '').trim(),
+    selectedResearchCategory: String(row.selectedResearchCategory || '').trim(),
   }
   if (!base.subject) throw new Error('subject required')
   return base
@@ -350,16 +300,37 @@ async function handleRow(row: ImportRow, currentSupervisorId: number) {
 
 export default defineEventHandler(async (event: H3Event) => {
   try {
-    // Only supervisors can upload completed assessment spreadsheets
+    // Check authentication - allow supervisors, admins, and superadmins
     const role = getCookie(event, 'role')
-    if (role !== 'supervisor') {
-      throw createError({ statusCode: 401, statusMessage: 'Only supervisors may import assessments' })
+    if (!['supervisor', 'admin', 'superadmin'].includes(role)) {
+      throw createError({ statusCode: 401, statusMessage: 'Authentication required to import assessments' })
     }
 
+    let currentSupervisorId = 0
+    
+    if (role === 'supervisor') {
     const supervisorIdCookie = getCookie(event, 'supervisorId')
-    const currentSupervisorId = parseInt(String(supervisorIdCookie || '0'))
+      currentSupervisorId = parseInt(String(supervisorIdCookie || '0'))
     if (!currentSupervisorId) {
       throw createError({ statusCode: 401, statusMessage: 'Missing supervisor session' })
+      }
+    } else {
+      // For admins/superadmins, use the first available supervisor or create a system supervisor
+      const firstSupervisor = await prisma.supervisor.findFirst()
+      if (firstSupervisor) {
+        currentSupervisorId = firstSupervisor.id
+      } else {
+        // Create a system supervisor for admin uploads
+        const systemSupervisor = await prisma.supervisor.create({
+          data: {
+            fullName: 'System Administrator',
+            email: 'system@madziwa.edu',
+            nationalId: 'SYSTEM-ADMIN',
+            phoneNumber: '0000000000'
+          }
+        })
+        currentSupervisorId = systemSupervisor.id
+      }
     }
 
     const parts = await readMultipartFormData(event)

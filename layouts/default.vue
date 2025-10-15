@@ -12,9 +12,9 @@
               </div>
               <div>
                 <h1 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Madziwa College
+                  Madziwa Teachers College
                 </h1>
-                <p class="text-xs text-gray-500">TP Assessment Platform</p>
+                <p class="text-xs text-gray-500">WIL Assessment Platform</p>
               </div>
             </NuxtLink>
           </div>
@@ -204,10 +204,10 @@
               <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
                 <i class="pi pi-graduation-cap text-white"></i>
               </div>
-              <h3 class="text-lg font-semibold">Madziwa College</h3>
+              <h3 class="text-lg font-semibold">Madziwa Teachers College</h3>
             </div>
             <p class="text-gray-300 mb-4">
-              Empowering educators through comprehensive Teaching Practice assessment and evaluation.
+              Empowering educators through comprehensive WIL assessment and evaluation.
             </p>
             <div class="flex space-x-4">
               <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
@@ -273,7 +273,7 @@
         <!-- Bottom Footer -->
         <div class="border-t border-gray-700 mt-8 pt-8 text-center">
           <p class="text-gray-400">
-            © {{ new Date().getFullYear() }} Madziwa College. All rights reserved. 
+            © {{ new Date().getFullYear() }} Madziwa Teachers College. All rights reserved. 
             <span class="text-blue-400">WIL Assessment Platform</span>
           </p>
         </div>

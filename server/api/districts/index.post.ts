@@ -13,7 +13,12 @@ export default defineEventHandler(async (event) => {
     const name = String(body.name || '').trim()
     if (!name) throw createError({ statusCode: 400, statusMessage: 'name required' })
 
-    const district = await prisma.district.create({ data: { name } })
+    // Use upsert to handle duplicates - if district exists, return it; if not, create it
+    const district = await prisma.district.upsert({
+      where: { name },
+      update: {}, // Don't update anything if it exists
+      create: { name }
+    })
     return { ok: true, district }
   } catch (error) {
     if ((error as any)?.statusCode) throw error

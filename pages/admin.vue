@@ -135,11 +135,11 @@
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">All Scores</option>
-              <option value="90-100">90-100% (Excellent)</option>
-              <option value="80-89">80-89% (Very Good)</option>
-              <option value="70-79">70-79% (Good)</option>
-              <option value="60-69">60-69% (Satisfactory)</option>
-              <option value="0-59">0-59% (Needs Improvement)</option>
+              <option value="80-100">80-100% (Grade 1)</option>
+              <option value="70-79">70-79% (Grade 2.1)</option>
+              <option value="60-69">60-69% (Grade 2.2)</option>
+              <option value="50-59">50-59% (Grade 3)</option>
+              <option value="0-49">0-49% (Grade F)</option>
             </select>
           </div>
           <div>
