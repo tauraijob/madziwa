@@ -11,7 +11,7 @@
 module.exports = {
   apps: [
     {
-      name: 'madziwa-tp-platform',
+      name: 'matcollege.co.zw',
       cwd: __dirname,
       // Run the built Nuxt Nitro server output
       script: 'node',
