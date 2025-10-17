@@ -33,7 +33,7 @@ module.exports = {
         PORT: '3033',
         HOST: '0.0.0.0',
         // Update this with your actual production database connection URL
-        DATABASE_URL: 'mysql://root:@localhost:3306/madziwa'
+        DATABASE_URL: 'mysql://matcollegewil:ufixyomekupM2019@localhost:3306/matcollegewil'
       },
       env_production: {
         NODE_ENV: 'production'
