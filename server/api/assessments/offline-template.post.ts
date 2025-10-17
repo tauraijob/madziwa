@@ -153,32 +153,32 @@ export default defineEventHandler(async (event) => {
     const colWidths = headers.map(() => ({ wch: 25 }))
     ws['!cols'] = colWidths
 
-    // Style header row with bold, clear formatting
-    const range = XLSX.utils.decode_range(ws['!ref'])
-    for (let C = range.s.c; C <= range.e.c; ++C) {
-      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: C })
-      if (!ws[cellAddress]) continue
-      ws[cellAddress].s = {
-        font: { 
-          bold: true, 
-          size: 12, 
-          color: { rgb: "FFFFFF" },
-          name: "Arial"
-        },
-        fill: { fgColor: { rgb: "1E40AF" } }, // Blue background
-        alignment: { 
-          horizontal: "center", 
-          vertical: "center",
-          wrapText: true
-        },
-        border: {
-          top: { style: "medium", color: { rgb: "000000" } },
-          bottom: { style: "medium", color: { rgb: "000000" } },
-          left: { style: "medium", color: { rgb: "000000" } },
-          right: { style: "medium", color: { rgb: "000000" } }
-        }
-      }
-    }
+            // Style header row with bold, clear formatting
+            const range = XLSX.utils.decode_range(ws['!ref'])
+            for (let C = range.s.c; C <= range.e.c; ++C) {
+              const cellAddress = XLSX.utils.encode_cell({ r: 0, c: C })
+              if (!ws[cellAddress]) continue
+              ws[cellAddress].s = {
+                font: {
+                  bold: true,
+                  size: 14,
+                  color: { rgb: "FFFFFF" },
+                  name: "Arial"
+                },
+                fill: { fgColor: { rgb: "1E40AF" } }, // Blue background
+                alignment: {
+                  horizontal: "center",
+                  vertical: "center",
+                  wrapText: true
+                },
+                border: {
+                  top: { style: "thick", color: { rgb: "000000" } },
+                  bottom: { style: "thick", color: { rgb: "000000" } },
+                  left: { style: "thick", color: { rgb: "000000" } },
+                  right: { style: "thick", color: { rgb: "000000" } }
+                }
+              }
+            }
 
     // Add data validation for marks columns
     const markColumns = headers
@@ -231,50 +231,91 @@ export default defineEventHandler(async (event) => {
     const instructionsWs = XLSX.utils.aoa_to_sheet(instructions)
     instructionsWs['!cols'] = [{ wch: 80 }]
 
-    // Style the instructions sheet
-    const instructionsRange = XLSX.utils.decode_range(instructionsWs['!ref'])
-    
-    // Style main title
-    const titleCell = XLSX.utils.encode_cell({ r: 0, c: 0 })
-    if (instructionsWs[titleCell]) {
-      instructionsWs[titleCell].s = {
-        font: { 
-          bold: true, 
-          size: 16, 
-          color: { rgb: "FFFFFF" },
-          name: "Arial"
-        },
-        fill: { fgColor: { rgb: "1E40AF" } },
-        alignment: { 
-          horizontal: "center", 
-          vertical: "center"
-        }
-      }
-    }
+            // Style the instructions sheet
+            const instructionsRange = XLSX.utils.decode_range(instructionsWs['!ref'])
 
-    // Style section headings
-    const sectionHeadings = ['SELECTED CRITERIA:', 'ASSESSMENT TYPE:']
-    sectionHeadings.forEach(heading => {
-      const rowIndex = instructions.findIndex(row => row[0] === heading)
-      if (rowIndex !== -1) {
-        const cellAddress = XLSX.utils.encode_cell({ r: rowIndex, c: 0 })
-        if (instructionsWs[cellAddress]) {
-          instructionsWs[cellAddress].s = {
-            font: { 
-              bold: true, 
-              size: 14, 
-              color: { rgb: "1E40AF" },
-              name: "Arial"
-            },
-            fill: { fgColor: { rgb: "E6F3FF" } },
-            alignment: { 
-              horizontal: "left", 
-              vertical: "center"
+            // Style main title
+            const titleCell = XLSX.utils.encode_cell({ r: 0, c: 0 })
+            if (instructionsWs[titleCell]) {
+              instructionsWs[titleCell].s = {
+                font: {
+                  bold: true,
+                  size: 18,
+                  color: { rgb: "FFFFFF" },
+                  name: "Arial"
+                },
+                fill: { fgColor: { rgb: "1E40AF" } },
+                alignment: {
+                  horizontal: "center",
+                  vertical: "center"
+                },
+                border: {
+                  top: { style: "thick", color: { rgb: "000000" } },
+                  bottom: { style: "thick", color: { rgb: "000000" } },
+                  left: { style: "thick", color: { rgb: "000000" } },
+                  right: { style: "thick", color: { rgb: "000000" } }
+                }
+              }
             }
-          }
-        }
-      }
-    })
+
+            // Style all section headings and make them bold
+            const sectionHeadings = ['SELECTED CRITERIA:', 'ASSESSMENT TYPE:']
+            sectionHeadings.forEach(heading => {
+              const rowIndex = instructions.findIndex(row => row[0] === heading)
+              if (rowIndex !== -1) {
+                const cellAddress = XLSX.utils.encode_cell({ r: rowIndex, c: 0 })
+                if (instructionsWs[cellAddress]) {
+                  instructionsWs[cellAddress].s = {
+                    font: {
+                      bold: true,
+                      size: 16,
+                      color: { rgb: "FFFFFF" },
+                      name: "Arial"
+                    },
+                    fill: { fgColor: { rgb: "1E40AF" } },
+                    alignment: {
+                      horizontal: "left",
+                      vertical: "center"
+                    },
+                    border: {
+                      top: { style: "medium", color: { rgb: "000000" } },
+                      bottom: { style: "medium", color: { rgb: "000000" } },
+                      left: { style: "medium", color: { rgb: "000000" } },
+                      right: { style: "medium", color: { rgb: "000000" } }
+                    }
+                  }
+                }
+              }
+            })
+
+            // Style all instruction text to be more visible
+            for (let R = 0; R < instructions.length; R++) {
+              for (let C = 0; C < 1; C++) {
+                const cellAddress = XLSX.utils.encode_cell({ r: R, c: C })
+                if (instructionsWs[cellAddress] && !instructionsWs[cellAddress].s) {
+                  instructionsWs[cellAddress].s = {
+                    font: {
+                      bold: false,
+                      size: 12,
+                      color: { rgb: "000000" },
+                      name: "Arial"
+                    },
+                    fill: { fgColor: { rgb: "FFFFFF" } },
+                    alignment: {
+                      horizontal: "left",
+                      vertical: "top",
+                      wrapText: true
+                    },
+                    border: {
+                      top: { style: "thin", color: { rgb: "CCCCCC" } },
+                      bottom: { style: "thin", color: { rgb: "CCCCCC" } },
+                      left: { style: "thin", color: { rgb: "CCCCCC" } },
+                      right: { style: "thin", color: { rgb: "CCCCCC" } }
+                    }
+                  }
+                }
+              }
+            }
 
     // Add worksheets to workbook
     XLSX.utils.book_append_sheet(wb, ws, 'Assessment Data')
