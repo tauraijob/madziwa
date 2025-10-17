@@ -211,21 +211,63 @@ export default defineEventHandler(async (event) => {
     
     XLSX.utils.sheet_add_aoa(ws, [sampleData], { origin: -1 })
 
+    // Style the sample data row for better visibility
+    const dataRange = XLSX.utils.decode_range(ws['!ref'])
+    for (let C = dataRange.s.c; C <= dataRange.e.c; ++C) {
+      const cellAddress = XLSX.utils.encode_cell({ r: 1, c: C })
+      if (ws[cellAddress]) {
+        ws[cellAddress].s = {
+          font: {
+            bold: false,
+            size: 11,
+            color: { rgb: "000000" },
+            name: "Arial"
+          },
+          fill: { fgColor: { rgb: "F8F9FA" } },
+          alignment: {
+            horizontal: "center",
+            vertical: "center",
+            wrapText: true
+          },
+          border: {
+            top: { style: "thin", color: { rgb: "000000" } },
+            bottom: { style: "thin", color: { rgb: "000000" } },
+            left: { style: "thin", color: { rgb: "000000" } },
+            right: { style: "thin", color: { rgb: "000000" } }
+          }
+        }
+      }
+    }
+
     // Add instructions sheet
     const instructions = [
       ['OFFLINE ASSESSMENT TEMPLATE INSTRUCTIONS'],
       [''],
+      ['GENERAL INSTRUCTIONS:'],
       ['1. Fill in the basic information: Student Name, Student Number, Subject, Topic, Assessment Date, Supervisor Name'],
       ['2. For each selected criteria, enter the mark (0 to maximum) and add comments'],
-      ['3. Marks should be entered as numbers only'],
+      ['3. Marks should be entered as numbers only (no decimals unless specified)'],
       ['4. Comments should be descriptive and constructive'],
-      ['5. Save the file and upload it back to the system when complete'],
+      ['5. All headings are in BOLD and clearly marked for easy identification'],
+      ['6. Save the file and upload it back to the system when complete'],
+      [''],
+      ['MARKING GUIDELINES:'],
+      ['- Each criteria has a maximum mark indicated in parentheses'],
+      ['- Enter marks as whole numbers (0, 1, 2, etc.)'],
+      ['- Use comments to justify your marks and provide feedback'],
+      ['- Ensure all required fields are completed before submission'],
       [''],
       ['SELECTED CRITERIA:'],
-      ...selectedCriteria.map(criteria => [`- ${criteria}`]),
+      ...selectedCriteria.map(criteria => [`• ${criteria}`]),
       [''],
       ['ASSESSMENT TYPE:'],
-      [`- ${assessmentType.toUpperCase()}`]
+      [`• ${assessmentType.toUpperCase()}`],
+      [''],
+      ['IMPORTANT NOTES:'],
+      ['- This template is specifically designed for offline assessment'],
+      ['- All headings and sections are clearly marked in BOLD'],
+      ['- Follow the marking scheme exactly as specified'],
+      ['- Contact your supervisor if you have any questions']
     ]
 
     const instructionsWs = XLSX.utils.aoa_to_sheet(instructions)
@@ -259,7 +301,7 @@ export default defineEventHandler(async (event) => {
             }
 
             // Style all section headings and make them bold
-            const sectionHeadings = ['SELECTED CRITERIA:', 'ASSESSMENT TYPE:']
+            const sectionHeadings = ['GENERAL INSTRUCTIONS:', 'MARKING GUIDELINES:', 'SELECTED CRITERIA:', 'ASSESSMENT TYPE:', 'IMPORTANT NOTES:']
             sectionHeadings.forEach(heading => {
               const rowIndex = instructions.findIndex(row => row[0] === heading)
               if (rowIndex !== -1) {
