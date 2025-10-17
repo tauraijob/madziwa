@@ -4,6 +4,9 @@ const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
   try {
+    // Test database connection first
+    await prisma.$connect()
+    
     const query = getQuery(event) as { candidateNo?: string; surname?: string }
 
     const where: any = {}
@@ -64,6 +67,11 @@ export default defineEventHandler(async (event) => {
     return { students }
   } catch (error) {
     console.error('Error searching students:', error)
-    throw createError({ statusCode: 500, statusMessage: 'Failed to search students' })
+    throw createError({ 
+      statusCode: 500, 
+      statusMessage: `Failed to search students: ${error.message}` 
+    })
+  } finally {
+    await prisma.$disconnect()
   }
 })

@@ -4,6 +4,9 @@ const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
   try {
+    await prisma.$connect()
+    
+    const query = getQuery(event) as { districtId?: string }
     const role = getCookie(event, 'role')
     const adminDistrictIdCookie = getCookie(event, 'adminDistrictId')
     const adminDistrictId = adminDistrictIdCookie ? parseInt(String(adminDistrictIdCookie)) : null
@@ -11,7 +14,11 @@ export default defineEventHandler(async (event) => {
     const supervisorId = supervisorIdCookie ? parseInt(String(supervisorIdCookie)) : null
 
     const where: any = {}
-    if (role === 'admin' && adminDistrictId) {
+    
+    // Check for explicit districtId in query parameters
+    if (query.districtId) {
+      where.districtId = parseInt(query.districtId)
+    } else if (role === 'admin' && adminDistrictId) {
       where.districtId = adminDistrictId
     } else if (role === 'supervisor' && supervisorId) {
       const sup = await prisma.supervisor.findUnique({ where: { id: supervisorId } })
@@ -32,7 +39,9 @@ export default defineEventHandler(async (event) => {
     console.error('Error fetching students:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to fetch students'
+      statusMessage: `Failed to fetch students: ${error.message}`
     })
+  } finally {
+    await prisma.$disconnect()
   }
 }) 

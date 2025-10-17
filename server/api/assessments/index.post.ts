@@ -4,6 +4,9 @@ const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
   try {
+    // Test database connection first
+    await prisma.$connect()
+    
     // Only supervisors may create assessments
     const role = getCookie(event, 'role')
     if (role !== 'supervisor') {
@@ -15,6 +18,15 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 401, statusMessage: 'Missing supervisor session' })
     }
     const body = await readBody(event)
+    
+    console.log('Creating assessment with data:', {
+      role,
+      supervisorId,
+      studentId: body.studentId,
+      subject: body.subject,
+      topic: body.topic,
+      formType: body.formType
+    })
     
     // Validate required fields
     if (!body.studentId || !body.subject || !body.topic) {
@@ -133,8 +145,10 @@ export default defineEventHandler(async (event) => {
       }
     }
 
+    console.log('Creating assessment with data:', data)
     const assessment = await prisma.assessment.create({ data, include: { student: true, supervisor: true } })
 
+    console.log('Assessment created successfully:', assessment.id)
     return {
       message: 'Assessment created successfully',
       assessment
@@ -143,7 +157,9 @@ export default defineEventHandler(async (event) => {
     console.error('Error creating assessment:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to create assessment'
+      statusMessage: `Failed to create assessment: ${error.message}`
     })
+  } finally {
+    await prisma.$disconnect()
   }
 }) 

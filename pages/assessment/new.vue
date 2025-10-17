@@ -8,7 +8,8 @@
           <h2 class="text-xl font-semibold text-gray-800 mb-4">MADZIWA TEACHERS COLLEGE</h2>
           <h3 class="text-lg font-medium text-gray-700 mb-6">CENTRE FOR TEACHER EDUCATION AND MATERIALS DEVELOPMENT</h3>
           <div class="text-base text-gray-600">
-            <div v-if="assessmentType === 'ecd'">DE: EXTERNAL EXAMINING INSTRUMENT: ECD & JUNIOR LEVELS</div>
+            <div v-if="assessmentType === 'ecd'">DE: EXTERNAL EXAMINING INSTRUMENT: ECD LEVEL</div>
+            <div v-else-if="assessmentType === 'junior'">DE: EXTERNAL EXAMINING INSTRUMENT: JUNIOR LEVEL</div>
             <div v-else-if="assessmentType === 'secondary'">DIPLOMA IN EDUCATION<br>EXTERNAL EXAMINING INSTRUMENT: SECONDARY LEVEL</div>
             <div v-else-if="assessmentType === 'isen'">FACULTY OF EDUCATION<br>CENTRE FOR TEACHER EDUCATION AND MATERIALS DEVELOPMENT<br>DIPLOMA IN EDUCATION<br>WORK INTEGRATED EXAMINING FORM<br>INCLUSION AND SPECIAL EDUCATIONAL NEEDS (ISEN)</div>
             <div v-else-if="assessmentType === 'materials'">MATERIALS DEVELOPMENT ASSESSMENT INSTRUMENT</div>
@@ -17,33 +18,169 @@
       </div>
 
       <form @submit.prevent="submitAssessment" novalidate class="space-y-8">
-        <!-- Offline Import -->
-        <div class="bg-white rounded-xl shadow-sm border p-6">
-          <h2 class="text-xl font-semibold text-gray-900 mb-4">Offline Import</h2>
-          <div class="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-3 md:space-y-0">
-            <a
-              :href="`/api/assessments/template?type=${assessmentType}`"
-              class="inline-flex items-center bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
-            >
-              <i class="pi pi-file mr-2"></i> Download {{ assessmentType.charAt(0).toUpperCase() + assessmentType.slice(1) }} Excel Template
-            </a>
-            <label class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
-              <i class="pi pi-upload mr-2"></i> Upload Completed Excel
-              <input type="file" accept=".xlsx,.xls,.csv" class="hidden" @change="onSupervisorImport" />
-            </label>
-          </div>
-        </div>
+                <!-- Offline Import -->
+                <div class="bg-white rounded-xl shadow-sm border p-6">
+                  <h2 class="text-xl font-semibold text-gray-900 mb-4">Offline Import</h2>
+                  
+                  <!-- Materials Development Criteria Selection -->
+                  <div v-if="assessmentType === 'materials'" class="mb-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Select Criteria for Template</h3>
+                    
+                    <!-- Content Quality -->
+                    <div class="mb-4 p-4 border border-gray-200 rounded-lg">
+                      <label class="flex items-center mb-3">
+                        <input type="checkbox" v-model="materialsCriteria.content" @change="toggleContentCategory" class="mr-2">
+                        <span class="font-semibold text-gray-800">CONTENT QUALITY (25 marks)</span>
+                      </label>
+                      <div class="ml-6 space-y-2 text-sm">
+                        <div class="flex items-center">
+                          <input type="checkbox" v-model="materialsCriteria.contentRelevance" @change="updateContentCategory" class="mr-2">
+                          <span>Relevance to curriculum (10 marks)</span>
+                        </div>
+                        <div class="flex items-center">
+                          <input type="checkbox" v-model="materialsCriteria.contentOrganization" @change="updateContentCategory" class="mr-2">
+                          <span>Organization and structure (10 marks)</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Pedagogical Value -->
+                    <div class="mb-4 p-4 border border-gray-200 rounded-lg">
+                      <label class="flex items-center mb-3">
+                        <input type="checkbox" v-model="materialsCriteria.pedagogical" @change="togglePedagogicalCategory" class="mr-2">
+                        <span class="font-semibold text-gray-800">PEDAGOGICAL VALUE (25 marks)</span>
+                      </label>
+                      <div class="ml-6 space-y-2 text-sm">
+                        <div class="flex items-center">
+                          <input type="checkbox" v-model="materialsCriteria.pedagogicalAlignment" @change="updatePedagogicalCategory" class="mr-2">
+                          <span>Alignment with teaching methods (5 marks)</span>
+                        </div>
+                        <div class="flex items-center">
+                          <input type="checkbox" v-model="materialsCriteria.pedagogicalEngagement" @change="updatePedagogicalCategory" class="mr-2">
+                          <span>Student engagement (5 marks)</span>
+                        </div>
+                        <div class="flex items-center">
+                          <input type="checkbox" v-model="materialsCriteria.pedagogicalConnection" @change="updatePedagogicalCategory" class="mr-2">
+                          <span>Connection to real-world (5 marks)</span>
+                        </div>
+                        <div class="flex items-center">
+                          <input type="checkbox" v-model="materialsCriteria.pedagogicalInclusive" @change="updatePedagogicalCategory" class="mr-2">
+                          <span>Inclusive design (5 marks)</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Design and Layout -->
+                    <div class="mb-4 p-4 border border-gray-200 rounded-lg">
+                      <label class="flex items-center mb-3">
+                        <input type="checkbox" v-model="materialsCriteria.design" @change="toggleDesignCategory" class="mr-2">
+                        <span class="font-semibold text-gray-800">DESIGN AND LAYOUT (20 marks)</span>
+                      </label>
+                      <div class="ml-6 space-y-2 text-sm">
+                        <div class="flex items-center">
+                          <input type="checkbox" v-model="materialsCriteria.designVisual" @change="updateDesignCategory" class="mr-2">
+                          <span>Visual appeal (5 marks)</span>
+                        </div>
+                        <div class="flex items-center">
+                          <input type="checkbox" v-model="materialsCriteria.designNavigation" @change="updateDesignCategory" class="mr-2">
+                          <span>Navigation and usability (5 marks)</span>
+                        </div>
+                        <div class="flex items-center">
+                          <input type="checkbox" v-model="materialsCriteria.designQuality" @change="updateDesignCategory" class="mr-2">
+                          <span>Quality of production (5 marks)</span>
+                        </div>
+                        <div class="flex items-center">
+                          <input type="checkbox" v-model="materialsCriteria.designConsistency" @change="updateDesignCategory" class="mr-2">
+                          <span>Consistency (5 marks)</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Innovation and Creativity -->
+                    <div class="mb-4 p-4 border border-gray-200 rounded-lg">
+                      <label class="flex items-center mb-3">
+                        <input type="checkbox" v-model="materialsCriteria.innovation" @change="toggleInnovationCategory" class="mr-2">
+                        <span class="font-semibold text-gray-800">INNOVATION AND CREATIVITY (15 marks)</span>
+                      </label>
+                      <div class="ml-6 space-y-2 text-sm">
+                        <div class="flex items-center">
+                          <input type="checkbox" v-model="materialsCriteria.innovationOriginality" @change="updateInnovationCategory" class="mr-2">
+                          <span>Originality (10 marks)</span>
+                        </div>
+                        <div class="flex items-center">
+                          <input type="checkbox" v-model="materialsCriteria.innovationTechnology" @change="updateInnovationCategory" class="mr-2">
+                          <span>Technology integration (10 marks)</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Education 5.0 Compliance -->
+                    <div class="mb-4 p-4 border border-gray-200 rounded-lg">
+                      <label class="flex items-center mb-3">
+                        <input type="checkbox" v-model="materialsCriteria.education" @change="toggleEducationCategory" class="mr-2">
+                        <span class="font-semibold text-gray-800">EDUCATION 5.0 COMPLIANCE (15 marks)</span>
+                      </label>
+                      <div class="ml-6 space-y-2 text-sm">
+                        <div class="flex items-center">
+                          <input type="checkbox" v-model="materialsCriteria.educationLocal" @change="updateEducationCategory" class="mr-2">
+                          <span>Local relevance (5 marks)</span>
+                        </div>
+                        <div class="flex items-center">
+                          <input type="checkbox" v-model="materialsCriteria.educationHeritage" @change="updateEducationCategory" class="mr-2">
+                          <span>Heritage preservation (5 marks)</span>
+                        </div>
+                        <div class="flex items-center">
+                          <input type="checkbox" v-model="materialsCriteria.educationProblem" @change="updateEducationCategory" class="mr-2">
+                          <span>Problem-solving focus (5 marks)</span>
+                        </div>
+                        <div class="flex items-center">
+                          <input type="checkbox" v-model="materialsCriteria.educationCommercial" @change="updateEducationCategory" class="mr-2">
+                          <span>Commercial viability (5 marks)</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-3 md:space-y-0">
+                    <button
+                      @click="downloadTemplate"
+                      class="inline-flex items-center bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
+                    >
+                      <i class="pi pi-file mr-2"></i> Download {{ assessmentType.charAt(0).toUpperCase() + assessmentType.slice(1) }} Excel Template
+                    </button>
+                    <label class="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">
+                      <i class="pi pi-upload mr-2"></i> Upload Completed Excel
+                      <input type="file" accept=".xlsx,.xls,.csv" class="hidden" @change="onSupervisorImport" />
+                    </label>
+                  </div>
+                </div>
+
+        <!-- Selected Criteria Assessment (if criteria are pre-selected) -->
+        <SelectedCriteriaAssessment
+          v-if="selectedCriteria.length > 0"
+          :assessment-type="assessmentType"
+          :selected-criteria="selectedCriteria"
+          :form="form"
+        />
         <!-- Assessment Type -->
         <div class="bg-white rounded-xl shadow-sm border p-6">
           <h2 class="text-xl font-semibold text-gray-900 mb-4">Assessment Type</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <div 
               @click="assessmentType = 'ecd'"
               class="p-4 border-2 rounded-lg cursor-pointer transition-colors"
               :class="assessmentType === 'ecd' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
             >
-              <h3 class="font-semibold text-gray-900 mb-2">ECD & Junior Levels</h3>
-              <p class="text-sm text-gray-600">Early Childhood Development and Junior Level assessment</p>
+              <h3 class="font-semibold text-gray-900 mb-2">ECD Level</h3>
+              <p class="text-sm text-gray-600">Early Childhood Development assessment</p>
+            </div>
+            <div 
+              @click="assessmentType = 'junior'"
+              class="p-4 border-2 rounded-lg cursor-pointer transition-colors"
+              :class="assessmentType === 'junior' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
+            >
+              <h3 class="font-semibold text-gray-900 mb-2">Junior Level</h3>
+              <p class="text-sm text-gray-600">Junior Level assessment</p>
             </div>
             <div 
               @click="assessmentType = 'secondary'"
@@ -205,7 +342,7 @@
         <div class="bg-white rounded-xl shadow-sm border p-6">
           <h2 class="text-xl font-semibold text-gray-900 mb-6">Education 5.0 Pillar Assessment</h2>
           
-          <!-- ECD & Junior Level Form -->
+          <!-- ECD Level Form -->
           <div v-if="assessmentType === 'ecd'" class="space-y-6">
             <div class="overflow-x-auto">
               <table class="min-w-full border border-gray-300">
@@ -277,17 +414,24 @@
                       <div class="text-xs text-gray-500 mt-1">5%</div>
                     </td>
                   </tr>
-                  <tr>
-                    <td class="border border-gray-300 px-4 py-2">
-                      <div class="font-medium">Records management</div>
-                      <ul class="text-sm text-gray-600 mt-1">
-                        <li>• Register</li>
-                        <li>• Progress Record</li>
-                        <li>• Individual Social Record, Remedial,</li>
-                        <li>• Extension work</li>
-                        <li>• Reading</li>
-                      </ul>
-                    </td>
+                        <tr>
+                          <td class="border border-gray-300 px-4 py-2">
+                            <div class="font-medium">Records management</div>
+                            <ul class="text-sm text-gray-600 mt-1">
+                              <li>• Register</li>
+                              <li>• Progress Record</li>
+                              <li>• Individual Social Record</li>
+                              <li>• Remedial</li>
+                              <li>• Extension work</li>
+                              <li>• Reading</li>
+                              <li>• Inventory Record</li>
+                              <li>• Test Record</li>
+                              <li>• WIL File</li>
+                              <li v-if="assessmentType === 'ecd'">• Anecdotal</li>
+                              <li v-if="assessmentType === 'ecd'">• Developmental Checklist</li>
+                              <li v-if="assessmentType === 'ecd'">• Health Record</li>
+                            </ul>
+                          </td>
                     <td class="border border-gray-300 px-4 py-2">
                       <textarea v-model="form.recordsComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                     </td>
@@ -373,9 +517,182 @@
               </table>
             </div>
           </div>
-        </div>
+          </div>
 
-        <!-- Secondary Level Form -->
+          <!-- Junior Level Form -->
+          <div v-if="assessmentType === 'junior'" class="space-y-6">
+            <div class="overflow-x-auto">
+              <table class="min-w-full border border-gray-300">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Education 5.0 Pillar</th>
+                    <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Aspect</th>
+                    <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Observations</th>
+                    <th class="border border-gray-300 px-4 py-2 text-left font-semibold">Mark</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="border border-gray-300 px-4 py-2 font-medium">Research-Teaching & Learning</td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <div class="font-medium">Preparation</div>
+                      <ul class="text-sm text-gray-600 mt-1">
+                        <li>• Portfolio of evidence</li>
+                        <li>• Scheming</li>
+                        <li>• Lesson planning</li>
+                        <li>• Evaluation</li>
+                      </ul>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <textarea v-model="form.preparationComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <input v-model.number="form.preparationMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" />
+                      <div class="text-xs text-gray-500 mt-1">15%</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-300 px-4 py-2"></td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <div class="font-medium">Lesson Facilitation</div>
+                      <ul class="text-sm text-gray-600 mt-1">
+                        <li>• Introduction</li>
+                        <li>• Questioning techniques and distribution</li>
+                        <li>• Sequencing of learning</li>
+                        <li>• Knowledge of content</li>
+                        <li>• Appropriate media use</li>
+                        <li>• Evidence of research</li>
+                        <li>• Assessment and feedback</li>
+                        <li>• Lesson conclusion</li>
+                      </ul>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <textarea v-model="form.lessonPlanningComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <input v-model.number="form.lessonPlanningMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" />
+                      <div class="text-xs text-gray-500 mt-1">15%</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-300 px-4 py-2"></td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <div class="font-medium">Deportment</div>
+                      <ul class="text-sm text-gray-600 mt-1">
+                        <li>• Dress code</li>
+                        <li>• Voice projection</li>
+                        <li>• Language use</li>
+                      </ul>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <textarea v-model="form.deportmentComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <input v-model.number="form.deportmentMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                      <div class="text-xs text-gray-500 mt-1">5%</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-300 px-4 py-2"></td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <div class="font-medium">Records management</div>
+                      <ul class="text-sm text-gray-600 mt-1">
+                        <li>• Register</li>
+                        <li>• Progress Record</li>
+                        <li>• Individual Social Record</li>
+                        <li>• Remedial</li>
+                        <li>• Extension work</li>
+                        <li>• Reading</li>
+                        <li>• Inventory Record</li>
+                        <li>• Test Record</li>
+                        <li>• WIL File</li>
+                      </ul>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <textarea v-model="form.recordsComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <input v-model.number="form.recordsMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" />
+                      <div class="text-xs text-gray-500 mt-1">15%</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-300 px-4 py-2"></td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <div class="font-medium">Teaching and learning environment</div>
+                      <ul class="text-sm text-gray-600 mt-1">
+                        <li>• Classroom layout and conduciveness</li>
+                        <li>• Management of learning centres</li>
+                      </ul>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <textarea v-model="form.environmentComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <input v-model.number="form.environmentMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" />
+                      <div class="text-xs text-gray-500 mt-1">10%</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-300 px-4 py-2 font-medium">Research-based Community Service/ Research & Innovation/Research & Industrialisation</td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <div class="space-y-2">
+                        <label class="flex items-center text-sm">
+                          <input v-model="form.selectedResearchCategory" type="radio" value="community_service" class="mr-2" />
+                          Research-based Community Service
+                        </label>
+                        <label class="flex items-center text-sm">
+                          <input v-model="form.selectedResearchCategory" type="radio" value="innovation" class="mr-2" />
+                          Research & Innovation
+                        </label>
+                        <label class="flex items-center text-sm">
+                          <input v-model="form.selectedResearchCategory" type="radio" value="industrialisation" class="mr-2" />
+                          Research & Industrialisation
+                        </label>
+                      </div>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <textarea v-model="form.remainingPillarsComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" placeholder="Enter observations..." :disabled="!form.selectedResearchCategory"></textarea>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <input v-model.number="form.remainingPillarsMark" type="number" min="0" max="30" class="w-20 px-2 py-1 border rounded text-center" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" :disabled="!form.selectedResearchCategory" />
+                      <div class="text-xs text-gray-500 mt-1">30% (Selected Category)</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-300 px-4 py-2"></td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <div class="font-medium">Remaining 2 pillars</div>
+                      <div v-if="form.selectedResearchCategory" class="text-sm text-gray-600 mt-2">
+                        <div v-if="form.selectedResearchCategory === 'community_service'">
+                          <div>• Research & Innovation</div>
+                          <div>• Research & Industrialisation</div>
+                        </div>
+                        <div v-else-if="form.selectedResearchCategory === 'innovation'">
+                          <div>• Research-based Community Service</div>
+                          <div>• Research & Industrialisation</div>
+                        </div>
+                        <div v-else-if="form.selectedResearchCategory === 'industrialisation'">
+                          <div>• Research-based Community Service</div>
+                          <div>• Research & Innovation</div>
+                        </div>
+                      </div>
+                      <div v-else class="text-sm text-gray-500">Select a category above to see remaining pillars</div>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <textarea v-model="form.remainingPillarsComment2" rows="2" class="w-full px-2 py-1 border rounded text-sm" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" placeholder="Enter observations..." :disabled="!form.selectedResearchCategory"></textarea>
+                    </td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <input v-model.number="form.remainingPillarsMark2" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" :disabled="!form.selectedResearchCategory" />
+                      <div class="text-xs text-gray-500 mt-1">10% (5% each for remaining 2 categories)</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Secondary Level Form -->
         <div v-if="assessmentType === 'secondary'" class="bg-white rounded-xl shadow-sm border p-6">
           <h2 class="text-xl font-semibold text-gray-900 mb-6">Secondary Level Assessment</h2>
           <div class="overflow-x-auto">
@@ -414,9 +731,13 @@
                     <ul class="text-sm text-gray-600 mt-1">
                       <li>• Register</li>
                       <li>• Progress Record</li>
-                      <li>• Individual Social Record, Remedial,</li>
+                      <li>• Individual Social Record</li>
+                      <li>• Remedial</li>
                       <li>• Extension work</li>
                       <li>• Reading</li>
+                      <li>• Inventory Record</li>
+                      <li>• Test Record</li>
+                      <li>• WIL File</li>
                     </ul>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
@@ -567,9 +888,13 @@
                     <ul class="text-sm text-gray-600 mt-1">
                       <li>• Register</li>
                       <li>• Progress Record</li>
-                      <li>• Individual Social Record, Remedial,</li>
+                      <li>• Individual Social Record</li>
+                      <li>• Remedial</li>
                       <li>• Extension work</li>
                       <li>• Reading</li>
+                      <li>• Inventory Record</li>
+                      <li>• Test Record</li>
+                      <li>• WIL File</li>
                     </ul>
                   </td>
                   <td class="border border-gray-300 px-4 py-2">
@@ -920,15 +1245,15 @@
 
         <!-- Signature Section -->
         <div class="bg-white rounded-xl shadow-sm border p-6">
-          <h2 class="text-xl font-semibold text-gray-900 mb-4">Examiner Information</h2>
+          <h2 class="text-xl font-semibold text-gray-900 mb-4">Supervisor Information</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Examiner Name</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Supervisor Name</label>
               <input 
                 v-model="form.examinerName" 
                 type="text"
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter examiner name"
+                placeholder="Enter supervisor name"
               >
             </div>
             <div>
@@ -1061,6 +1386,35 @@ const { settings, loadSettings } = useAssessmentSettings()
 // Selected assessment type (from query). Default to ecd
 const assessmentType = ref('ecd')
 
+// Selected criteria for offline assessment
+const selectedCriteria = ref([])
+const showCriteriaModal = ref(false)
+
+// Materials Development criteria
+const materialsCriteria = ref({
+  content: false,
+  contentRelevance: false,
+  contentOrganization: false,
+  pedagogical: false,
+  pedagogicalAlignment: false,
+  pedagogicalEngagement: false,
+  pedagogicalConnection: false,
+  pedagogicalInclusive: false,
+  design: false,
+  designVisual: false,
+  designNavigation: false,
+  designQuality: false,
+  designConsistency: false,
+  innovation: false,
+  innovationOriginality: false,
+  innovationTechnology: false,
+  education: false,
+  educationLocal: false,
+  educationHeritage: false,
+  educationProblem: false,
+  educationCommercial: false
+})
+
 // Assessment fields (scores/comments)
 const form = ref({
   subject: '',
@@ -1070,20 +1424,30 @@ const form = ref({
   // ECD & Junior Level fields
   preparationMark: 0,
   preparationComment: '',
-  lessonFacilitationMark: 0,
-  lessonFacilitationComment: '',
+  lessonPlanningMark: 0,
+  lessonPlanningComment: '',
+  introductionMark: 0,
+  introductionComment: '',
+  developmentMark: 0,
+  developmentComment: '',
+  conclusionMark: 0,
+  conclusionComment: '',
+  personalDimensionsMark: 0,
+  personalDimensionsComment: '',
   deportmentMark: 0,
   deportmentComment: '',
-  recordsMark: 0,
-  recordsComment: '',
+  documentsMark: 0,
+  documentsComment: '',
   environmentMark: 0,
   environmentComment: '',
   communityMark: 0,
   communityComment: '',
-  remainingPillarsMark: 0,
-  remainingPillarsComment: '',
-  // Research category selection
-  selectedResearchCategory: '',
+          remainingPillarsMark: 0,
+          remainingPillarsComment: '',
+          remainingPillarsMark2: 0,
+          remainingPillarsComment2: '',
+          // Research category selection
+          selectedResearchCategory: '',
   // Materials Development fields
   contentRelevanceMark: 0,
   contentOrganizationMark: 0,
@@ -1436,15 +1800,24 @@ const submitAssessment = async () => {
       clampField('educationCommercialMark', 5)
       clampField('educationTotalMark', 20)
       clampField('materialsTotalMark', 100)
+            } else if (assessmentType.value === 'junior') {
+              // Junior specific clamping
+              clampField('preparationMark', 15)
+              clampField('lessonFacilitationMark', 15)
+              clampField('deportmentMark', 5)
+              clampField('recordsMark', 15)
+              clampField('environmentMark', 10)
+              clampField('remainingPillarsMark', 30)
+              clampField('remainingPillarsMark2', 10)
     } else {
       // ECD, Secondary, ISEN specific clamping
-      clampField('preparationMark', 15)
+      clampField('preparationMark', 10)
       clampField('lessonFacilitationMark', 15)
       clampField('deportmentMark', 5)
       clampField('recordsMark', 15)
       clampField('environmentMark', 10)
-      clampField('communityMark', 30)
-      clampField('remainingPillarsMark', 10)
+      clampField('communityMark', 20)
+      clampField('remainingPillarsMark', 25)
     }
 
     const supervisorId = await ensureSupervisor()
@@ -1536,6 +1909,148 @@ const getSignatureData = () => {
   if (!canvas) return null
   
   return canvas.toDataURL('image/png')
+}
+
+
+// Category toggle methods for Materials Development
+const toggleContentCategory = () => {
+  if (materialsCriteria.value.content) {
+    materialsCriteria.value.contentRelevance = true
+    materialsCriteria.value.contentOrganization = true
+  } else {
+    materialsCriteria.value.contentRelevance = false
+    materialsCriteria.value.contentOrganization = false
+  }
+}
+
+const updateContentCategory = () => {
+  materialsCriteria.value.content = materialsCriteria.value.contentRelevance && materialsCriteria.value.contentOrganization
+}
+
+const togglePedagogicalCategory = () => {
+  if (materialsCriteria.value.pedagogical) {
+    materialsCriteria.value.pedagogicalAlignment = true
+    materialsCriteria.value.pedagogicalEngagement = true
+    materialsCriteria.value.pedagogicalConnection = true
+    materialsCriteria.value.pedagogicalInclusive = true
+  } else {
+    materialsCriteria.value.pedagogicalAlignment = false
+    materialsCriteria.value.pedagogicalEngagement = false
+    materialsCriteria.value.pedagogicalConnection = false
+    materialsCriteria.value.pedagogicalInclusive = false
+  }
+}
+
+const updatePedagogicalCategory = () => {
+  materialsCriteria.value.pedagogical = materialsCriteria.value.pedagogicalAlignment && 
+    materialsCriteria.value.pedagogicalEngagement && 
+    materialsCriteria.value.pedagogicalConnection && 
+    materialsCriteria.value.pedagogicalInclusive
+}
+
+const toggleDesignCategory = () => {
+  if (materialsCriteria.value.design) {
+    materialsCriteria.value.designVisual = true
+    materialsCriteria.value.designNavigation = true
+    materialsCriteria.value.designQuality = true
+    materialsCriteria.value.designConsistency = true
+  } else {
+    materialsCriteria.value.designVisual = false
+    materialsCriteria.value.designNavigation = false
+    materialsCriteria.value.designQuality = false
+    materialsCriteria.value.designConsistency = false
+  }
+}
+
+const updateDesignCategory = () => {
+  materialsCriteria.value.design = materialsCriteria.value.designVisual && 
+    materialsCriteria.value.designNavigation && 
+    materialsCriteria.value.designQuality && 
+    materialsCriteria.value.designConsistency
+}
+
+const toggleInnovationCategory = () => {
+  if (materialsCriteria.value.innovation) {
+    materialsCriteria.value.innovationOriginality = true
+    materialsCriteria.value.innovationTechnology = true
+  } else {
+    materialsCriteria.value.innovationOriginality = false
+    materialsCriteria.value.innovationTechnology = false
+  }
+}
+
+const updateInnovationCategory = () => {
+  materialsCriteria.value.innovation = materialsCriteria.value.innovationOriginality && materialsCriteria.value.innovationTechnology
+}
+
+const toggleEducationCategory = () => {
+  if (materialsCriteria.value.education) {
+    materialsCriteria.value.educationLocal = true
+    materialsCriteria.value.educationHeritage = true
+    materialsCriteria.value.educationProblem = true
+    materialsCriteria.value.educationCommercial = true
+  } else {
+    materialsCriteria.value.educationLocal = false
+    materialsCriteria.value.educationHeritage = false
+    materialsCriteria.value.educationProblem = false
+    materialsCriteria.value.educationCommercial = false
+  }
+}
+
+const updateEducationCategory = () => {
+  materialsCriteria.value.education = materialsCriteria.value.educationLocal && 
+    materialsCriteria.value.educationHeritage && 
+    materialsCriteria.value.educationProblem && 
+    materialsCriteria.value.educationCommercial
+}
+
+// Get selected criteria for Materials Development
+const getSelectedMaterialsCriteria = () => {
+  return Object.entries(materialsCriteria.value)
+    .filter(([_, selected]) => selected)
+    .map(([key, _]) => key)
+}
+
+// Updated download template function
+const downloadTemplate = async () => {
+  try {
+    let selectedCriteria = []
+    
+    if (assessmentType.value === 'materials') {
+      selectedCriteria = getSelectedMaterialsCriteria()
+    }
+    
+    const response = await $fetch('/api/assessments/offline-template', {
+      method: 'POST',
+      body: {
+        assessmentType: assessmentType.value,
+        selectedCriteria
+      }
+    })
+
+    // Create download link
+    const link = document.createElement('a')
+    link.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${response.data}`
+    link.download = response.filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    toast.add({ 
+      severity: 'success', 
+      summary: 'Success', 
+      detail: 'Template downloaded successfully!', 
+      life: 3000 
+    })
+  } catch (error) {
+    console.error('Error downloading template:', error)
+    toast.add({ 
+      severity: 'error', 
+      summary: 'Error', 
+      detail: 'Failed to download template. Please try again.', 
+      life: 3000 
+    })
+  }
 }
 
 onMounted(() => {

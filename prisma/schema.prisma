@@ -18,8 +18,9 @@ model Supervisor {
   pinHash     String?
   phoneNumber String        @map("phoneNumber")
   nationalId  String        @unique @map("nationalId")
-  districtId  Int?
-  district    District?     @relation(fields: [districtId], references: [id])
+  districtId  Int?          // Keep for backward compatibility
+  district    District?     @relation("SupervisorPrimaryDistrict", fields: [districtId], references: [id])
+  districts   SupervisorDistrict[] @relation("SupervisorDistricts")
   createdAt   DateTime      @default(now()) @map("createdAt")
   updatedAt   DateTime      @updatedAt @map("updatedAt")
   assessments Assessment[]
@@ -89,9 +90,22 @@ model District {
   name      String    @unique
   students  Student[]
   admins    AdminUser[]
-  supervisors Supervisor[]
+  supervisors Supervisor[] @relation("SupervisorPrimaryDistrict")
+  supervisorDistricts SupervisorDistrict[] @relation("DistrictSupervisors")
 
   @@map("districts")
+}
+
+model SupervisorDistrict {
+  id          Int       @id @default(autoincrement())
+  supervisorId Int
+  districtId   Int
+  supervisor  Supervisor @relation("SupervisorDistricts", fields: [supervisorId], references: [id], onDelete: Cascade)
+  district    District   @relation("DistrictSupervisors", fields: [districtId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now()) @map("createdAt")
+
+  @@unique([supervisorId, districtId])
+  @@map("supervisor_districts")
 }
 
 model AdminUser {

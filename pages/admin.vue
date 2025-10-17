@@ -90,6 +90,52 @@
         </div>
       </div>
 
+      <!-- District Information for Admins -->
+      <div v-if="!isSuperadmin && assignedDistrict" class="bg-white rounded-xl shadow-sm border p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold text-gray-900">Your Assigned District</h2>
+          <div class="text-sm text-gray-500">
+            <i class="pi pi-map-marker mr-1"></i>
+            District Information
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-blue-50 rounded-lg p-4">
+            <div class="flex items-center">
+              <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                <i class="pi pi-map-marker text-blue-600"></i>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-600">District Name</p>
+                <p class="text-lg font-bold text-gray-900">{{ assignedDistrict.name }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-green-50 rounded-lg p-4">
+            <div class="flex items-center">
+              <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                <i class="pi pi-users text-green-600"></i>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-600">Students in District</p>
+                <p class="text-lg font-bold text-gray-900">{{ districtStudentCount }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-purple-50 rounded-lg p-4">
+            <div class="flex items-center">
+              <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                <i class="pi pi-user text-purple-600"></i>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-600">Supervisors in District</p>
+                <p class="text-lg font-bold text-gray-900">{{ districtSupervisorCount }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Filters and Search -->
       <div class="bg-white rounded-xl shadow-sm border p-6 mb-6">
         <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
@@ -417,6 +463,9 @@ const role = useCookie('role')
 const isSuperadmin = computed(() => role.value === 'superadmin')
 const districts = ref([])
 const selectedDistrictId = ref('')
+const assignedDistrict = ref(null)
+const districtStudentCount = ref(0)
+const districtSupervisorCount = ref(0)
 
 // Filters
 const filters = ref({
@@ -601,6 +650,28 @@ const loadDistricts = async () => {
     districts.value = res.districts || []
   } catch (e) {
     districts.value = []
+  }
+}
+
+const loadAssignedDistrict = async () => {
+  if (isSuperadmin.value) return
+  try {
+    const adminDistrictId = useCookie('adminDistrictId')
+    if (adminDistrictId.value) {
+      const res = await $fetch(`/api/districts/${adminDistrictId.value}`)
+      assignedDistrict.value = res.district
+      
+      // Load student and supervisor counts for this district
+      const [studentsRes, supervisorsRes] = await Promise.all([
+        $fetch('/api/students', { params: { districtId: adminDistrictId.value } }),
+        $fetch('/api/supervisors', { params: { districtId: adminDistrictId.value } })
+      ])
+      
+      districtStudentCount.value = studentsRes.students?.length || 0
+      districtSupervisorCount.value = supervisorsRes.supervisors?.length || 0
+    }
+  } catch (e) {
+    console.error('Error loading assigned district:', e)
   }
 }
 
@@ -851,6 +922,7 @@ const logout = () => {
 onMounted(() => {
   fetchAssessments()
   loadDistricts()
+  loadAssignedDistrict()
 })
 </script>
 

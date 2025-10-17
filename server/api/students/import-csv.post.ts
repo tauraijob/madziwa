@@ -142,10 +142,22 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    return { total: lines.length - 1, created, updated, errors, results }
+    return { 
+      total: lines.length - 1, 
+      created, 
+      updated, 
+      errors, 
+      results,
+      success: errors === 0,
+      message: errors > 0 ? `Import completed with ${errors} errors. Check details below.` : 'Import completed successfully!'
+    }
   } catch (error) {
     console.error('Error importing students CSV:', error)
-    throw createError({ statusCode: 500, statusMessage: 'Failed to import students CSV' })
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+    throw createError({ 
+      statusCode: 500, 
+      statusMessage: `Failed to import students CSV: ${errorMessage}` 
+    })
   }
 })
 

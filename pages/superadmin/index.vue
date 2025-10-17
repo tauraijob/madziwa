@@ -61,7 +61,16 @@
         </div>
         <div v-if="csvImportSummary" class="bg-gray-50 border border-gray-200 rounded p-4 text-sm text-gray-700">
           <div class="font-medium mb-1">Import Summary</div>
-          <div>Created: {{ csvImportSummary.created }}, Updated: {{ csvImportSummary.updated }}, Errors: {{ csvImportSummary.errors }}</div>
+          <div class="flex items-center space-x-4">
+            <div>Created: {{ csvImportSummary.created }}, Updated: {{ csvImportSummary.updated }}, Errors: {{ csvImportSummary.errors }}</div>
+            <button 
+              v-if="csvImportSummary.errors > 0" 
+              @click="showErrorDetails = true"
+              class="text-red-600 hover:text-red-800 text-sm font-medium"
+            >
+              View Error Details
+            </button>
+          </div>
         </div>
       </div>
 
@@ -189,7 +198,8 @@
                   <th class="px-4 py-2 text-left">Email</th>
                   <th class="px-4 py-2 text-left">Phone</th>
                   <th class="px-4 py-2 text-left">National ID</th>
-                  <th class="px-4 py-2 text-left">District</th>
+                  <th class="px-4 py-2 text-left">Primary District</th>
+                  <th class="px-4 py-2 text-left">Assigned Districts</th>
                   <th class="px-4 py-2 text-left">Actions</th>
                 </tr>
               </thead>
@@ -205,7 +215,18 @@
                       <option v-for="d in districts" :key="d.id" :value="d.id">{{ d.name }}</option>
                     </select>
                   </td>
+                  <td class="px-4 py-2">
+                    <div class="flex flex-wrap gap-1">
+                      <span v-for="district in s.assignedDistricts" :key="district.id" 
+                            class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                        {{ district.name }}
+                      </span>
+                      <span v-if="!s.assignedDistricts || s.assignedDistricts.length === 0" 
+                            class="text-gray-500 text-sm">None</span>
+                    </div>
+                  </td>
                   <td class="px-4 py-2 text-right space-x-2">
+                    <button @click="openDistrictModal(s)" class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Manage Districts</button>
                     <button @click="openPasswordModal(s)" class="px-3 py-1.5 text-sm bg-yellow-600 text-white rounded hover:bg-yellow-700">Edit Password</button>
                     <button @click="deleteSupervisor(s.id)" class="px-3 py-1.5 text-sm bg-red-600 text-white rounded hover:bg-red-700">Delete</button>
                   </td>
@@ -314,6 +335,92 @@
         </div>
       </div>
     </div>
+
+    <!-- District Management Modal -->
+    <div v-if="showDistrictModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
+      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl">
+        <h2 class="text-2xl font-bold mb-4">Manage Districts for {{ selectedSupervisor?.fullName }}</h2>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Select Districts</label>
+          <div class="max-h-60 overflow-y-auto border border-gray-300 rounded-md p-3">
+            <div v-for="district in districts" :key="district.id" class="flex items-center mb-2">
+              <input 
+                :id="`district-${district.id}`"
+                v-model="selectedDistricts"
+                :value="district.id"
+                type="checkbox"
+                class="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label :for="`district-${district.id}`" class="text-sm text-gray-700">
+                {{ district.name }}
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-end space-x-3">
+          <button 
+            @click="closeDistrictModal" 
+            class="px-4 py-2 text-gray-600 bg-gray-200 rounded-md hover:bg-gray-300"
+          >
+            Cancel
+          </button>
+          <button 
+            @click="saveSupervisorDistricts" 
+            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            Save Districts
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Details Modal -->
+    <div v-if="showErrorDetails" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
+      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl max-h-[80vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold text-gray-900">Import Error Details</h2>
+          <button @click="showErrorDetails = false" class="text-gray-400 hover:text-gray-600">
+            <i class="pi pi-times text-xl"></i>
+          </button>
+        </div>
+        
+        <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div class="text-red-800 font-medium">
+            {{ csvImportSummary.message }}
+          </div>
+          <div class="text-red-600 text-sm mt-1">
+            Total rows: {{ csvImportSummary.total }}, Errors: {{ csvImportSummary.errors }}
+          </div>
+        </div>
+
+        <div class="space-y-2 max-h-96 overflow-y-auto">
+          <div 
+            v-for="result in csvImportSummary.results.filter(r => r.status === 'error')" 
+            :key="result.row"
+            class="p-3 bg-red-50 border border-red-200 rounded-lg"
+          >
+            <div class="flex justify-between items-start">
+              <div class="flex-1">
+                <div class="font-medium text-red-800">Row {{ result.row }}</div>
+                <div class="text-red-600 text-sm mt-1">{{ result.error }}</div>
+                <div v-if="result.candidateNo" class="text-red-500 text-xs mt-1">
+                  Candidate Number: {{ result.candidateNo }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button 
+            @click="showErrorDetails = false"
+            class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -336,6 +443,10 @@ const resetForm = ref({ id: undefined, email: '', newPassword: '' })
 const showPasswordModal = ref(false)
 const selectedSupervisor = ref(null)
 const passwordForm = ref({ newPassword: '', confirmPassword: '' })
+
+// District management modal
+const showDistrictModal = ref(false)
+const selectedDistricts = ref([])
 
 const loadStats = async () => {
   try {
@@ -582,40 +693,8 @@ const resetSupervisorPassword = async () => {
   }
 }
 
-const downloadAllCsv = async () => {
-  try {
-    const response = await $fetch('/api/assessments/export-csv', { method: 'GET', responseType: 'blob' })
-    const blob = new Blob([response], { type: 'text/csv' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `assessments-${new Date().toISOString().split('T')[0]}.csv`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-  } catch (e) {
-    alert('Failed to download CSV')
-  }
-}
-
-const downloadAllPdfs = async () => {
-  try {
-    const response = await $fetch('/api/assessments/export-pdf-all', { method: 'GET', responseType: 'blob' })
-    const blob = new Blob([response], { type: 'application/zip' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `assessments-${new Date().toISOString().split('T')[0]}.zip`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-  } catch (e) {
-    alert('Failed to download PDFs')
-  }
-}
-
-onMounted(() => { loadStats(); loadDistrictsAdmins(); loadSupervisors() })
-</script>
-
+// District management methods
+const openDistrictModal = (supervisor) => {
+  selectedSupervisor.value = supervisor
+  selectedDistricts.value = supervisor.assignedDistricts?.map(d => d.id) || []
+  showDistrictModal.value = t
