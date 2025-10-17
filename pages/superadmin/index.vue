@@ -430,6 +430,7 @@ definePageMeta({ middleware: 'superadmin-auth' })
 const stats = reactive({ totalAssessments: 0, totalStudents: 0, totalSupervisors: 0, averageScore: 0, csvImportedStudents: 0 })
 const csvImportSummary = ref(null)
 const supImportSummary = ref(null)
+const showErrorDetails = ref(false)
 
 const admins = ref([])
 const supervisors = ref([])
@@ -531,14 +532,18 @@ const onImportStudentsCsv = async (e) => {
     form.append('file', file)
     const result = await $fetch('/api/students/import-csv', { method: 'POST', body: form })
     csvImportSummary.value = result
+    
     if (result.errors > 0) {
-      alert(`Students import completed with errors. Created: ${result.created}, Updated: ${result.updated}, Errors: ${result.errors}. Check console for details.`)
+      // Show detailed error information
+      console.log('Import errors:', result.results.filter(r => r.status === 'error'))
+      alert(`Students import completed with ${result.errors} errors. Click "View Error Details" to see specific issues.`)
     } else {
       alert(`Students import successful! Created: ${result.created}, Updated: ${result.updated}`)
     }
   } catch (err) {
     console.error('CSV import error:', err)
-    alert(`Import failed: ${err.data?.statusMessage || err.message || 'Please verify the CSV format and try again.'}`)
+    const errorMessage = err.data?.statusMessage || err.message || 'Please verify the CSV format and try again.'
+    alert(`Import failed: ${errorMessage}`)
   } finally {
     e.target.value = ''
   }
@@ -697,4 +702,69 @@ const resetSupervisorPassword = async () => {
 const openDistrictModal = (supervisor) => {
   selectedSupervisor.value = supervisor
   selectedDistricts.value = supervisor.assignedDistricts?.map(d => d.id) || []
-  showDistrictModal.value = t
+  showDistrictModal.value = true
+}
+
+const closeDistrictModal = () => {
+  showDistrictModal.value = false
+  selectedSupervisor.value = null
+  selectedDistricts.value = []
+}
+
+const saveSupervisorDistricts = async () => {
+  try {
+    if (!selectedSupervisor.value) return
+    
+    const payload = {
+      supervisorId: selectedSupervisor.value.id,
+      districtIds: selectedDistricts.value
+    }
+    
+    await $fetch('/api/supervisors/assign-districts', { method: 'POST', body: payload })
+    alert('Supervisor districts updated successfully')
+    
+    // Refresh supervisors list
+    await loadDistrictsAdmins()
+    closeDistrictModal()
+  } catch (e) {
+    alert('Failed to update districts: ' + (e.data?.message || e.message || 'Unknown error'))
+  }
+}
+
+const downloadAllCsv = async () => {
+  try {
+    const response = await $fetch('/api/assessments/export-csv', { method: 'GET', responseType: 'blob' })
+    const blob = new Blob([response], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `assessments-${new Date().toISOString().split('T')[0]}.csv`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (e) {
+    alert('Failed to download CSV')
+  }
+}
+
+const downloadAllPdfs = async () => {
+  try {
+    const response = await $fetch('/api/assessments/export-pdf-all', { method: 'GET', responseType: 'blob' })
+    const blob = new Blob([response], { type: 'application/zip' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `assessments-${new Date().toISOString().split('T')[0]}.zip`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (e) {
+    alert('Failed to download PDFs')
+  }
+}
+
+onMounted(() => { loadStats(); loadDistrictsAdmins(); loadSupervisors() })
+</script>
+
