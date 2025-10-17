@@ -260,14 +260,28 @@ function mapAssessmentData(row: ImportRow) {
     communityComment: String(row.communityComment || '').trim(),
     selectedResearchCategory: String(row.selectedResearchCategory || '').trim(),
   }
-  if (!base.subject) throw new Error('subject required')
+  
+  // Validate required fields
+  if (!base.subject) throw new Error('Subject is required')
+  if (!base.topic) throw new Error('Topic is required')
+  
   return base
 }
 
 async function handleRow(row: ImportRow, currentSupervisorId: number) {
   const norm = normalizeRow(row)
+  
   // Required identifiers
-  if (!norm.fullName || !norm.candidateNo) throw new Error('Student fullName and candidateNo are required')
+  if (!norm.fullName || !norm.candidateNo) {
+    throw new Error('Student fullName and candidateNo are required')
+  }
+  
+  // Validate student data
+  if (!norm.sex) throw new Error('Student sex is required')
+  if (!norm.email) throw new Error('Student email is required')
+  if (!norm.schoolName) throw new Error('Student schoolName is required')
+  if (!norm.className) throw new Error('Student className is required')
+  
   // Supervisor fields in the sheet are ignored; we attach to the logged-in supervisor
   const student = await upsertStudent(norm)
   const data = mapAssessmentData(norm)
@@ -289,13 +303,13 @@ async function handleRow(row: ImportRow, currentSupervisorId: number) {
       where: { id: existing.id },
       data: { ...data, supervisorId: currentSupervisorId, studentId: student.id },
     })
-    return { status: 'updated', student: student.candidateNo, subject: data.subject }
+    return { status: 'updated', student: student.candidateNo, subject: data.subject, studentName: student.fullName }
   }
 
   await prisma.assessment.create({
     data: { ...data, supervisorId: currentSupervisorId, studentId: student.id },
   })
-  return { status: 'created', student: student.candidateNo, subject: data.subject }
+  return { status: 'created', student: student.candidateNo, subject: data.subject, studentName: student.fullName }
 }
 
 export default defineEventHandler(async (event: H3Event) => {
@@ -353,22 +367,31 @@ export default defineEventHandler(async (event: H3Event) => {
     }
 
     const results: any[] = []
+    let created = 0, updated = 0, errors = 0
+
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i]
       try {
         const res = await handleRow(row, currentSupervisorId)
         results.push({ row: i + 2, ...res }) // +2 accounts for 1-based index and header row
+        if (res.status === 'created') created++
+        if (res.status === 'updated') updated++
       } catch (err: any) {
-        results.push({ row: i + 2, status: 'error', error: err?.message || String(err) })
+        errors++
+        const errorMsg = err?.message || String(err)
+        console.error(`Error processing row ${i + 2}:`, errorMsg)
+        results.push({ row: i + 2, status: 'error', error: errorMsg })
       }
     }
 
     const summary = {
       total: rows.length,
-      created: results.filter(r => r.status === 'created').length,
-      updated: results.filter(r => r.status === 'updated').length,
-      errors: results.filter(r => r.status === 'error').length,
+      created,
+      updated,
+      errors,
       results,
+      success: errors === 0,
+      message: errors > 0 ? `Import completed with ${errors} errors. Check details below.` : 'Import completed successfully!'
     }
 
     return summary

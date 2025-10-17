@@ -197,20 +197,12 @@ const onSupervisorImport = async (e) => {
     const result = await $fetch('/api/assessments/import-xlsx', { method: 'POST', body: formData })
     
     // Show detailed results
-    const message = `Import completed!\n\n` +
-      `Total rows: ${result.total}\n` +
-      `Created: ${result.created}\n` +
-      `Updated: ${result.updated}\n` +
-      `Errors: ${result.errors}`
-    
     if (result.errors > 0) {
-      const errorDetails = result.results
-        .filter(r => r.status === 'error')
-        .map(r => `Row ${r.row}: ${r.error}`)
-        .join('\n')
-      alert(message + '\n\nError details:\n' + errorDetails)
+      // Show detailed error information
+      console.log('Import errors:', result.results.filter(r => r.status === 'error'))
+      alert(`Excel import completed with ${result.errors} errors. Check console for details.\n\nTotal: ${result.total}, Created: ${result.created}, Updated: ${result.updated}, Errors: ${result.errors}`)
     } else {
-      alert(message)
+      alert(`Excel import successful!\n\nTotal: ${result.total}, Created: ${result.created}, Updated: ${result.updated}`)
     }
     
     await fetchMine()
