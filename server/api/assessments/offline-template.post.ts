@@ -1,3 +1,4 @@
+// @ts-ignore
 import * as XLSX from 'xlsx/xlsx.mjs'
 import { defineEventHandler, readBody, createError } from 'h3'
 
@@ -186,7 +187,7 @@ export default defineEventHandler(async (event) => {
       .map(({ index }) => index)
 
     markColumns.forEach(colIndex => {
-      const maxMark = headers[colIndex].match(/\((\d+)\)/)?.[1] || '100'
+      const maxMark = headers[colIndex]?.match(/\((\d+)\)/)?.[1] || '100'
       const cellRef = XLSX.utils.encode_cell({ r: 1, c: colIndex })
       
       // Add data validation (Excel doesn't support this in XLSX.js, but we can add instructions)
@@ -288,9 +289,10 @@ export default defineEventHandler(async (event) => {
     }
   } catch (error) {
     console.error('Error generating offline template:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
     throw createError({ 
       statusCode: 500, 
-      statusMessage: `Failed to generate template: ${error.message}` 
+      statusMessage: `Failed to generate template: ${errorMessage}` 
     })
   }
 })
