@@ -58,10 +58,10 @@ export default defineEventHandler(async (event) => {
       environmentComment: body.environmentComment || '',
       documentsMark: clamp(toInt(body.documentsMark), 10),
       documentsComment: body.documentsComment || '',
-      introductionMark: clamp(toInt(body.introductionMark), 3),
-      introductionComment: body.introductionComment || '',
-      developmentMark: clamp(toInt(body.developmentMark), 30),
-      developmentComment: body.developmentComment || '',
+      introductionMark: 0, // Will be set by specific assessment type mapping
+      introductionComment: '',
+      developmentMark: 0, // Will be set by specific assessment type mapping
+      developmentComment: '',
       conclusionMark: clamp(toInt(body.conclusionMark), 3),
       conclusionComment: body.conclusionComment || '',
       personalDimensionsMark: clamp(toInt(body.personalDimensionsMark), 4),
@@ -108,41 +108,89 @@ export default defineEventHandler(async (event) => {
       data.communityComment = ''
     } else if (isECDStyle) {
       // Map ECD/Junior-style fields if provided to standard schema slots, with server-side clamping
-      // Frontend uses: preparationMark(15), lessonFacilitationMark(15), deportmentMark(5), recordsMark(15), environmentMark(10), communityMark(30), remainingPillarsMark(10)
+      // Frontend uses: preparationMark(15), lessonPlanningMark(15), deportmentMark(5), documentsMark(15), environmentMark(10), communityMark(30), remainingPillarsMark(10)
       const hasECDFields = (
+        body.lessonPlanningMark !== undefined ||
         body.lessonFacilitationMark !== undefined ||
         body.deportmentMark !== undefined ||
+        body.documentsMark !== undefined ||
         body.recordsMark !== undefined ||
         body.remainingPillarsMark !== undefined
       )
+      
+      // Debug: Log ECD field detection
+      console.log('ECD Field Detection:', {
+        formType: body.formType,
+        hasECDFields,
+        lessonFacilitationMark: body.lessonFacilitationMark,
+        lessonFacilitationComment: body.lessonFacilitationComment,
+        recordsMark: body.recordsMark,
+        recordsComment: body.recordsComment,
+        preparationMark: body.preparationMark,
+        preparationComment: body.preparationComment
+      })
       if (hasECDFields) {
         // Direct mapping with proper clamping to original maximum values
         data.preparationMark = clamp(toInt(body.preparationMark), 15)
         data.preparationComment = body.preparationComment || data.preparationComment
 
-        data.lessonPlanningMark = clamp(toInt(body.lessonFacilitationMark), 15)
-        data.lessonPlanningComment = body.lessonFacilitationComment || data.lessonPlanningComment
+        // Handle both lessonPlanningMark (Junior) and lessonFacilitationMark (ECD)
+        if (body.lessonPlanningMark !== undefined) {
+          data.lessonPlanningMark = clamp(toInt(body.lessonPlanningMark), 15)
+          data.lessonPlanningComment = body.lessonPlanningComment || data.lessonPlanningComment
+        } else if (body.lessonFacilitationMark !== undefined) {
+          data.lessonPlanningMark = clamp(toInt(body.lessonFacilitationMark), 15)
+          data.lessonPlanningComment = body.lessonFacilitationComment || data.lessonPlanningComment
+        }
 
         data.environmentMark = clamp(toInt(body.environmentMark), 10)
         data.environmentComment = body.environmentComment || data.environmentComment
 
-        data.documentsMark = clamp(toInt(body.recordsMark), 15)
-        data.documentsComment = body.recordsComment || data.documentsComment
+        // Handle both documentsMark (Junior) and recordsMark (ECD)
+        if (body.documentsMark !== undefined) {
+          data.documentsMark = clamp(toInt(body.documentsMark), 15)
+          data.documentsComment = body.documentsComment || data.documentsComment
+        } else if (body.recordsMark !== undefined) {
+          data.documentsMark = clamp(toInt(body.recordsMark), 15)
+          data.documentsComment = body.recordsComment || data.documentsComment
+        }
 
-        data.introductionMark = clamp(toInt(body.deportmentMark), 5)
-        data.introductionComment = body.deportmentComment || data.introductionComment
+        data.personalDimensionsMark = clamp(toInt(body.deportmentMark), 5)
+        data.personalDimensionsComment = body.deportmentComment || data.personalDimensionsComment
 
-        data.developmentMark = clamp(toInt(body.communityMark), 30)
-        data.developmentComment = body.communityComment || data.developmentComment
+        data.communityMark = clamp(toInt(body.communityMark), 30)
+        data.communityComment = body.communityComment || data.communityComment
 
+        // Map remainingPillarsMark to conclusionMark since remainingPillarsMark doesn't exist in DB
         data.conclusionMark = clamp(toInt(body.remainingPillarsMark), 10)
         data.conclusionComment = body.remainingPillarsComment || data.conclusionComment
 
         // Ensure unused fields are zeroed to avoid double counting
-        data.personalDimensionsMark = 0
-        data.personalDimensionsComment = ''
-        // Note: communityMark is already mapped to developmentMark above, so we don't set it here
+        // Note: personalDimensionsMark is already set above from deportmentMark
+        // Note: communityMark is already set above
       }
+    } else if (body.formType === 'junior') {
+      // Junior Level specific mapping
+      data.preparationMark = clamp(toInt(body.preparationMark), 15)
+      data.preparationComment = body.preparationComment || data.preparationComment
+      data.lessonPlanningMark = clamp(toInt(body.lessonPlanningMark), 15)
+      data.lessonPlanningComment = body.lessonPlanningComment || data.lessonPlanningComment
+      data.personalDimensionsMark = clamp(toInt(body.deportmentMark), 5)
+      data.personalDimensionsComment = body.deportmentComment || data.personalDimensionsComment
+      data.documentsMark = clamp(toInt(body.documentsMark), 15)
+      data.documentsComment = body.documentsComment || data.documentsComment
+      data.environmentMark = clamp(toInt(body.environmentMark), 10)
+      data.environmentComment = body.environmentComment || data.environmentComment
+      data.communityMark = clamp(toInt(body.communityMark), 30)
+      data.communityComment = body.communityComment || data.communityComment
+      data.conclusionMark = clamp(toInt(body.remainingPillarsMark), 10)
+      data.conclusionComment = body.remainingPillarsComment || data.conclusionComment
+      
+      // Zero out unused fields for Junior Level
+      data.introductionMark = 0
+      data.introductionComment = ''
+      data.developmentMark = 0
+      data.developmentComment = ''
     }
 
     console.log('Creating assessment with data:', data)

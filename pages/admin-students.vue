@@ -109,7 +109,19 @@ const select = async (s) => {
     const res = await $fetch('/api/assessments', { params: { studentId: s.id } })
     assessments.value = (res.assessments || []).map(a => ({
       ...a,
-      totalMark: a.preparationMark + a.lessonPlanningMark + a.environmentMark + a.documentsMark + a.introductionMark + a.developmentMark + a.conclusionMark + a.personalDimensionsMark + (a.communityMark || 0)
+      totalMark: (() => {
+        // Calculate total based on assessment type
+        if (a.formType === 'ecd') {
+          // ECD: preparation + lessonPlanning (mapped from lessonFacilitation) + personalDimensions (mapped from deportment) + documents (mapped from records) + environment + community + conclusion (mapped from remainingPillars)
+          return a.preparationMark + a.lessonPlanningMark + a.personalDimensionsMark + a.documentsMark + a.environmentMark + a.communityMark + a.conclusionMark
+        } else if (a.formType === 'junior') {
+          // Junior: preparation + lessonPlanning + personalDimensions (mapped from deportment) + documents + environment + community + conclusion (mapped from remainingPillars)
+          return a.preparationMark + a.lessonPlanningMark + a.personalDimensionsMark + a.documentsMark + a.environmentMark + a.communityMark + a.conclusionMark
+        } else {
+          // Default calculation for other types
+          return a.preparationMark + a.lessonPlanningMark + a.environmentMark + a.documentsMark + a.introductionMark + a.developmentMark + a.conclusionMark + a.personalDimensionsMark + (a.communityMark || 0)
+        }
+      })()
     }))
   } catch (e) {
     assessments.value = []

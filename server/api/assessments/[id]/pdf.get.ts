@@ -420,7 +420,57 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
               <td>20</td>
               <td>${Math.round((assessment.introductionMark / 20) * 100)}%</td>
             </tr>
-            ` : (assessment.formType === 'ecd' || assessment.formType === 'junior' || !assessment.formType) ? `
+            ` : assessment.formType === 'junior' ? `
+            <tr>
+              <td><strong>Research-Teaching & Learning</strong><br/>Preparation</td>
+              <td>${Math.min(assessment.preparationMark, 15)}</td>
+              <td>15</td>
+              <td>${Math.round(Math.min(assessment.preparationMark, 15) / 15 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Research-Teaching & Learning</strong><br/>Lesson Facilitation</td>
+              <td>${Math.min(assessment.lessonPlanningMark, 15)}</td>
+              <td>15</td>
+              <td>${Math.round(Math.min(assessment.lessonPlanningMark, 15) / 15 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Research-Teaching & Learning</strong><br/>Deportment</td>
+              <td>${Math.min(assessment.personalDimensionsMark, 5)}</td>
+              <td>5</td>
+              <td>${Math.round(Math.min(assessment.personalDimensionsMark, 5) / 5 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Research-Teaching & Learning</strong><br/>Records Management</td>
+              <td>${Math.min(assessment.documentsMark, 15)}</td>
+              <td>15</td>
+              <td>${Math.round(Math.min(assessment.documentsMark, 15) / 15 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Research-Teaching & Learning</strong><br/>Teaching and Learning Environment</td>
+              <td>${Math.min(assessment.environmentMark, 10)}</td>
+              <td>10</td>
+              <td>${Math.round(Math.min(assessment.environmentMark, 10) / 10 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>${assessment.selectedResearchCategory === 'community_service' ? 'Research-based Community Service' : 
+                              assessment.selectedResearchCategory === 'innovation' ? 'Research & Innovation' : 
+                              assessment.selectedResearchCategory === 'industrialisation' ? 'Research & Industrialisation' : 'Research Category'} (Selected Category)</strong>
+              </td>
+              <td>${Math.min(assessment.communityMark, 30)}</td>
+              <td>30</td>
+              <td>${Math.round(Math.min(assessment.communityMark, 30) / 30 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Remaining 2 Pillars</strong><br/>
+                  <em>${assessment.selectedResearchCategory === 'community_service' ? 'Research & Innovation, Research & Industrialisation' : 
+                       assessment.selectedResearchCategory === 'innovation' ? 'Research-based Community Service, Research & Industrialisation' : 
+                       assessment.selectedResearchCategory === 'industrialisation' ? 'Research-based Community Service, Research & Innovation' : 'Not Selected'}</em>
+              </td>
+              <td>${Math.min(assessment.conclusionMark, 10)}</td>
+              <td>10</td>
+              <td>${Math.round(Math.min(assessment.conclusionMark, 10) / 10 * 100)}%</td>
+            </tr>
+            ` : (assessment.formType === 'ecd' || !assessment.formType) ? `
             <tr>
               <td><strong>Research-Teaching & Learning</strong><br/>Preparation</td>
               <td>${Math.min(assessment.preparationMark, 15)}</td>

@@ -7,51 +7,30 @@
       </div>
 
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Junior Supervision -->
-        <NuxtLink
-          to="/assessment/new?type=junior"
-          class="group block bg-white rounded-xl border shadow-sm hover:shadow-md transition-all p-6"
-        >
-          <div class="flex items-center mb-4">
-            <div class="w-12 h-12 rounded-xl bg-blue-600 text-white flex items-center justify-center mr-3">
-              <i class="pi pi-briefcase text-xl"></i>
+      <div class="grid grid-cols-1 gap-6">
+        <!-- Single Assessment Card -->
+        <div class="bg-white rounded-xl border shadow-sm p-8 text-center">
+          <div class="flex items-center justify-center mb-6">
+            <div class="w-16 h-16 rounded-xl bg-green-600 text-white flex items-center justify-center mr-4">
+              <i class="pi pi-graduation-cap text-2xl"></i>
             </div>
             <div>
-              <h2 class="text-xl font-semibold text-gray-900">Junior Level</h2>
-              <p class="text-sm text-gray-600">Assessment for Junior Level students with Education 5.0 emphasis.</p>
+              <h2 class="text-2xl font-semibold text-gray-900">Begin Assessment</h2>
+              <p class="text-gray-600">Start your teaching practice assessment</p>
             </div>
           </div>
-          <ul class="text-sm text-gray-700 space-y-1 list-disc pl-5">
-            <li>Preparation (10), Lesson Planning (15), Introduction (5)</li>
-            <li>Development (15), Conclusion (5), Personal (5)</li>
-            <li>Records Management (15), Environment (10), Community (20)</li>
-            <li>Research-based Community Service (25)</li>
-          </ul>
-        </NuxtLink>
-
-        <!-- Early Childhood Development -->
-        <NuxtLink
-          to="/assessment/new?type=ecd"
-          class="group block bg-white rounded-xl border shadow-sm hover:shadow-md transition-all p-6"
-        >
-          <div class="flex items-center mb-4">
-            <div class="w-12 h-12 rounded-xl bg-rose-600 text-white flex items-center justify-center mr-3">
-              <i class="pi pi-users text-xl"></i>
-            </div>
-            <div>
-              <h2 class="text-xl font-semibold text-gray-900">Early Childhood Development</h2>
-              <p class="text-sm text-gray-600">ECD-specific Records & Environment with Education 5.0 emphasis.</p>
-            </div>
+          
+          <NuxtLink
+            to="/assessment/new"
+            class="inline-block bg-green-600 text-white text-lg font-semibold py-4 px-8 rounded-xl hover:bg-green-700 transition-all transform hover:scale-105 shadow-lg"
+          >
+            Start Assessment
+          </NuxtLink>
+          
+          <div class="mt-6 text-sm text-gray-500">
+            <p>Choose your assessment type and criteria on the next page</p>
           </div>
-          <ul class="text-sm text-gray-700 space-y-1 list-disc pl-5">
-            <li>Preparation (10), Lesson Planning (15), Introduction (5)</li>
-            <li>Development (15), Conclusion (5), Personal (5)</li>
-            <li>Records Management (15), Environment (10), Community (20)</li>
-            <li>ECD-specific: Anecdotal, Developmental Checklist, Health Record</li>
-            <li>Research-based Child Study & Community Service (25)</li>
-          </ul>
-        </NuxtLink>
+        </div>
       </div>
 
     </div>

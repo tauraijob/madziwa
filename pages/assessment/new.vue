@@ -357,7 +357,7 @@
                 <tbody>
                   <!-- Research-Teaching & Learning -->
                   <tr>
-                    <td rowspan="4" class="border border-gray-300 px-4 py-2 align-top font-medium">Research-Teaching & Learning</td>
+                    <td rowspan="3" class="border border-gray-300 px-4 py-2 align-top font-medium">Research-Teaching & Learning</td>
                     <td class="border border-gray-300 px-4 py-2">
                       <div class="font-medium">Preparation</div>
                       <ul class="text-sm text-gray-600 mt-1">
@@ -414,24 +414,25 @@
                       <div class="text-xs text-gray-500 mt-1">5%</div>
                     </td>
                   </tr>
-                        <tr>
-                          <td class="border border-gray-300 px-4 py-2">
-                            <div class="font-medium">Records management</div>
-                            <ul class="text-sm text-gray-600 mt-1">
-                              <li>• Register</li>
-                              <li>• Progress Record</li>
-                              <li>• Individual Social Record</li>
-                              <li>• Remedial</li>
-                              <li>• Extension work</li>
-                              <li>• Reading</li>
-                              <li>• Inventory Record</li>
-                              <li>• Test Record</li>
-                              <li>• WIL File</li>
-                              <li v-if="assessmentType === 'ecd'">• Anecdotal</li>
-                              <li v-if="assessmentType === 'ecd'">• Developmental Checklist</li>
-                              <li v-if="assessmentType === 'ecd'">• Health Record</li>
-                            </ul>
-                          </td>
+                  <tr>
+                    <td class="border border-gray-300 px-4 py-2 font-medium">Records Management</td>
+                    <td class="border border-gray-300 px-4 py-2">
+                      <div class="font-medium">Records management</div>
+                      <ul class="text-sm text-gray-600 mt-1">
+                        <li>• Register</li>
+                        <li>• Progress Record</li>
+                        <li>• Individual Social Record</li>
+                        <li>• Remedial</li>
+                        <li>• Extension work</li>
+                        <li>• Reading</li>
+                        <li>• Inventory Record</li>
+                        <li>• Test Record</li>
+                        <li>• WIL File</li>
+                        <li v-if="assessmentType === 'ecd'">• Anecdotal</li>
+                        <li v-if="assessmentType === 'ecd'">• Developmental Checklist</li>
+                        <li v-if="assessmentType === 'ecd'">• Health Record</li>
+                      </ul>
+                    </td>
                     <td class="border border-gray-300 px-4 py-2">
                       <textarea v-model="form.recordsComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                     </td>
@@ -457,12 +458,12 @@
                     </td>
                   </tr>
                   <tr>
-                    <td class="border border-gray-300 px-4 py-2 font-medium">Research-based Community Service/ Research & Innovation/Research & Industrialisation</td>
+                    <td class="border border-gray-300 px-4 py-2 font-medium">Research-based Child Study & Community Service/ Research & Innovation/Research & Industrialisation</td>
                     <td class="border border-gray-300 px-4 py-2">
                       <div class="space-y-2">
                         <label class="flex items-center text-sm">
                           <input v-model="form.selectedResearchCategory" type="radio" value="community_service" class="mr-2" />
-                          Research-based Community Service
+                          Research-based Child Study & Community Service
                         </label>
                         <label class="flex items-center text-sm">
                           <input v-model="form.selectedResearchCategory" type="radio" value="innovation" class="mr-2" />
@@ -476,12 +477,12 @@
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
                       <textarea v-model="form.communityComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" placeholder="Enter observations..." :disabled="!form.selectedResearchCategory"></textarea>
-                      <div v-if="!form.selectedResearchCategory" class="text-xs text-gray-500 mt-1">Select a category above to enable</div>
+                      <div v-if="!form.selectedResearchCategory" class="text-xs text-red-600 mt-1 font-semibold">⚠️ Select a research category above to enable (Required for ECD)</div>
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
                       <input v-model.number="form.communityMark" type="number" min="0" max="30" class="w-20 px-2 py-1 border rounded text-center" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" :disabled="!form.selectedResearchCategory" />
                       <div class="text-xs text-gray-500 mt-1">30% (Selected Category)</div>
-                      <div v-if="!form.selectedResearchCategory" class="text-xs text-gray-500 mt-1">Select a category above to enable</div>
+                      <div v-if="!form.selectedResearchCategory" class="text-xs text-red-600 mt-1 font-semibold">⚠️ Select a research category above to enable (Required for ECD)</div>
                     </td>
                   </tr>
                   <tr>
@@ -493,11 +494,11 @@
                           <div>• Research & Industrialisation</div>
                         </div>
                         <div v-else-if="form.selectedResearchCategory === 'innovation'">
-                          <div>• Research-based Community Service</div>
+                          <div>• Research-based Child Study & Community Service</div>
                           <div>• Research & Industrialisation</div>
                         </div>
                         <div v-else-if="form.selectedResearchCategory === 'industrialisation'">
-                          <div>• Research-based Community Service</div>
+                          <div>• Research-based Child Study & Community Service</div>
                           <div>• Research & Innovation</div>
                         </div>
                       </div>
@@ -547,7 +548,7 @@
                       <textarea v-model="form.preparationComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
-                      <input v-model.number="form.preparationMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" />
+                      <input v-model.number="form.preparationMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" @input="calculateJuniorTotal" />
                       <div class="text-xs text-gray-500 mt-1">15%</div>
                     </td>
                   </tr>
@@ -570,7 +571,7 @@
                       <textarea v-model="form.lessonPlanningComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
-                      <input v-model.number="form.lessonPlanningMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" />
+                      <input v-model.number="form.lessonPlanningMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" @input="calculateJuniorTotal" />
                       <div class="text-xs text-gray-500 mt-1">15%</div>
                     </td>
                   </tr>
@@ -588,7 +589,7 @@
                       <textarea v-model="form.deportmentComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
-                      <input v-model.number="form.deportmentMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" />
+                      <input v-model.number="form.deportmentMark" type="number" min="0" max="5" class="w-20 px-2 py-1 border rounded text-center" @input="calculateJuniorTotal" />
                       <div class="text-xs text-gray-500 mt-1">5%</div>
                     </td>
                   </tr>
@@ -609,10 +610,10 @@
                       </ul>
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
-                      <textarea v-model="form.recordsComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
+                      <textarea v-model="form.documentsComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
-                      <input v-model.number="form.recordsMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" />
+                      <input v-model.number="form.documentsMark" type="number" min="0" max="15" class="w-20 px-2 py-1 border rounded text-center" @input="calculateJuniorTotal" />
                       <div class="text-xs text-gray-500 mt-1">15%</div>
                     </td>
                   </tr>
@@ -629,7 +630,7 @@
                       <textarea v-model="form.environmentComment" rows="3" class="w-full px-2 py-1 border rounded text-sm" placeholder="Enter observations..."></textarea>
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
-                      <input v-model.number="form.environmentMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" />
+                      <input v-model.number="form.environmentMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" @input="calculateJuniorTotal" />
                       <div class="text-xs text-gray-500 mt-1">10%</div>
                     </td>
                   </tr>
@@ -652,10 +653,10 @@
                       </div>
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
-                      <textarea v-model="form.remainingPillarsComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" placeholder="Enter observations..." :disabled="!form.selectedResearchCategory"></textarea>
+                      <textarea v-model="form.communityComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" placeholder="Enter observations..." :disabled="!form.selectedResearchCategory"></textarea>
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
-                      <input v-model.number="form.remainingPillarsMark" type="number" min="0" max="30" class="w-20 px-2 py-1 border rounded text-center" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" :disabled="!form.selectedResearchCategory" />
+                      <input v-model.number="form.communityMark" type="number" min="0" max="30" class="w-20 px-2 py-1 border rounded text-center" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" :disabled="!form.selectedResearchCategory" @input="calculateJuniorTotal" />
                       <div class="text-xs text-gray-500 mt-1">30% (Selected Category)</div>
                     </td>
                   </tr>
@@ -680,10 +681,10 @@
                       <div v-else class="text-sm text-gray-500">Select a category above to see remaining pillars</div>
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
-                      <textarea v-model="form.remainingPillarsComment2" rows="2" class="w-full px-2 py-1 border rounded text-sm" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" placeholder="Enter observations..." :disabled="!form.selectedResearchCategory"></textarea>
+                      <textarea v-model="form.remainingPillarsComment" rows="2" class="w-full px-2 py-1 border rounded text-sm" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" placeholder="Enter observations..." :disabled="!form.selectedResearchCategory"></textarea>
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
-                      <input v-model.number="form.remainingPillarsMark2" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" :disabled="!form.selectedResearchCategory" />
+                      <input v-model.number="form.remainingPillarsMark" type="number" min="0" max="10" class="w-20 px-2 py-1 border rounded text-center" :class="{ 'bg-gray-100 cursor-not-allowed': !form.selectedResearchCategory }" :disabled="!form.selectedResearchCategory" @input="calculateJuniorTotal" />
                       <div class="text-xs text-gray-500 mt-1">10% (5% each for remaining 2 categories)</div>
                     </td>
                   </tr>
@@ -788,12 +789,12 @@
                   </td>
                 </tr>
                 <tr>
-                  <td class="border border-gray-300 px-4 py-2 font-medium">Research-based Community Service/ Research & Innovation/Research & Industrialisation</td>
+                  <td class="border border-gray-300 px-4 py-2 font-medium">Research-based Child Study & Community Service/ Research & Innovation/Research & Industrialisation</td>
                   <td class="border border-gray-300 px-4 py-2">
                     <div class="space-y-2">
                       <label class="flex items-center text-sm">
                         <input v-model="form.selectedResearchCategory" type="radio" value="community_service" class="mr-2" />
-                        Research-based Community Service
+                        Research-based Child Study & Community Service
                       </label>
                       <label class="flex items-center text-sm">
                         <input v-model="form.selectedResearchCategory" type="radio" value="innovation" class="mr-2" />
@@ -824,11 +825,11 @@
                         <div>• Research & Industrialisation</div>
                       </div>
                       <div v-else-if="form.selectedResearchCategory === 'innovation'">
-                        <div>• Research-based Community Service</div>
+                        <div>• Research-based Child Study & Community Service</div>
                         <div>• Research & Industrialisation</div>
                       </div>
                       <div v-else-if="form.selectedResearchCategory === 'industrialisation'">
-                        <div>• Research-based Community Service</div>
+                        <div>• Research-based Child Study & Community Service</div>
                         <div>• Research & Innovation</div>
                       </div>
                     </div>
@@ -1346,8 +1347,8 @@
           <button type="submit" :disabled="loading || !canSubmitAssessment" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
             {{ loading ? 'Submitting...' : 'Submit Assessment' }}
           </button>
-          <div v-if="!isResearchCategoryValid" class="text-red-600 text-sm mt-2">
-            Please select a research category before submitting.
+          <div v-if="!isResearchCategoryValid" class="text-red-600 text-sm mt-2 bg-red-50 p-3 rounded-lg border border-red-200">
+            <strong>⚠️ Required:</strong> Please select a research category (Community Service, Innovation, or Industrialisation) to enable the Community Service and Remaining Pillars fields. This is required for ECD assessments.
           </div>
         </div>
       </form>
@@ -1426,6 +1427,8 @@ const form = ref({
   preparationComment: '',
   lessonPlanningMark: 0,
   lessonPlanningComment: '',
+  lessonFacilitationMark: 0,
+  lessonFacilitationComment: '',
   introductionMark: 0,
   introductionComment: '',
   developmentMark: 0,
@@ -1438,6 +1441,8 @@ const form = ref({
   deportmentComment: '',
   documentsMark: 0,
   documentsComment: '',
+  recordsMark: 0,
+  recordsComment: '',
   environmentMark: 0,
   environmentComment: '',
   communityMark: 0,
@@ -1570,6 +1575,15 @@ watch(form, () => {
       0, 100
     )
     form.value.materialsTotalPercentage = form.value.materialsTotalMark
+  } else if (assessmentType.value === 'junior') {
+    // Junior Level specific clamping
+    clampField('preparationMark', 15)
+    clampField('lessonPlanningMark', 15)
+    clampField('deportmentMark', 5)
+    clampField('documentsMark', 15)
+    clampField('environmentMark', 10)
+    clampField('communityMark', 30)
+    clampField('remainingPillarsMark', 10)
   } else {
     // ECD, Secondary, ISEN specific clamping
     clampField('preparationMark', 15)
@@ -1588,6 +1602,14 @@ const totalScore = computed(() => {
            form.value.lessonFacilitationMark +
            form.value.deportmentMark +
            form.value.recordsMark +
+           form.value.environmentMark +
+           form.value.communityMark +
+           form.value.remainingPillarsMark
+  } else if (assessmentType.value === 'junior') {
+    return form.value.preparationMark +
+           form.value.lessonPlanningMark +
+           form.value.deportmentMark +
+           form.value.documentsMark +
            form.value.environmentMark +
            form.value.communityMark +
            form.value.remainingPillarsMark
@@ -1795,21 +1817,21 @@ const submitAssessment = async () => {
             } else if (assessmentType.value === 'junior') {
               // Junior specific clamping
               clampField('preparationMark', 15)
-              clampField('lessonFacilitationMark', 15)
+              clampField('lessonPlanningMark', 15)
               clampField('deportmentMark', 5)
-              clampField('recordsMark', 15)
+              clampField('documentsMark', 15)
               clampField('environmentMark', 10)
-              clampField('remainingPillarsMark', 30)
-              clampField('remainingPillarsMark2', 10)
+              clampField('communityMark', 30)
+              clampField('remainingPillarsMark', 10)
     } else {
       // ECD, Secondary, ISEN specific clamping
-      clampField('preparationMark', 10)
+      clampField('preparationMark', 15)
       clampField('lessonFacilitationMark', 15)
       clampField('deportmentMark', 5)
       clampField('recordsMark', 15)
       clampField('environmentMark', 10)
-      clampField('communityMark', 20)
-      clampField('remainingPillarsMark', 25)
+      clampField('communityMark', 30)
+      clampField('remainingPillarsMark', 10)
     }
 
     const supervisorId = await ensureSupervisor()
@@ -1817,6 +1839,25 @@ const submitAssessment = async () => {
 
     // Get signature data
     const signatureData = getSignatureData()
+
+    // Debug: Log the form data being sent
+    console.log('Form data being sent:', {
+      assessmentType: assessmentType.value,
+      lessonFacilitationMark: form.value.lessonFacilitationMark,
+      lessonFacilitationComment: form.value.lessonFacilitationComment,
+      recordsMark: form.value.recordsMark,
+      recordsComment: form.value.recordsComment,
+      preparationMark: form.value.preparationMark,
+      preparationComment: form.value.preparationComment,
+      deportmentMark: form.value.deportmentMark,
+      deportmentComment: form.value.deportmentComment,
+      environmentMark: form.value.environmentMark,
+      environmentComment: form.value.environmentComment,
+      communityMark: form.value.communityMark,
+      communityComment: form.value.communityComment,
+      remainingPillarsMark: form.value.remainingPillarsMark,
+      remainingPillarsComment: form.value.remainingPillarsComment
+    })
 
     await $fetch('/api/assessments', {
       method: 'POST',
@@ -2001,6 +2042,20 @@ const getSelectedMaterialsCriteria = () => {
   return Object.entries(materialsCriteria.value)
     .filter(([_, selected]) => selected)
     .map(([key, _]) => key)
+}
+
+// Calculate Junior Level total score
+const calculateJuniorTotal = () => {
+  if (assessmentType.value === 'junior') {
+    // Clamp values to their maximums
+    form.value.preparationMark = Math.min(Math.max(form.value.preparationMark || 0, 0), 15)
+    form.value.lessonPlanningMark = Math.min(Math.max(form.value.lessonPlanningMark || 0, 0), 15)
+    form.value.deportmentMark = Math.min(Math.max(form.value.deportmentMark || 0, 0), 5)
+    form.value.documentsMark = Math.min(Math.max(form.value.documentsMark || 0, 0), 15)
+    form.value.environmentMark = Math.min(Math.max(form.value.environmentMark || 0, 0), 10)
+    form.value.communityMark = Math.min(Math.max(form.value.communityMark || 0, 0), 30)
+    form.value.remainingPillarsMark = Math.min(Math.max(form.value.remainingPillarsMark || 0, 0), 10)
+  }
 }
 
 // Updated download template function

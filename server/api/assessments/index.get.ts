@@ -45,15 +45,24 @@ export default defineEventHandler(async (event) => {
     // Add totalMark to each assessment with proper clamping
     const assessmentsWithTotal = assessments.map(assessment => {
       let totalMark
-      if (assessment.formType === 'ecd' || assessment.formType === 'junior' || !assessment.formType) {
-        // For ECD/Junior, use clamped values to prevent exceeding maximums
-        totalMark = Math.min(assessment.preparationMark || 0, 15) + 
-                   Math.min(assessment.lessonPlanningMark || 0, 15) + 
-                   Math.min(assessment.environmentMark || 0, 10) + 
-                   Math.min(assessment.documentsMark || 0, 15) + 
-                   Math.min(assessment.introductionMark || 0, 5) + 
-                   Math.min(assessment.developmentMark || 0, 30) + 
-                   Math.min(assessment.conclusionMark || 0, 10)
+      if (assessment.formType === 'ecd') {
+        // For ECD: preparation + lessonPlanning (mapped from lessonFacilitation) + personalDimensions (mapped from deportment) + documents (mapped from records) + environment + community + conclusion (mapped from remainingPillars)
+        totalMark = (assessment.preparationMark || 0) + 
+                   (assessment.lessonPlanningMark || 0) + 
+                   (assessment.personalDimensionsMark || 0) + 
+                   (assessment.documentsMark || 0) + 
+                   (assessment.environmentMark || 0) + 
+                   (assessment.communityMark || 0) + 
+                   (assessment.conclusionMark || 0)
+      } else if (assessment.formType === 'junior') {
+        // For Junior: preparation + lessonPlanning + personalDimensions (mapped from deportment) + documents + environment + community + conclusion (mapped from remainingPillars)
+        totalMark = (assessment.preparationMark || 0) + 
+                   (assessment.lessonPlanningMark || 0) + 
+                   (assessment.personalDimensionsMark || 0) + 
+                   (assessment.documentsMark || 0) + 
+                   (assessment.environmentMark || 0) + 
+                   (assessment.communityMark || 0) + 
+                   (assessment.conclusionMark || 0)
       } else {
         // For other assessment types, use standard calculation
         totalMark = (assessment.preparationMark || 0) + 

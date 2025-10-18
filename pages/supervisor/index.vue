@@ -141,9 +141,34 @@ const fetchMine = async () => {
     const res = await $fetch('/api/assessments/by-supervisor')
     assessments.value = (res.assessments || []).map(a => ({
       ...a,
-      totalMark: a.totalMark ?? (
-        a.preparationMark + a.lessonPlanningMark + a.environmentMark + a.documentsMark + a.introductionMark + a.developmentMark + a.conclusionMark + a.personalDimensionsMark + (a.communityMark || 0)
-      )
+      totalMark: a.totalMark ?? (() => {
+        // Debug: Log assessment data for ECD assessments
+        if (a.formType === 'ecd') {
+          console.log('ECD Assessment Data:', {
+            formType: a.formType,
+            preparationMark: a.preparationMark,
+            lessonPlanningMark: a.lessonPlanningMark,
+            personalDimensionsMark: a.personalDimensionsMark,
+            documentsMark: a.documentsMark,
+            environmentMark: a.environmentMark,
+            communityMark: a.communityMark,
+            conclusionMark: a.conclusionMark,
+            total: a.preparationMark + a.lessonPlanningMark + a.personalDimensionsMark + a.documentsMark + a.environmentMark + a.communityMark + a.conclusionMark
+          })
+        }
+        
+        // Calculate total based on assessment type
+        if (a.formType === 'ecd') {
+          // ECD: preparation + lessonPlanning (mapped from lessonFacilitation) + personalDimensions (mapped from deportment) + documents (mapped from records) + environment + community + conclusion (mapped from remainingPillars)
+          return a.preparationMark + a.lessonPlanningMark + a.personalDimensionsMark + a.documentsMark + a.environmentMark + a.communityMark + a.conclusionMark
+        } else if (a.formType === 'junior') {
+          // Junior: preparation + lessonPlanning + personalDimensions (mapped from deportment) + documents + environment + community + conclusion (mapped from remainingPillars)
+          return a.preparationMark + a.lessonPlanningMark + a.personalDimensionsMark + a.documentsMark + a.environmentMark + a.communityMark + a.conclusionMark
+        } else {
+          // Default calculation for other types
+          return a.preparationMark + a.lessonPlanningMark + a.environmentMark + a.documentsMark + a.introductionMark + a.developmentMark + a.conclusionMark + a.personalDimensionsMark + (a.communityMark || 0)
+        }
+      })()
     }))
   } finally {
     loading.value = false

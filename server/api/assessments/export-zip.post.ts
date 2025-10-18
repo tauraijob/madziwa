@@ -383,9 +383,9 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
             </tr>
             <tr>
               <td><strong>Research-Teaching & Learning</strong><br/>Deportment</td>
-              <td>${assessment.introductionMark}</td>
+              <td>${assessment.personalDimensionsMark}</td>
               <td>5</td>
-              <td>${Math.round(assessment.introductionMark / 5 * 100)}%</td>
+              <td>${Math.round(assessment.personalDimensionsMark / 5 * 100)}%</td>
             </tr>
             <tr>
               <td><strong>Research-Teaching & Learning</strong><br/>Records Management</td>
@@ -401,9 +401,9 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
             </tr>
             <tr>
               <td><strong>Research-based Community Service/Research & Innovation/Research & Industrialisation</strong></td>
-              <td>${assessment.developmentMark}</td>
+              <td>${assessment.communityMark}</td>
               <td>30</td>
-              <td>${Math.round(assessment.developmentMark / 30 * 100)}%</td>
+              <td>${Math.round(assessment.communityMark / 30 * 100)}%</td>
             </tr>
             <tr>
               <td><strong>Remaining 2 Pillars</strong></td>
