@@ -18,24 +18,62 @@
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
         <div class="bg-white rounded-xl shadow-sm border p-6">
-          <div class="text-sm text-gray-600">Total Assessments</div>
-          <div class="text-3xl font-bold text-gray-900 mt-1">{{ stats.totalAssessments }}</div>
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-600">Total Assessments</div>
+              <div class="text-3xl font-bold text-gray-900 mt-1">{{ stats.totalAssessments }}</div>
+            </div>
+            <div class="text-green-600">
+              <i class="pi pi-file text-2xl"></i>
+            </div>
+          </div>
         </div>
         <div class="bg-white rounded-xl shadow-sm border p-6">
-          <div class="text-sm text-gray-600">Total Students</div>
-          <div class="text-3xl font-bold text-gray-900 mt-1">{{ stats.totalStudents }}</div>
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-600">Total Students</div>
+              <div class="text-3xl font-bold text-gray-900 mt-1">{{ stats.totalStudents }}</div>
+            </div>
+            <div class="text-purple-600">
+              <i class="pi pi-user text-2xl"></i>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border p-6 cursor-pointer hover:shadow-md transition-shadow" @click="loadDistrictsAdmins" title="Click to refresh">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-600">Total Supervisors</div>
+              <div class="text-3xl font-bold text-gray-900 mt-1">{{ stats.totalSupervisors }}</div>
+            </div>
+            <div class="text-blue-600">
+              <i class="pi pi-users text-2xl"></i>
+            </div>
+          </div>
+          <div class="mt-2 text-xs text-gray-500">
+            Registered in system
+          </div>
         </div>
         <div class="bg-white rounded-xl shadow-sm border p-6">
-          <div class="text-sm text-gray-600">Total Supervisors</div>
-          <div class="text-3xl font-bold text-gray-900 mt-1">{{ stats.totalSupervisors }}</div>
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-600">Average Score</div>
+              <div class="text-3xl font-bold text-gray-900 mt-1">{{ stats.averageScore }}%</div>
+            </div>
+            <div class="text-orange-600">
+              <i class="pi pi-chart-line text-2xl"></i>
+            </div>
+          </div>
         </div>
         <div class="bg-white rounded-xl shadow-sm border p-6">
-          <div class="text-sm text-gray-600">Average Score</div>
-          <div class="text-3xl font-bold text-gray-900 mt-1">{{ stats.averageScore }}%</div>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm border p-6">
-          <div class="text-sm text-gray-600">CSV Imported Students</div>
-          <div class="text-3xl font-bold text-gray-900 mt-1">{{ stats.csvImportedStudents }}</div>
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm text-gray-600">CSV Imported Students</div>
+              <div class="text-3xl font-bold text-gray-900 mt-1">{{ stats.csvImportedStudents }}</div>
+            </div>
+            <div class="text-indigo-600">
+              <i class="pi pi-download text-2xl"></i>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -90,7 +128,16 @@
         </div>
         <div v-if="supImportSummary" class="bg-gray-50 border border-gray-200 rounded p-4 text-sm text-gray-700 mt-4">
           <div class="font-medium mb-1">Import Summary</div>
-          <div>Created: {{ supImportSummary.created }}, Updated: {{ supImportSummary.updated }}, Errors: {{ supImportSummary.errors }}</div>
+          <div class="flex items-center space-x-4">
+            <div>Created: {{ supImportSummary.created }}, Updated: {{ supImportSummary.updated }}, Errors: {{ supImportSummary.errors }}</div>
+            <button 
+              v-if="supImportSummary.errors > 0" 
+              @click="showSupErrorDetails = true"
+              class="text-red-600 hover:text-red-800 text-sm font-medium"
+            >
+              View Error Details
+            </button>
+          </div>
         </div>
       </div>
 
@@ -165,7 +212,12 @@
       <div class="bg-white rounded-xl shadow-sm border p-6 mb-8">
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-xl font-semibold text-gray-900">Manage Supervisors</h2>
-          <NuxtLink to="/supervisors/new" class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700">Full Page</NuxtLink>
+          <div class="flex space-x-2">
+            <button @click="loadDistrictsAdmins" class="bg-gray-600 text-white px-3 py-2 rounded hover:bg-gray-700">
+              <i class="pi pi-refresh mr-1"></i> Refresh
+            </button>
+            <NuxtLink to="/supervisors/new" class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700">Full Page</NuxtLink>
+          </div>
         </div>
         
         <!-- Create New Supervisor -->
@@ -217,11 +269,11 @@
                   </td>
                   <td class="px-4 py-2">
                     <div class="flex flex-wrap gap-1">
-                      <span v-for="district in s.assignedDistricts" :key="district.id" 
+                      <span v-for="districtAssignment in s.districts" :key="districtAssignment.id" 
                             class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                        {{ district.name }}
+                        {{ districtAssignment.district.name }}
                       </span>
-                      <span v-if="!s.assignedDistricts || s.assignedDistricts.length === 0" 
+                      <span v-if="!s.districts || s.districts.length === 0" 
                             class="text-gray-500 text-sm">None</span>
                     </div>
                   </td>
@@ -436,6 +488,63 @@
         </div>
       </div>
     </div>
+
+    <!-- Supervisor Import Error Details Modal -->
+    <div v-if="showSupErrorDetails" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[80vh] overflow-hidden">
+        <div class="p-6 border-b border-gray-200">
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-900">Supervisor Import Error Details</h3>
+            <button 
+              @click="showSupErrorDetails = false"
+              class="text-gray-400 hover:text-gray-600"
+            >
+              <i class="pi pi-times text-xl"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="p-6">
+          <div class="mb-4 text-sm text-gray-600">
+            <div class="font-medium">Import Summary:</div>
+            <div>Total rows: {{ supImportSummary?.total }}, Created: {{ supImportSummary?.created }}, Updated: {{ supImportSummary?.updated }}, Errors: {{ supImportSummary?.errors }}</div>
+          </div>
+        </div>
+
+        <div class="space-y-3 max-h-96 overflow-y-auto">
+          <div 
+            v-for="result in supImportSummary?.results.filter(r => r.status === 'error')" 
+            :key="result.row"
+            class="p-4 bg-red-50 border border-red-200 rounded-lg"
+          >
+            <div class="flex justify-between items-start">
+              <div class="flex-1">
+                <div class="font-medium text-red-800 text-lg">Row {{ result.row }}</div>
+                <div class="text-red-600 text-sm mt-2 font-medium">Error Details:</div>
+                <div class="text-red-700 text-sm mt-1 bg-red-100 p-2 rounded border-l-4 border-red-400">
+                  {{ result.error }}
+                </div>
+                <div v-if="result.nationalId" class="text-red-500 text-xs mt-2 bg-red-100 p-2 rounded">
+                  <strong>National ID:</strong> {{ result.nationalId }}
+                </div>
+                <div class="text-gray-600 text-xs mt-2">
+                  <strong>Tip:</strong> Check that all required columns are present and data is properly formatted.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button 
+            @click="showSupErrorDetails = false"
+            class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -446,6 +555,7 @@ const stats = reactive({ totalAssessments: 0, totalStudents: 0, totalSupervisors
 const csvImportSummary = ref(null)
 const supImportSummary = ref(null)
 const showErrorDetails = ref(false)
+const showSupErrorDetails = ref(false)
 
 const admins = ref([])
 const supervisors = ref([])
@@ -466,13 +576,14 @@ const selectedDistricts = ref([])
 
 const loadStats = async () => {
   try {
-    const [assessmentsRes, csvCountRes] = await Promise.all([
+    const [assessmentsRes, csvCountRes, supervisorsRes] = await Promise.all([
       $fetch('/api/assessments'),
-      $fetch('/api/students/csv-imported-count')
+      $fetch('/api/students/csv-imported-count'),
+      $fetch('/api/supervisors')
     ])
     stats.totalAssessments = assessmentsRes.statistics?.totalAssessments || 0
     stats.totalStudents = assessmentsRes.statistics?.totalStudents || 0
-    stats.totalSupervisors = assessmentsRes.statistics?.totalSupervisors || 0
+    stats.totalSupervisors = supervisorsRes.supervisors?.length || 0
     stats.averageScore = assessmentsRes.statistics?.averageScore || 0
     stats.csvImportedStudents = csvCountRes.csvImportedStudents || 0
   } catch (e) {
@@ -490,6 +601,9 @@ const loadDistrictsAdmins = async () => {
     districts.value = d.districts || []
     admins.value = a.admins || []
     supervisors.value = s.supervisors || []
+    
+    // Update supervisor count in stats
+    stats.totalSupervisors = supervisors.value.length
   } catch (e) {
     // ignore
   }
@@ -572,9 +686,18 @@ const onImportSupervisorsCsv = async (e) => {
     form.append('file', file)
     const result = await $fetch('/api/supervisors/import-csv', { method: 'POST', body: form })
     supImportSummary.value = result
-    alert(`Supervisors import complete. Created: ${result.created}, Updated: ${result.updated}, Errors: ${result.errors}`)
+    
+    if (result.errors > 0) {
+      // Show detailed error information
+      console.log('Supervisor import errors:', result.results.filter(r => r.status === 'error'))
+      alert(`Supervisors import completed with ${result.errors} errors. Check the console for details.`)
+    } else {
+      alert(`Supervisors import successful! Created: ${result.created}, Updated: ${result.updated}`)
+    }
   } catch (err) {
-    alert('Import failed. Please verify the CSV and try again.')
+    console.error('Supervisor CSV import error:', err)
+    const errorMessage = err.data?.statusMessage || err.message || 'Please verify the CSV format and try again.'
+    alert(`Import failed: ${errorMessage}`)
   } finally {
     e.target.value = ''
   }
@@ -716,7 +839,7 @@ const resetSupervisorPassword = async () => {
 // District management methods
 const openDistrictModal = (supervisor) => {
   selectedSupervisor.value = supervisor
-  selectedDistricts.value = supervisor.assignedDistricts?.map(d => d.id) || []
+  selectedDistricts.value = supervisor.districts?.map(d => d.district.id) || []
   showDistrictModal.value = true
 }
 

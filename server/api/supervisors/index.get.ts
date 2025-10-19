@@ -24,7 +24,12 @@ export default defineEventHandler(async (event) => {
     const supervisors = await prisma.supervisor.findMany({ 
       where, 
       include: { 
-        district: true
+        district: true,
+        districts: {
+          include: {
+            district: true
+          }
+        }
       }, 
       orderBy: { fullName: 'asc' } 
     })

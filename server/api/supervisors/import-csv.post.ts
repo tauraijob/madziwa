@@ -26,13 +26,35 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 400, statusMessage: 'Only .csv files are accepted' })
     }
 
-    // Parse CSV
+    // Parse CSV with better handling
     const text = file.data.toString('utf-8')
-    const lines = text.split(/\r?\n/).filter(Boolean)
+    const lines = text.split(/\r?\n/).filter(line => line.trim() !== '')
     if (lines.length < 2) {
       throw createError({ statusCode: 400, statusMessage: 'CSV has no data rows' })
     }
-    const header = lines[0].split(',').map(h => h.trim().toLowerCase())
+    
+    // Simple CSV parser that handles quoted fields
+    function parseCSVLine(line: string): string[] {
+      const result = []
+      let current = ''
+      let inQuotes = false
+      
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i]
+        if (char === '"') {
+          inQuotes = !inQuotes
+        } else if (char === ',' && !inQuotes) {
+          result.push(current.trim())
+          current = ''
+        } else {
+          current += char
+        }
+      }
+      result.push(current.trim())
+      return result
+    }
+    
+    const header = parseCSVLine(lines[0]).map(h => h.replace(/"/g, '').trim().toLowerCase())
     if (!header.length) throw createError({ statusCode: 400, statusMessage: 'Invalid CSV header' })
 
     // Expected: fullname,email,phonenumber,nationalid
@@ -66,8 +88,21 @@ export default defineEventHandler(async (event) => {
     const results: any[] = []
 
     for (let r = 1; r < lines.length; r++) {
-      const row = lines[r].split(',')
+      const row = parseCSVLine(lines[r])
+      
+      // Skip completely empty rows
       if (row.length === 1 && row[0].trim() === '') continue
+      
+      // Check if row has enough columns
+      if (row.length < header.length) {
+        errors++
+        results.push({ 
+          row: r + 1, 
+          status: 'error', 
+          error: `Row has ${row.length} columns but header has ${header.length} columns. Expected: ${header.join(', ')}` 
+        })
+        continue
+      }
       try {
         const fullName = (row[idxMap['fullName']] || '').trim()
         const email = (row[idxMap['email']] || '').trim().toLowerCase()
@@ -75,8 +110,21 @@ export default defineEventHandler(async (event) => {
         const rawNationalId = (row[idxMap['nationalId']] || '').trim()
         const nationalId = rawNationalId.replace(/[^a-z0-9]/gi, '').toUpperCase()
 
-        if (!fullName || !email || !phoneNumber || !nationalId) {
-          throw new Error('Missing required supervisor fields (fullname,email,phonenumber,nationalid)')
+        // Check for missing required fields with detailed information
+        const missingFields = []
+        if (!fullName) missingFields.push('fullName')
+        if (!email) missingFields.push('email')
+        if (!phoneNumber) missingFields.push('phoneNumber')
+        if (!nationalId) missingFields.push('nationalId')
+        
+        if (missingFields.length > 0) {
+          throw new Error(`Missing required fields: ${missingFields.join(', ')}. Row data: ${row.join(' | ')}`)
+        }
+        
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (email && !emailRegex.test(email)) {
+          throw new Error(`Invalid email format: ${email}. Row data: ${row.join(' | ')}`)
         }
 
         // Upsert by normalized nationalId
@@ -93,15 +141,29 @@ export default defineEventHandler(async (event) => {
         }
       } catch (err: any) {
         errors++
-        results.push({ row: r + 1, status: 'error', error: err?.message || String(err) })
+        const errorMsg = err?.message || String(err)
+        console.error(`Error processing supervisor row ${r + 1}:`, errorMsg)
+        results.push({ row: r + 1, status: 'error', error: errorMsg })
       }
     }
 
     // Password logic: Supervisors authenticate with nationalId and last 4 digits of phone. No password stored.
-    return { total: lines.length - 1, created, updated, errors, results }
+    return { 
+      total: lines.length - 1, 
+      created, 
+      updated, 
+      errors, 
+      results,
+      success: errors === 0,
+      message: errors > 0 ? `Import completed with ${errors} errors. Check details below.` : 'Import completed successfully!'
+    }
   } catch (error) {
     console.error('Error importing supervisors CSV:', error)
-    throw createError({ statusCode: 500, statusMessage: 'Failed to import supervisors CSV' })
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+    throw createError({ 
+      statusCode: 500, 
+      statusMessage: `Failed to import supervisors CSV: ${errorMessage}` 
+    })
   }
 })
 
