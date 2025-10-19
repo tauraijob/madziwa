@@ -84,8 +84,30 @@ export default defineEventHandler(async (event) => {
 
     // Set cookies
     setCookie(event, 'role', user.role === 'superadmin' ? 'superadmin' : 'admin', { httpOnly: false, sameSite: 'lax', path: '/' })
-    if (user.assignedDistrictId) {
-      setCookie(event, 'adminDistrictId', String(user.assignedDistrictId), { httpOnly: false, sameSite: 'lax', path: '/' })
+    
+    // For admin users, ensure they have a district assigned (default to Bindura if none assigned)
+    if (user.role === 'admin') {
+      if (user.assignedDistrictId) {
+        setCookie(event, 'adminDistrictId', String(user.assignedDistrictId), { httpOnly: false, sameSite: 'lax', path: '/' })
+      } else {
+        // Auto-assign to Bindura district if no district assigned
+        try {
+          const binduraDistrict = await prisma.district.findFirst({ where: { name: 'Bindura' } })
+          if (binduraDistrict) {
+            await prisma.adminUser.update({
+              where: { id: user.id },
+              data: { assignedDistrictId: binduraDistrict.id }
+            })
+            setCookie(event, 'adminDistrictId', String(binduraDistrict.id), { httpOnly: false, sameSite: 'lax', path: '/' })
+            user.assignedDistrictId = binduraDistrict.id
+          } else {
+            deleteCookie(event, 'adminDistrictId', { path: '/' })
+          }
+        } catch (e) {
+          console.error('Error auto-assigning Bindura district:', e)
+          deleteCookie(event, 'adminDistrictId', { path: '/' })
+        }
+      }
     } else {
       deleteCookie(event, 'adminDistrictId', { path: '/' })
     }

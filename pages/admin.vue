@@ -657,8 +657,11 @@ const loadAssignedDistrict = async () => {
   if (isSuperadmin.value) return
   try {
     const adminDistrictId = useCookie('adminDistrictId')
+    console.log('Admin district ID from cookie:', adminDistrictId.value)
+    
     if (adminDistrictId.value) {
       const res = await $fetch(`/api/districts/${adminDistrictId.value}`)
+      console.log('District data:', res.district)
       assignedDistrict.value = res.district
       
       // Load student and supervisor counts for this district
@@ -667,8 +670,13 @@ const loadAssignedDistrict = async () => {
         $fetch('/api/supervisors', { params: { districtId: adminDistrictId.value } })
       ])
       
+      console.log('Students response:', studentsRes)
+      console.log('Supervisors response:', supervisorsRes)
+      
       districtStudentCount.value = studentsRes.students?.length || 0
       districtSupervisorCount.value = supervisorsRes.supervisors?.length || 0
+    } else {
+      console.log('No admin district ID found in cookie')
     }
   } catch (e) {
     console.error('Error loading assigned district:', e)

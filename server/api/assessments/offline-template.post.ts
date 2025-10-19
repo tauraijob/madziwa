@@ -100,50 +100,48 @@ export default defineEventHandler(async (event) => {
     } else {
       // ECD Assessment criteria - exactly matching online form
       if (assessmentType === 'ecd') {
-        if (selectedCriteria.includes('preparation')) {
-          headers.push('PREPARATION MARK (15)', 'PREPARATION COMMENT')
-        }
-        if (selectedCriteria.includes('lessonPlanning')) {
-          headers.push('LESSON FACILITATION MARK (15)', 'LESSON FACILITATION COMMENT')
-        }
-        if (selectedCriteria.includes('personal')) {
-          headers.push('DEPORTMENT MARK (5)', 'DEPORTMENT COMMENT')
-        }
-        if (selectedCriteria.includes('records')) {
-          headers.push('RECORDS MANAGEMENT MARK (15)', 'RECORDS MANAGEMENT COMMENT')
-        }
-        if (selectedCriteria.includes('environment')) {
-          headers.push('TEACHING AND LEARNING ENVIRONMENT MARK (10)', 'TEACHING AND LEARNING ENVIRONMENT COMMENT')
-        }
-        if (selectedCriteria.includes('research')) {
-          headers.push('RESEARCH-BASED CHILD STUDY & COMMUNITY SERVICE MARK (30)', 'RESEARCH-BASED CHILD STUDY & COMMUNITY SERVICE COMMENT')
-        }
-        if (selectedCriteria.includes('remainingPillars')) {
-          headers.push('REMAINING 2 PILLARS MARK (10)', 'REMAINING 2 PILLARS COMMENT')
-        }
+        // PREPARATION and its aspects
+        headers.push('PREPARATION MARK (15)', 'PREPARATION COMMENT')
+        
+        // LESSON FACILITATION and its aspects
+        headers.push('LESSON FACILITATION MARK (15)', 'LESSON FACILITATION COMMENT')
+        
+        // DEPORTMENT and its aspects
+        headers.push('DEPORTMENT MARK (5)', 'DEPORTMENT COMMENT')
+        
+        // RECORDS MANAGEMENT
+        headers.push('RECORDS MANAGEMENT MARK (15)', 'RECORDS MANAGEMENT COMMENT')
+        
+        // TEACHING AND LEARNING ENVIRONMENT
+        headers.push('TEACHING AND LEARNING ENVIRONMENT MARK (10)', 'TEACHING AND LEARNING ENVIRONMENT COMMENT')
+        
+        // SELECTABLE 3 CATEGORIES - Research-based Child Study & Community Service/Research & Innovation/Research & Industrialisation
+        headers.push('SELECTABLE 3 CATEGORIES MARK (30)', 'SELECTABLE 3 CATEGORIES COMMENT')
+        
+        // REMAINING 2 PILLARS (assessed together out of 10% each taking 5%)
+        headers.push('REMAINING 2 PILLARS MARK (10)', 'REMAINING 2 PILLARS COMMENT')
       } else if (assessmentType === 'junior') {
         // Junior Level criteria - exactly matching online form
-        if (selectedCriteria.includes('preparation')) {
-          headers.push('PREPARATION MARK (15)', 'PREPARATION COMMENT')
-        }
-        if (selectedCriteria.includes('lessonPlanning')) {
-          headers.push('LESSON FACILITATION MARK (15)', 'LESSON FACILITATION COMMENT')
-        }
-        if (selectedCriteria.includes('personal')) {
-          headers.push('DEPORTMENT MARK (5)', 'DEPORTMENT COMMENT')
-        }
-        if (selectedCriteria.includes('records')) {
-          headers.push('RECORDS MANAGEMENT MARK (15)', 'RECORDS MANAGEMENT COMMENT')
-        }
-        if (selectedCriteria.includes('environment')) {
-          headers.push('TEACHING AND LEARNING ENVIRONMENT MARK (10)', 'TEACHING AND LEARNING ENVIRONMENT COMMENT')
-        }
-        if (selectedCriteria.includes('community')) {
-          headers.push('RESEARCH-BASED COMMUNITY SERVICE/RESEARCH & INNOVATION/RESEARCH & INDUSTRIALISATION MARK (30)', 'RESEARCH-BASED COMMUNITY SERVICE/RESEARCH & INNOVATION/RESEARCH & INDUSTRIALISATION COMMENT')
-        }
-        if (selectedCriteria.includes('remainingPillars')) {
-          headers.push('REMAINING 2 PILLARS MARK (10)', 'REMAINING 2 PILLARS COMMENT')
-        }
+        // PREPARATION and its aspects
+        headers.push('PREPARATION MARK (15)', 'PREPARATION COMMENT')
+        
+        // LESSON FACILITATION and its aspects
+        headers.push('LESSON FACILITATION MARK (15)', 'LESSON FACILITATION COMMENT')
+        
+        // DEPORTMENT and its aspects
+        headers.push('DEPORTMENT MARK (5)', 'DEPORTMENT COMMENT')
+        
+        // RECORDS MANAGEMENT
+        headers.push('RECORDS MANAGEMENT MARK (15)', 'RECORDS MANAGEMENT COMMENT')
+        
+        // TEACHING AND LEARNING ENVIRONMENT
+        headers.push('TEACHING AND LEARNING ENVIRONMENT MARK (10)', 'TEACHING AND LEARNING ENVIRONMENT COMMENT')
+        
+        // SELECTABLE 3 CATEGORIES - Research-based Community Service/Research & Innovation/Research & Industrialisation
+        headers.push('SELECTABLE 3 CATEGORIES MARK (30)', 'SELECTABLE 3 CATEGORIES COMMENT')
+        
+        // REMAINING 2 PILLARS (assessed together out of 10% each taking 5%)
+        headers.push('REMAINING 2 PILLARS MARK (10)', 'REMAINING 2 PILLARS COMMENT')
       } else {
         // Standard criteria for Secondary, ISEN
         if (selectedCriteria.includes('preparation')) {
@@ -230,7 +228,7 @@ export default defineEventHandler(async (event) => {
           maxMark = '15'
         } else if (header.includes('TEACHING AND LEARNING ENVIRONMENT MARK')) {
           maxMark = '10'
-        } else if (header.includes('RESEARCH-BASED CHILD STUDY & COMMUNITY SERVICE MARK')) {
+        } else if (header.includes('SELECTABLE 3 CATEGORIES MARK')) {
           maxMark = '30'
         } else if (header.includes('REMAINING 2 PILLARS MARK')) {
           maxMark = '10'
@@ -249,7 +247,7 @@ export default defineEventHandler(async (event) => {
           maxMark = '15'
         } else if (header.includes('TEACHING AND LEARNING ENVIRONMENT MARK')) {
           maxMark = '10'
-        } else if (header.includes('RESEARCH-BASED COMMUNITY SERVICE/RESEARCH & INNOVATION/RESEARCH & INDUSTRIALISATION MARK')) {
+        } else if (header.includes('SELECTABLE 3 CATEGORIES MARK')) {
           maxMark = '30'
         } else if (header.includes('REMAINING 2 PILLARS MARK')) {
           maxMark = '10'
@@ -401,29 +399,31 @@ export default defineEventHandler(async (event) => {
         ['   - Research & Innovation'],
         ['   - Research & Industrialisation']
       ]),
-      ['3. For REMAINING 2 PILLARS: These are the other two categories that will also be assessed'],
+      ['3. For REMAINING 2 PILLARS: These are the other two categories that will also be assessed (out of 10% each taking 5%)'],
       ...(assessmentType === 'ecd' ? [
         [''],
         ['ECD ASSESSMENT CRITERIA:'],
-        ['- Preparation (15 marks)'],
-        ['- Lesson Facilitation (15 marks)'],
-        ['- Deportment (5 marks)'],
-        ['- Records Management (15 marks)'],
-        ['- Teaching and Learning Environment (10 marks)'],
-        ['- Research-based Child Study & Community Service (30 marks)'],
-        ['- Remaining 2 Pillars (10 marks)'],
+        ['- PREPARATION and its aspects (15 marks)'],
+        ['- LESSON FACILITATION and its aspects (15 marks)'],
+        ['- DEPORTMENT and its aspects (5 marks)'],
+        ['- RECORDS MANAGEMENT (15 marks)'],
+        ['- TEACHING AND LEARNING ENVIRONMENT (10 marks)'],
+        ['- SELECTABLE 3 CATEGORIES: Research-based Child Study & Community Service/Research & Innovation/Research & Industrialisation (30 marks)'],
+        ['  * Supervisor must select ONE category from the three options'],
+        ['- REMAINING 2 PILLARS (assessed together out of 10% each taking 5%) (10 marks)'],
         [''],
         ['4. For each selected criteria, enter the mark (0 to maximum) and add comments']
       ] : assessmentType === 'junior' ? [
         [''],
         ['JUNIOR LEVEL ASSESSMENT CRITERIA:'],
-        ['- Preparation (15 marks)'],
-        ['- Lesson Facilitation (15 marks)'],
-        ['- Deportment (5 marks)'],
-        ['- Records Management (15 marks)'],
-        ['- Teaching and Learning Environment (10 marks)'],
-        ['- Research-based Community Service/Research & Innovation/Research & Industrialisation (30 marks)'],
-        ['- Remaining 2 Pillars (10 marks)'],
+        ['- PREPARATION and its aspects (15 marks)'],
+        ['- LESSON FACILITATION and its aspects (15 marks)'],
+        ['- DEPORTMENT and its aspects (5 marks)'],
+        ['- RECORDS MANAGEMENT (15 marks)'],
+        ['- TEACHING AND LEARNING ENVIRONMENT (10 marks)'],
+        ['- SELECTABLE 3 CATEGORIES: Research-based Community Service/Research & Innovation/Research & Industrialisation (30 marks)'],
+        ['  * Supervisor must select ONE category from the three options'],
+        ['- REMAINING 2 PILLARS (assessed together out of 10% each taking 5%) (10 marks)'],
         [''],
         ['4. For each selected criteria, enter the mark (0 to maximum) and add comments']
       ] : assessmentType === 'materials' ? [
