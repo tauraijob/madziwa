@@ -4,18 +4,22 @@ A comprehensive web-based application for Teaching Practice (TP) assessment mana
 
 ## 🚀 Features
 
-- **Comprehensive Assessment Form** - Complete 100-point scoring system
-- **Supervisor & Student Management** - Automatic creation and updates
+- **Comprehensive Assessment Form** - Complete 100-point scoring system with detailed criteria
+- **Multi-Level Assessment Support** - ECD, Junior/Primary, Secondary, ISEN, and Materials Development
+- **Offline Excel Templates** - Download and upload assessment templates with data validation
+- **Supervisor & Student Management** - Automatic creation and updates with district assignment
 - **Assessment Tracking** - View, edit, and manage all assessments
-- **Admin Dashboard** - Complete admin interface with advanced features
-- **PDF Export** - Download individual assessments as PDF reports
+- **Admin Dashboard** - Complete admin interface with district-specific statistics
+- **PDF Export** - Download individual assessments as PDF reports with detailed breakdowns
 - **Batch Download** - Download multiple assessments as ZIP file
-- **Advanced Filtering** - Filter by subject, date range, score range
-- **Real-time Statistics** - Dashboard with assessment statistics
+- **Advanced Filtering** - Filter by subject, date range, score range, district
+- **Real-time Statistics** - Dashboard with assessment statistics by district
 - **Responsive Design** - Works on desktop and mobile devices
 - **Modern UI** - Built with PrimeVue components
 - **Real-time Validation** - Form validation and error handling
 - **Search & Filter** - Advanced data table with search capabilities
+- **Template Management** - Download assessment templates for offline use
+- **Category Selection** - Dynamic category selection for different assessment types
 
 ## 🛠️ Technology Stack
 
@@ -27,6 +31,7 @@ A comprehensive web-based application for Teaching Practice (TP) assessment mana
 - **HTTP Client**: Axios
 - **PDF Generation**: Puppeteer 24
 - **ZIP Creation**: JSZip 3
+- **Excel Processing**: XLSX 0.18.5
 - **Build Tooling**: PostCSS 8 + Autoprefixer 10
 
 ## 📋 Prerequisites
@@ -75,6 +80,9 @@ npm run db:generate
 
 # Push schema to database
 npm run db:push
+
+# Seed database with initial data
+npm run db:seed
 ```
 
 ### 5. Start Development Server
@@ -99,7 +107,10 @@ madziwa-tp-platform/
 │   └── css/
 │       └── main.css              # Main styles with Tailwind
 ├── components/
-│   └── AssessmentDetailModal.vue # Assessment detail modal
+│   ├── AssessmentDetailModal.vue # Assessment detail modal
+│   ├── CriteriaSelectionModal.vue # Criteria selection modal
+│   ├── ExcelValidationModal.vue  # Excel validation modal
+│   └── SelectedCriteriaAssessment.vue # Selected criteria assessment component
 ├── layouts/
 │   └── default.vue              # Main layout with navigation
 ├── middleware/
@@ -111,6 +122,8 @@ madziwa-tp-platform/
 │   ├── admin.vue                # Admin dashboard
 │   ├── admin-login.vue          # Admin login page
 │   ├── supervisor-login.vue     # Supervisor login page
+│   ├── templates.vue            # Template download page
+│   ├── guide.vue                # Assessment guide page
 │   ├── assessment/
 │   │   ├── index.vue            # Assessment listing
 │   │   ├── new.vue              # Create new assessment
@@ -132,7 +145,10 @@ madziwa-tp-platform/
 │       │   ├── [id]/pdf.get.ts   # Generate PDF
 │       │   ├── export-csv.get.ts # Export CSV
 │       │   ├── export-pdf-all.get.ts # Export all PDFs
-│       │   └── export-zip.post.ts # Export ZIP
+│       │   ├── export-zip.post.ts # Export ZIP
+│       │   ├── offline-template.post.ts # Generate offline Excel templates
+│       │   ├── import-xlsx.post.ts # Import Excel assessments
+│       │   └── template.get.ts   # Get assessment template
 │       ├── students/
 │       │   ├── index.get.ts      # Get all students
 │       │   ├── index.post.ts     # Create student
@@ -142,6 +158,13 @@ madziwa-tp-platform/
 │       │   ├── index.get.ts      # Get all supervisors
 │       │   ├── index.post.ts     # Create supervisor
 │       │   └── me.get.ts         # Get current supervisor
+│       ├── admins/
+│       │   ├── index.get.ts      # Get all admins
+│       │   ├── index.post.ts     # Create admin
+│       │   └── assign-district.post.ts # Assign district to admin
+│       ├── districts/
+│       │   ├── index.get.ts      # Get all districts
+│       │   └── [id].get.ts       # Get single district
 │       └── auth/
 │           ├── admin-login.post.ts # Admin login
 │           └── supervisor-login.post.ts # Supervisor login
@@ -163,9 +186,10 @@ madziwa-tp-platform/
 
 ### 📊 Statistics Overview
 - Total assessments count
-- Total students count
-- Total supervisors count
+- Students in assigned district count
+- Supervisors in assigned district count
 - Average score percentage
+- District-specific data display
 
 ### 🔍 Advanced Filtering
 - Search by student name, supervisor, subject
@@ -204,6 +228,41 @@ madziwa-tp-platform/
 - Input validation and sanitization
 - Secure file downloads
 
+## 📊 Offline Template Features
+
+### 📋 Excel Template Generation
+- **Multi-Level Support**: ECD, Junior/Primary, Secondary, ISEN, and Materials Development
+- **Data Validation**: Dropdown selections and mark limits
+- **Category Selection**: Dynamic research category selection
+- **Instructions**: Built-in guidance for supervisors
+- **Professional Formatting**: Styled headers and data validation
+
+### 📤 Template Upload
+- **Excel Import**: Upload completed assessment templates
+- **Data Validation**: Server-side validation of marks and categories
+- **Bulk Processing**: Import multiple assessments at once
+- **Error Handling**: Clear feedback for validation errors
+
+### 🎯 Assessment Types
+
+#### ECD Templates
+- Preparation and its aspects (15 marks)
+- Lesson Facilitation and its aspects (15 marks)
+- Deportment and its aspects (5 marks)
+- Records Management (15 marks)
+- Teaching and Learning Environment (10 marks)
+- Selectable 3 Categories: Research-based Child Study & Community Service/Research & Innovation/Research & Industrialisation (30 marks)
+- Remaining 2 Pillars (10 marks)
+
+#### Junior/Primary Templates
+- Preparation and its aspects (15 marks)
+- Lesson Facilitation and its aspects (15 marks)
+- Deportment and its aspects (5 marks)
+- Records Management (15 marks)
+- Teaching and Learning Environment (10 marks)
+- Selectable 3 Categories: Research-based Community Service/Research & Innovation/Research & Industrialisation (30 marks)
+- Remaining 2 Pillars (10 marks)
+
 ## 🗄️ Database Schema
 
 ### Models
@@ -212,18 +271,38 @@ madziwa-tp-platform/
 - **Student**: Full name, sex, candidate number, email, school, class
 - **Assessment**: Complete assessment data with 100-point scoring system
 
-### Assessment Categories (100 points total)
+### Assessment Categories by Level
 
+#### ECD Assessment (100 points total)
 | Category | Max Points |
 |----------|------------|
-| Preparation & Scheming | 20 |
-| Lesson Planning | 20 |
-| Learning Environment & Management | 10 |
-| Other Work-Related Learning Documents | 10 |
-| Lesson Presentation: Introduction | 3 |
-| Lesson Presentation: Development | 30 |
-| Lesson Presentation: Conclusion | 3 |
-| Personal Dimensions | 4 |
+| Preparation and its aspects | 15 |
+| Lesson Facilitation and its aspects | 15 |
+| Deportment and its aspects | 5 |
+| Records Management | 15 |
+| Teaching and Learning Environment | 10 |
+| Selectable 3 Categories (Research-based Child Study & Community Service/Research & Innovation/Research & Industrialisation) | 30 |
+| Remaining 2 Pillars (assessed together out of 10% each taking 5%) | 10 |
+
+#### Junior/Primary Assessment (100 points total)
+| Category | Max Points |
+|----------|------------|
+| Preparation and its aspects | 15 |
+| Lesson Facilitation and its aspects | 15 |
+| Deportment and its aspects | 5 |
+| Records Management | 15 |
+| Teaching and Learning Environment | 10 |
+| Selectable 3 Categories (Research-based Community Service/Research & Innovation/Research & Industrialisation) | 30 |
+| Remaining 2 Pillars (assessed together out of 10% each taking 5%) | 10 |
+
+#### Materials Development Assessment (100 points total)
+| Category | Max Points |
+|----------|------------|
+| Content Quality | 20 |
+| Pedagogical Value | 20 |
+| Design & Layout | 20 |
+| Innovation & Creativity | 20 |
+| Education 5.0 Compliance | 20 |
 
 ## 🎨 UI Components
 
@@ -253,6 +332,7 @@ npm run db:seed          # Seed database with initial data
 
 ## 🌐 API Endpoints
 
+### Assessments
 - `GET /api/assessments` - Get all assessments
 - `POST /api/assessments` - Create new assessment
 - `GET /api/assessments/:id` - Get single assessment
@@ -260,10 +340,28 @@ npm run db:seed          # Seed database with initial data
 - `DELETE /api/assessments/:id` - Delete assessment
 - `GET /api/assessments/:id/pdf` - Download assessment as PDF
 - `POST /api/assessments/export-zip` - Download multiple assessments as ZIP
+- `POST /api/assessments/offline-template` - Generate offline Excel template
+- `POST /api/assessments/import-xlsx` - Import Excel assessments
+- `GET /api/assessments/template` - Get assessment template
+
+### Students
 - `GET /api/students` - Get all students
 - `POST /api/students` - Create student
+- `GET /api/students/search` - Search students
+
+### Supervisors
 - `GET /api/supervisors` - Get all supervisors
 - `POST /api/supervisors` - Create supervisor
+- `GET /api/supervisors/me` - Get current supervisor
+
+### Admins
+- `GET /api/admins` - Get all admins
+- `POST /api/admins` - Create admin
+- `POST /api/admins/assign-district` - Assign district to admin
+
+### Districts
+- `GET /api/districts` - Get all districts
+- `GET /api/districts/:id` - Get single district
 
 ## 📱 Responsive Design
 
