@@ -85,7 +85,11 @@ export default defineEventHandler(async (event) => {
     // Ensure required columns present
     const missingCols = required.filter(col => idxMap[aliasMap[col] || col] === undefined)
     if (missingCols.length) {
-      throw createError({ statusCode: 400, statusMessage: `Missing required columns: ${missingCols.join(', ')}` })
+      const missingColNames = missingCols.map(col => aliasMap[col] || col)
+      throw createError({ 
+        statusCode: 400, 
+        statusMessage: `Missing required columns: ${missingColNames.join(', ')}. Found columns: ${header.join(', ')}` 
+      })
     }
 
     const results: any[] = []
@@ -93,7 +97,21 @@ export default defineEventHandler(async (event) => {
 
     for (let r = 1; r < lines.length; r++) {
       const row = parseCSVLine(lines[r])
+      
+      // Skip completely empty rows
       if (row.length === 1 && row[0].trim() === '') continue
+      
+      // Check if row has enough columns
+      if (row.length < header.length) {
+        errors++
+        results.push({ 
+          row: r + 1, 
+          status: 'error', 
+          error: `Row has ${row.length} columns but header has ${header.length} columns. Expected: ${header.join(', ')}` 
+        })
+        continue
+      }
+      
       try {
         const surname = (row[idxMap['surname']] || '').trim()
         const names = (row[idxMap['names']] || '').trim()
@@ -106,8 +124,30 @@ export default defineEventHandler(async (event) => {
         const className = (row[idxMap['className']] || '').trim()
         const districtName = (row[idxMap['district']] || '').trim()
 
-        if (!fullName || !candidateNo || !sex || !email || !schoolName || !className || !districtName) {
-          throw new Error('Missing required student fields (ensure surname,names,sex,email,district,schoolname,classname,candidateno). Phone is optional.')
+        // Check for missing required fields with detailed information
+        const missingFields = []
+        if (!fullName) missingFields.push('fullName (constructed from surname + names)')
+        if (!candidateNo) missingFields.push('candidateNo')
+        if (!sex) missingFields.push('sex')
+        if (!email) missingFields.push('email')
+        if (!schoolName) missingFields.push('schoolName')
+        if (!className) missingFields.push('className')
+        if (!districtName) missingFields.push('districtName')
+        
+        if (missingFields.length > 0) {
+          throw new Error(`Missing required fields: ${missingFields.join(', ')}. Row data: ${row.join(' | ')}`)
+        }
+        
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (email && !emailRegex.test(email)) {
+          throw new Error(`Invalid email format: ${email}. Row data: ${row.join(' | ')}`)
+        }
+        
+        // Validate sex field
+        const validSexValues = ['male', 'female', 'm', 'f', 'Male', 'Female', 'M', 'F']
+        if (sex && !validSexValues.includes(sex)) {
+          throw new Error(`Invalid sex value: ${sex}. Valid values are: male, female, m, f. Row data: ${row.join(' | ')}`)
         }
 
         // Ensure district exists if provided

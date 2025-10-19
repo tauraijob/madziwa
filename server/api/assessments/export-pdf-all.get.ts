@@ -11,9 +11,6 @@ export default defineEventHandler(async (event) => {
     if (role !== 'admin' && role !== 'superadmin') {
       throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
     }
-    if (role === 'admin') {
-      throw createError({ statusCode: 403, statusMessage: 'Admins are view-only. Downloads disabled.' })
-    }
     const adminDistrictIdCookie = getCookie(event, 'adminDistrictId')
     const adminDistrictId = adminDistrictIdCookie ? parseInt(String(adminDistrictIdCookie)) : null
 
@@ -50,12 +47,17 @@ export default defineEventHandler(async (event) => {
       }, {} as Record<string, { student: any, assessments: any[] }>)
 
       // Create folders for each SRN and generate PDFs
+      const totalAssessments = Object.values(assessmentsBySRN).reduce((sum, group) => sum + group.assessments.length, 0)
+      let processedCount = 0
+      
       for (const [srn, { student, assessments: studentAssessments }] of Object.entries(assessmentsBySRN)) {
-        // Create a folder for this SRN
-        const srnFolder = zip.folder(`SRN_${srn}_${student.fullName.replace(/[^a-zA-Z0-9]/g, '_')}`)
+        // Create a folder using the full candidate number
+        const candidateNumber = student.candidateNo || srn
+        const srnFolder = zip.folder(`Candidate_${candidateNumber}`)
         
         for (const assessment of studentAssessments) {
-          // Calculate total mark with proper calculation for consistency
+          try {
+            // Calculate total mark with proper calculation for consistency
           let totalMark
           if (assessment.formType === 'ecd') {
             // ECD: preparation + lessonPlanning + personalDimensions + documents + environment + community + conclusion
@@ -96,7 +98,10 @@ export default defineEventHandler(async (event) => {
           
           const page = await browser.newPage()
           await page.emulateMediaType('screen')
-          await page.setContent(htmlContent, { waitUntil: 'domcontentloaded' })
+          await page.setContent(htmlContent, { 
+            waitUntil: 'domcontentloaded',
+            timeout: 30000 // 30 seconds timeout for page content
+          })
           
           const pdf = await page.pdf({
             format: 'A4',
@@ -107,7 +112,8 @@ export default defineEventHandler(async (event) => {
               left: '20mm'
             },
             printBackground: true,
-            preferCSSPageSize: true
+            preferCSSPageSize: true,
+            timeout: 30000 // 30 seconds timeout for PDF generation
           })
           await page.close()
           
@@ -115,6 +121,19 @@ export default defineEventHandler(async (event) => {
           const assessmentType = assessment.formType || 'ECD'
           const fileName = `${assessmentType}_${assessment.subject.replace(/[^a-zA-Z0-9]/g, '_')}_${assessment.topic.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`
           srnFolder.file(fileName, pdf)
+          
+          // Update progress
+          processedCount++
+          console.log(`PDF generation progress: ${processedCount}/${totalAssessments} (${Math.round((processedCount/totalAssessments)*100)}%)`)
+          
+          // Small delay to prevent overwhelming the system
+          await new Promise(resolve => setTimeout(resolve, 100))
+          
+          } catch (assessmentError) {
+            console.error(`Failed to generate PDF for assessment ${assessment.id}:`, assessmentError)
+            // Continue with next assessment instead of failing completely
+            processedCount++
+          }
         }
       }
     } finally {

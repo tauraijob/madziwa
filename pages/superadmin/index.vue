@@ -391,20 +391,35 @@
           <div class="text-red-600 text-sm mt-1">
             Total rows: {{ csvImportSummary.total }}, Errors: {{ csvImportSummary.errors }}
           </div>
+          <div v-if="csvImportSummary.errors > 0" class="mt-3">
+            <div class="text-red-700 font-medium text-sm mb-2">Common Error Types:</div>
+            <div class="text-red-600 text-xs space-y-1">
+              <div v-for="(count, errorType) in getErrorSummary()" :key="errorType" class="flex justify-between">
+                <span>{{ errorType }}:</span>
+                <span class="font-medium">{{ count }} occurrence(s)</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="space-y-2 max-h-96 overflow-y-auto">
+        <div class="space-y-3 max-h-96 overflow-y-auto">
           <div 
             v-for="result in csvImportSummary.results.filter(r => r.status === 'error')" 
             :key="result.row"
-            class="p-3 bg-red-50 border border-red-200 rounded-lg"
+            class="p-4 bg-red-50 border border-red-200 rounded-lg"
           >
             <div class="flex justify-between items-start">
               <div class="flex-1">
-                <div class="font-medium text-red-800">Row {{ result.row }}</div>
-                <div class="text-red-600 text-sm mt-1">{{ result.error }}</div>
-                <div v-if="result.candidateNo" class="text-red-500 text-xs mt-1">
-                  Candidate Number: {{ result.candidateNo }}
+                <div class="font-medium text-red-800 text-lg">Row {{ result.row }}</div>
+                <div class="text-red-600 text-sm mt-2 font-medium">Error Details:</div>
+                <div class="text-red-700 text-sm mt-1 bg-red-100 p-2 rounded border-l-4 border-red-400">
+                  {{ result.error }}
+                </div>
+                <div v-if="result.candidateNo" class="text-red-500 text-xs mt-2 bg-red-100 p-2 rounded">
+                  <strong>Candidate Number:</strong> {{ result.candidateNo }}
+                </div>
+                <div class="text-gray-600 text-xs mt-2">
+                  <strong>Tip:</strong> Check that all required columns are present and data is properly formatted.
                 </div>
               </div>
             </div>
@@ -733,17 +748,29 @@ const saveSupervisorDistricts = async () => {
 
 const downloadAllCsv = async () => {
   try {
-    const response = await $fetch('/api/assessments/export-csv', { method: 'GET', responseType: 'blob' })
-    const blob = new Blob([response], { type: 'text/csv' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `assessments-${new Date().toISOString().split('T')[0]}.csv`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
+    const response = await $fetch('/api/assessments/export-csv', { method: 'GET' })
+    
+    if (response.csvData && response.csvData.length > 0) {
+      // Download each CSV file separately
+      for (const csvItem of response.csvData) {
+        const blob = new Blob([csvItem.data], { type: 'text/csv' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `${csvItem.type}-assessments-${new Date().toISOString().split('T')[0]}.csv`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+        
+        // Small delay between downloads
+        await new Promise(resolve => setTimeout(resolve, 500))
+      }
+    } else {
+      alert('No assessment data found to export')
+    }
   } catch (e) {
+    console.error('CSV export error:', e)
     alert('Failed to download CSV')
   }
 }
@@ -763,6 +790,35 @@ const downloadAllPdfs = async () => {
   } catch (e) {
     alert('Failed to download PDFs')
   }
+}
+
+// Function to analyze error patterns
+const getErrorSummary = () => {
+  if (!csvImportSummary.value?.results) return {}
+  
+  const errorCounts = {}
+  const errorResults = csvImportSummary.value.results.filter(r => r.status === 'error')
+  
+  errorResults.forEach(result => {
+    const error = result.error || 'Unknown error'
+    let errorType = 'Other'
+    
+    if (error.includes('Missing required fields')) {
+      errorType = 'Missing Required Fields'
+    } else if (error.includes('Invalid email format')) {
+      errorType = 'Invalid Email Format'
+    } else if (error.includes('Invalid sex value')) {
+      errorType = 'Invalid Sex Value'
+    } else if (error.includes('columns but header has')) {
+      errorType = 'Column Count Mismatch'
+    } else if (error.includes('Missing required columns')) {
+      errorType = 'Missing Required Columns'
+    }
+    
+    errorCounts[errorType] = (errorCounts[errorType] || 0) + 1
+  })
+  
+  return errorCounts
 }
 
 onMounted(() => { loadStats(); loadDistrictsAdmins(); loadSupervisors() })

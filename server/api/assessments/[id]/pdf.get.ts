@@ -148,7 +148,7 @@ export default defineEventHandler(async (event) => {
 
     // Set response headers and return
     setHeader(event, 'Content-Type', 'application/pdf')
-    setHeader(event, 'Content-Disposition', `attachment; filename="assessment-${assessment.student.fullName}-${assessment.subject}.pdf"`)
+    setHeader(event, 'Content-Disposition', `attachment; filename="assessment-${assessment.student.candidateNo}-${assessment.subject}.pdf"`)
 
     return pdfBuffer
   } catch (error) {

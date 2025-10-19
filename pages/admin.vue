@@ -851,17 +851,29 @@ const exportSelectedAsZip = async () => {
 const downloadAllCsv = async () => {
   loading.value = true
   try {
-    const response = await $fetch('/api/assessments/export-csv', { method: 'GET', responseType: 'blob' })
-    const blob = new Blob([response], { type: 'text/csv' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `assessments-${new Date().toISOString().split('T')[0]}.csv`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
+    const response = await $fetch('/api/assessments/export-csv', { method: 'GET' })
+    
+    if (response.csvData && response.csvData.length > 0) {
+      // Download each CSV file separately
+      for (const csvItem of response.csvData) {
+        const blob = new Blob([csvItem.data], { type: 'text/csv' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `${csvItem.type}-assessments-${new Date().toISOString().split('T')[0]}.csv`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+        
+        // Small delay between downloads
+        await new Promise(resolve => setTimeout(resolve, 500))
+      }
+    } else {
+      alert('No assessment data found to export')
+    }
   } catch (e) {
+    console.error('CSV export error:', e)
     alert('Failed to download CSV')
   } finally {
     loading.value = false

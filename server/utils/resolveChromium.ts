@@ -59,7 +59,7 @@ export function buildPuppeteerLaunchOptions() {
       '--no-first-run',
       '--no-zygote',
     ],
-    timeout: 60000,
+    timeout: 120000, // 2 minutes
   } as const
 
   // Only set executablePath if we found a valid one. Otherwise let Puppeteer decide.
