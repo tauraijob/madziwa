@@ -19,13 +19,15 @@ export default defineEventHandler(async (event) => {
       'STUDENT CANDIDATE', 
       'SUBJECT', 
       'TOPIC', 
-      'ASSESSMENT DATE'
+      'ASSESSMENT DATE',
+      'SELECTED CATEGORY',
+      'REMAINING 2 PILLARS'
     ]
 
     if (assessmentType === 'materials') {
-      // Materials Development criteria - Content Quality
+      // Materials Development criteria - Content Quality (20 marks)
       if (selectedCriteria.includes('content') || selectedCriteria.includes('contentRelevance') || selectedCriteria.includes('contentOrganization')) {
-        headers.push('CONTENT QUALITY MARK (25)', 'CONTENT QUALITY COMMENT')
+        headers.push('CONTENT QUALITY MARK (20)', 'CONTENT QUALITY COMMENT')
         if (selectedCriteria.includes('contentRelevance')) {
           headers.push('CONTENT RELEVANCE MARK (10)', 'CONTENT RELEVANCE COMMENT')
         }
@@ -34,9 +36,9 @@ export default defineEventHandler(async (event) => {
         }
       }
       
-      // Pedagogical Value
+      // Pedagogical Value (20 marks)
       if (selectedCriteria.includes('pedagogical') || selectedCriteria.includes('pedagogicalAlignment') || selectedCriteria.includes('pedagogicalEngagement') || selectedCriteria.includes('pedagogicalConnection') || selectedCriteria.includes('pedagogicalInclusive')) {
-        headers.push('PEDAGOGICAL VALUE MARK (25)', 'PEDAGOGICAL VALUE COMMENT')
+        headers.push('PEDAGOGICAL VALUE MARK (20)', 'PEDAGOGICAL VALUE COMMENT')
         if (selectedCriteria.includes('pedagogicalAlignment')) {
           headers.push('PEDAGOGICAL ALIGNMENT MARK (5)', 'PEDAGOGICAL ALIGNMENT COMMENT')
         }
@@ -51,7 +53,7 @@ export default defineEventHandler(async (event) => {
         }
       }
       
-      // Design and Layout
+      // Design and Layout (20 marks)
       if (selectedCriteria.includes('design') || selectedCriteria.includes('designVisual') || selectedCriteria.includes('designNavigation') || selectedCriteria.includes('designQuality') || selectedCriteria.includes('designConsistency')) {
         headers.push('DESIGN & LAYOUT MARK (20)', 'DESIGN & LAYOUT COMMENT')
         if (selectedCriteria.includes('designVisual')) {
@@ -68,9 +70,9 @@ export default defineEventHandler(async (event) => {
         }
       }
       
-      // Innovation and Creativity
+      // Innovation and Creativity (20 marks)
       if (selectedCriteria.includes('innovation') || selectedCriteria.includes('innovationOriginality') || selectedCriteria.includes('innovationTechnology')) {
-        headers.push('INNOVATION & CREATIVITY MARK (15)', 'INNOVATION & CREATIVITY COMMENT')
+        headers.push('INNOVATION & CREATIVITY MARK (20)', 'INNOVATION & CREATIVITY COMMENT')
         if (selectedCriteria.includes('innovationOriginality')) {
           headers.push('INNOVATION ORIGINALITY MARK (10)', 'INNOVATION ORIGINALITY COMMENT')
         }
@@ -79,9 +81,9 @@ export default defineEventHandler(async (event) => {
         }
       }
       
-      // Education 5.0 Compliance
+      // Education 5.0 Compliance (20 marks)
       if (selectedCriteria.includes('education') || selectedCriteria.includes('educationLocal') || selectedCriteria.includes('educationHeritage') || selectedCriteria.includes('educationProblem') || selectedCriteria.includes('educationCommercial')) {
-        headers.push('EDUCATION 5.0 COMPLIANCE MARK (15)', 'EDUCATION 5.0 COMPLIANCE COMMENT')
+        headers.push('EDUCATION 5.0 COMPLIANCE MARK (20)', 'EDUCATION 5.0 COMPLIANCE COMMENT')
         if (selectedCriteria.includes('educationLocal')) {
           headers.push('EDUCATION LOCAL MARK (5)', 'EDUCATION LOCAL COMMENT')
         }
@@ -96,46 +98,73 @@ export default defineEventHandler(async (event) => {
         }
       }
     } else {
-      // Standard criteria for ECD, Secondary, ISEN
-      if (selectedCriteria.includes('preparation')) {
-        headers.push('PREPARATION MARK (10)', 'PREPARATION COMMENT')
-      }
-      if (selectedCriteria.includes('lessonPlanning')) {
-        headers.push('LESSON PLANNING MARK (15)', 'LESSON PLANNING COMMENT')
-      }
-      if (selectedCriteria.includes('introduction')) {
-        headers.push('INTRODUCTION MARK (5)', 'INTRODUCTION COMMENT')
-      }
-      if (selectedCriteria.includes('development')) {
-        headers.push('DEVELOPMENT MARK (15)', 'DEVELOPMENT COMMENT')
-      }
-      if (selectedCriteria.includes('conclusion')) {
-        headers.push('CONCLUSION MARK (5)', 'CONCLUSION COMMENT')
-      }
-      if (selectedCriteria.includes('personal')) {
-        headers.push('PERSONAL MARK (5)', 'PERSONAL COMMENT')
-      }
-      if (selectedCriteria.includes('records')) {
-        headers.push('RECORDS MANAGEMENT MARK (15)', 'RECORDS MANAGEMENT COMMENT')
-        // Add ECD-specific records items if it's ECD assessment
-        if (assessmentType === 'ecd') {
-          headers.push('ANECDOTAL RECORD MARK', 'ANECDOTAL RECORD COMMENT')
-          headers.push('DEVELOPMENTAL CHECKLIST MARK', 'DEVELOPMENTAL CHECKLIST COMMENT')
-          headers.push('HEALTH RECORD MARK', 'HEALTH RECORD COMMENT')
+      // ECD Assessment criteria - exactly matching online form
+      if (assessmentType === 'ecd') {
+        if (selectedCriteria.includes('preparation')) {
+          headers.push('PREPARATION MARK (15)', 'PREPARATION COMMENT')
         }
-      }
-      if (selectedCriteria.includes('environment')) {
-        headers.push('ENVIRONMENT MARK (10)', 'ENVIRONMENT COMMENT')
-      }
-      if (selectedCriteria.includes('community')) {
-        headers.push('COMMUNITY MARK (20)', 'COMMUNITY COMMENT')
-      }
-      if (selectedCriteria.includes('research')) {
-        if (assessmentType === 'ecd') {
-          headers.push('RESEARCH-BASED CHILD STUDY & COMMUNITY SERVICE MARK (25)', 'RESEARCH-BASED CHILD STUDY & COMMUNITY SERVICE COMMENT')
-        } else if (assessmentType === 'junior') {
-          headers.push('RESEARCH-BASED COMMUNITY SERVICE MARK (25)', 'RESEARCH-BASED COMMUNITY SERVICE COMMENT')
-        } else {
+        if (selectedCriteria.includes('lessonPlanning')) {
+          headers.push('LESSON FACILITATION MARK (15)', 'LESSON FACILITATION COMMENT')
+        }
+        if (selectedCriteria.includes('personal')) {
+          headers.push('DEPORTMENT MARK (5)', 'DEPORTMENT COMMENT')
+        }
+        if (selectedCriteria.includes('records')) {
+          headers.push('RECORDS MANAGEMENT MARK (15)', 'RECORDS MANAGEMENT COMMENT')
+        }
+        if (selectedCriteria.includes('environment')) {
+          headers.push('TEACHING AND LEARNING ENVIRONMENT MARK (10)', 'TEACHING AND LEARNING ENVIRONMENT COMMENT')
+        }
+        if (selectedCriteria.includes('research')) {
+          headers.push('RESEARCH-BASED CHILD STUDY & COMMUNITY SERVICE MARK (30)', 'RESEARCH-BASED CHILD STUDY & COMMUNITY SERVICE COMMENT')
+        }
+        if (selectedCriteria.includes('remainingPillars')) {
+          headers.push('REMAINING 2 PILLARS MARK (10)', 'REMAINING 2 PILLARS COMMENT')
+        }
+      } else if (assessmentType === 'junior') {
+        // Junior Level criteria - exactly matching online form
+        if (selectedCriteria.includes('preparation')) {
+          headers.push('PREPARATION MARK (15)', 'PREPARATION COMMENT')
+        }
+        if (selectedCriteria.includes('lessonPlanning')) {
+          headers.push('LESSON FACILITATION MARK (15)', 'LESSON FACILITATION COMMENT')
+        }
+        if (selectedCriteria.includes('personal')) {
+          headers.push('DEPORTMENT MARK (5)', 'DEPORTMENT COMMENT')
+        }
+        if (selectedCriteria.includes('records')) {
+          headers.push('RECORDS MANAGEMENT MARK (15)', 'RECORDS MANAGEMENT COMMENT')
+        }
+        if (selectedCriteria.includes('environment')) {
+          headers.push('TEACHING AND LEARNING ENVIRONMENT MARK (10)', 'TEACHING AND LEARNING ENVIRONMENT COMMENT')
+        }
+        if (selectedCriteria.includes('community')) {
+          headers.push('RESEARCH-BASED COMMUNITY SERVICE/RESEARCH & INNOVATION/RESEARCH & INDUSTRIALISATION MARK (30)', 'RESEARCH-BASED COMMUNITY SERVICE/RESEARCH & INNOVATION/RESEARCH & INDUSTRIALISATION COMMENT')
+        }
+        if (selectedCriteria.includes('remainingPillars')) {
+          headers.push('REMAINING 2 PILLARS MARK (10)', 'REMAINING 2 PILLARS COMMENT')
+        }
+      } else {
+        // Standard criteria for Secondary, ISEN
+        if (selectedCriteria.includes('preparation')) {
+          headers.push('PREPARATION MARK (10)', 'PREPARATION COMMENT')
+        }
+        if (selectedCriteria.includes('lessonPlanning')) {
+          headers.push('LESSON PLANNING MARK (15)', 'LESSON PLANNING COMMENT')
+        }
+        if (selectedCriteria.includes('personal')) {
+          headers.push('PERSONAL MARK (5)', 'PERSONAL COMMENT')
+        }
+        if (selectedCriteria.includes('records')) {
+          headers.push('RECORDS MANAGEMENT MARK (15)', 'RECORDS MANAGEMENT COMMENT')
+        }
+        if (selectedCriteria.includes('environment')) {
+          headers.push('ENVIRONMENT MARK (10)', 'ENVIRONMENT COMMENT')
+        }
+        if (selectedCriteria.includes('community')) {
+          headers.push('COMMUNITY MARK (20)', 'COMMUNITY COMMENT')
+        }
+        if (selectedCriteria.includes('research')) {
           headers.push('RESEARCH-BASED COMMUNITY SERVICE MARK (25)', 'RESEARCH-BASED COMMUNITY SERVICE COMMENT')
         }
       }
@@ -185,14 +214,117 @@ export default defineEventHandler(async (event) => {
       .map(({ index }) => index)
 
     markColumns.forEach(colIndex => {
-      const maxMark = headers[colIndex]?.match(/\((\d+)\)/)?.[1] || '100'
+      const header = headers[colIndex]
+      let maxMark = '100'
+      
+      // Set specific max marks based on assessment type
+      if (assessmentType === 'ecd') {
+        // ECD Level specific mark allocations - exactly matching online form
+        if (header.includes('PREPARATION MARK')) {
+          maxMark = '15'
+        } else if (header.includes('LESSON FACILITATION MARK')) {
+          maxMark = '15'
+        } else if (header.includes('DEPORTMENT MARK')) {
+          maxMark = '5'
+        } else if (header.includes('RECORDS MANAGEMENT MARK')) {
+          maxMark = '15'
+        } else if (header.includes('TEACHING AND LEARNING ENVIRONMENT MARK')) {
+          maxMark = '10'
+        } else if (header.includes('RESEARCH-BASED CHILD STUDY & COMMUNITY SERVICE MARK')) {
+          maxMark = '30'
+        } else if (header.includes('REMAINING 2 PILLARS MARK')) {
+          maxMark = '10'
+        } else {
+          maxMark = header?.match(/\((\d+)\)/)?.[1] || '100'
+        }
+      } else if (assessmentType === 'junior') {
+        // Junior Level specific mark allocations - exactly matching online form
+        if (header.includes('PREPARATION MARK')) {
+          maxMark = '15'
+        } else if (header.includes('LESSON FACILITATION MARK')) {
+          maxMark = '15'
+        } else if (header.includes('DEPORTMENT MARK')) {
+          maxMark = '5'
+        } else if (header.includes('RECORDS MANAGEMENT MARK')) {
+          maxMark = '15'
+        } else if (header.includes('TEACHING AND LEARNING ENVIRONMENT MARK')) {
+          maxMark = '10'
+        } else if (header.includes('RESEARCH-BASED COMMUNITY SERVICE/RESEARCH & INNOVATION/RESEARCH & INDUSTRIALISATION MARK')) {
+          maxMark = '30'
+        } else if (header.includes('REMAINING 2 PILLARS MARK')) {
+          maxMark = '10'
+        } else {
+          maxMark = header?.match(/\((\d+)\)/)?.[1] || '100'
+        }
+      } else {
+        maxMark = header?.match(/\((\d+)\)/)?.[1] || '100'
+      }
+      
       const cellRef = XLSX.utils.encode_cell({ r: 1, c: colIndex })
       
-      // Add data validation (Excel doesn't support this in XLSX.js, but we can add instructions)
+      // Add data validation using XLSX.js dv property
+      if (!ws[cellRef]) {
+        ws[cellRef] = { v: '', t: 'n' }
+      }
+      
+      // Add data validation constraint
+      ws[cellRef].dv = {
+        type: 'whole',
+        operator: 'lessThanOrEqual',
+        formula1: maxMark,
+        showInputMessage: true,
+        showErrorMessage: true,
+        inputTitle: 'Mark Entry',
+        inputMessage: `Enter a mark between 0 and ${maxMark}`,
+        errorTitle: 'Invalid Mark',
+        errorMessage: `Mark must be between 0 and ${maxMark}. Please correct your entry.`,
+        errorStyle: 'stop'
+      }
+    })
+
+    // Add data validation for SELECTED CATEGORY column
+    const selectedCategoryColIndex = headers.findIndex(header => header === 'SELECTED CATEGORY')
+    if (selectedCategoryColIndex !== -1) {
+      const cellRef = XLSX.utils.encode_cell({ r: 1, c: selectedCategoryColIndex })
+      
       if (!ws[cellRef]) {
         ws[cellRef] = { v: '', t: 's' }
       }
-    })
+      
+      // Add dropdown validation for research categories based on assessment type
+      let researchCategories = []
+      if (assessmentType === 'ecd') {
+        researchCategories = [
+          'Research-based Child Study & Community Service',
+          'Research & Innovation',
+          'Research & Industrialisation'
+        ]
+      } else if (assessmentType === 'junior') {
+        researchCategories = [
+          'Research-based Community Service',
+          'Research & Innovation',
+          'Research & Industrialisation'
+        ]
+      } else {
+        researchCategories = [
+          'Community Service',
+          'Research & Innovation',
+          'Research & Industrialisation'
+        ]
+      }
+      
+      ws[cellRef].dv = {
+        type: 'list',
+        formula1: `"${researchCategories.join(',')}"`,
+        showInputMessage: true,
+        showErrorMessage: true,
+        inputTitle: 'Select Research Category',
+        inputMessage: 'Choose one of the three research categories',
+        errorTitle: 'Invalid Selection',
+        errorMessage: 'Please select a valid research category from the dropdown list.',
+        errorStyle: 'stop'
+      }
+    }
 
     // Add sample data row
     const sampleData = headers.map((header, index) => {
@@ -202,6 +334,18 @@ export default defineEventHandler(async (event) => {
         return '' // Empty comment
       } else if (header === 'Assessment Date') {
         return new Date().toISOString().slice(0, 16) // Current date
+      } else if (header === 'SELECTED CATEGORY') {
+        // Show the first research category as an example based on assessment type
+        if (assessmentType === 'ecd') {
+          return 'Research-based Child Study & Community Service'
+        } else if (assessmentType === 'junior') {
+          return 'Research-based Community Service'
+        } else {
+          return 'Community Service'
+        }
+      } else if (header === 'REMAINING 2 PILLARS') {
+        // Show remaining pillars based on assessment type
+        return getRemainingPillarsText(assessmentType, selectedCriteria)
       } else {
         return '' // Empty for other fields
       }
@@ -243,11 +387,78 @@ export default defineEventHandler(async (event) => {
       [''],
       ['GENERAL INSTRUCTIONS:'],
       ['1. Fill in the basic information: Student Candidate (candidate number), Subject, Topic, Assessment Date'],
-      ['2. For each selected criteria, enter the mark (0 to maximum) and add comments'],
-      ['3. Marks should be entered as numbers only (no decimals unless specified)'],
-      ['4. Comments should be descriptive and constructive'],
-      ['5. All headings are in BOLD and clearly marked for easy identification'],
-      ['6. Save the file and upload it back to the system when complete'],
+      ['2. For SELECTED CATEGORY: Use the dropdown to choose ONE of the three research categories:'],
+      ...(assessmentType === 'ecd' ? [
+        ['   - Research-based Child Study & Community Service'],
+        ['   - Research & Innovation'],
+        ['   - Research & Industrialisation']
+      ] : assessmentType === 'junior' ? [
+        ['   - Research-based Community Service'],
+        ['   - Research & Innovation'],
+        ['   - Research & Industrialisation']
+      ] : [
+        ['   - Community Service'],
+        ['   - Research & Innovation'],
+        ['   - Research & Industrialisation']
+      ]),
+      ['3. For REMAINING 2 PILLARS: These are the other two categories that will also be assessed'],
+      ...(assessmentType === 'ecd' ? [
+        [''],
+        ['ECD ASSESSMENT CRITERIA:'],
+        ['- Preparation (15 marks)'],
+        ['- Lesson Facilitation (15 marks)'],
+        ['- Deportment (5 marks)'],
+        ['- Records Management (15 marks)'],
+        ['- Teaching and Learning Environment (10 marks)'],
+        ['- Research-based Child Study & Community Service (30 marks)'],
+        ['- Remaining 2 Pillars (10 marks)'],
+        [''],
+        ['4. For each selected criteria, enter the mark (0 to maximum) and add comments']
+      ] : assessmentType === 'junior' ? [
+        [''],
+        ['JUNIOR LEVEL ASSESSMENT CRITERIA:'],
+        ['- Preparation (15 marks)'],
+        ['- Lesson Facilitation (15 marks)'],
+        ['- Deportment (5 marks)'],
+        ['- Records Management (15 marks)'],
+        ['- Teaching and Learning Environment (10 marks)'],
+        ['- Research-based Community Service/Research & Innovation/Research & Industrialisation (30 marks)'],
+        ['- Remaining 2 Pillars (10 marks)'],
+        [''],
+        ['4. For each selected criteria, enter the mark (0 to maximum) and add comments']
+      ] : assessmentType === 'materials' ? [
+        [''],
+        ['MATERIALS DEVELOPMENT ASSESSMENT CRITERIA:'],
+        ['- Content Quality (20 marks)'],
+        ['  • Relevance to curriculum (10 marks)'],
+        ['  • Organization and structure (10 marks)'],
+        ['- Pedagogical Value (20 marks)'],
+        ['  • Alignment with learning objectives (5 marks)'],
+        ['  • Student engagement strategies (5 marks)'],
+        ['  • Connection to real-world applications (5 marks)'],
+        ['  • Inclusive learning approaches (5 marks)'],
+        ['- Design & Layout (20 marks)'],
+        ['  • Visual appeal and clarity (5 marks)'],
+        ['  • Navigation and usability (5 marks)'],
+        ['  • Quality of presentation (5 marks)'],
+        ['  • Consistency in design (5 marks)'],
+        ['- Innovation & Creativity (20 marks)'],
+        ['  • Originality and creativity (10 marks)'],
+        ['  • Use of technology (10 marks)'],
+        ['- Education 5.0 Compliance (20 marks)'],
+        ['  • Local content integration (5 marks)'],
+        ['  • Cultural heritage preservation (5 marks)'],
+        ['  • Problem-solving focus (5 marks)'],
+        ['  • Commercial viability (5 marks)'],
+        [''],
+        ['4. For each selected criteria, enter the mark (0 to maximum) and add comments']
+      ] : [
+        ['4. For each selected criteria, enter the mark (0 to maximum) and add comments']
+      ]),
+      ['5. Marks should be entered as numbers only (no decimals unless specified)'],
+      ['6. Comments should be descriptive and constructive'],
+      ['7. All headings are in BOLD and clearly marked for easy identification'],
+      ['8. Save the file and upload it back to the system when complete'],
       [''],
       ['STUDENT DETAILS:'],
       ['- Only STUDENT CANDIDATE field needs to be filled (student candidate number)'],
@@ -255,10 +466,13 @@ export default defineEventHandler(async (event) => {
       ['- The system will match students using the candidate number provided'],
       [''],
       ['MARKING GUIDELINES:'],
-      ['- Each criteria has a maximum mark indicated in parentheses'],
-      ['- Enter marks as whole numbers (0, 1, 2, etc.)'],
+      ['- Each criteria has a maximum mark indicated in parentheses (e.g., PREPARATION MARK (10))'],
+      ['- Enter marks as whole numbers (0, 1, 2, etc.) - NO DECIMALS ALLOWED'],
+      ['- Marks are automatically validated: you CANNOT enter marks above the maximum'],
+      ['- If you try to enter a mark above the limit, Excel will show an error message'],
       ['- Use comments to justify your marks and provide feedback'],
       ['- Ensure all required fields are completed before submission'],
+      ['- Example: If a field shows "PREPARATION MARK (10)", you can only enter 0-10'],
       [''],
       ['SELECTED CRITERIA:'],
       ...selectedCriteria.map(criteria => [`• ${criteria}`]),
@@ -266,12 +480,19 @@ export default defineEventHandler(async (event) => {
       ['ASSESSMENT TYPE:'],
       [`• ${assessmentType.toUpperCase()}`],
       [''],
+      ['VALIDATION RULES:'],
+      ['- Excel will prevent you from entering marks above the maximum allowed'],
+      ['- If you see an error message, check that your mark is within the valid range'],
+      ['- All mark fields have built-in validation that cannot be bypassed'],
+      ['- The system will also validate marks again during upload for extra security'],
+      ['- Invalid marks will be highlighted and must be corrected before upload'],
+      [''],
       ['IMPORTANT NOTES:'],
       ['- This template is specifically designed for offline assessment'],
       ['- All headings and sections are clearly marked in BOLD'],
       ['- Follow the marking scheme exactly as specified'],
       ['- Student details will be automatically updated from the database during import'],
-      ['- Contact your supervisor if you have any questions']
+      ['- Contact your supervisor if you have any questions about mark limits']
     ]
 
     const instructionsWs = XLSX.utils.aoa_to_sheet(instructions)
@@ -305,7 +526,7 @@ export default defineEventHandler(async (event) => {
             }
 
             // Style all section headings and make them bold
-            const sectionHeadings = ['GENERAL INSTRUCTIONS:', 'STUDENT DETAILS:', 'MARKING GUIDELINES:', 'SELECTED CRITERIA:', 'ASSESSMENT TYPE:', 'IMPORTANT NOTES:']
+            const sectionHeadings = ['GENERAL INSTRUCTIONS:', 'STUDENT DETAILS:', 'MARKING GUIDELINES:', 'VALIDATION RULES:', 'SELECTED CRITERIA:', 'ASSESSMENT TYPE:', 'IMPORTANT NOTES:']
             sectionHeadings.forEach(heading => {
               const rowIndex = instructions.findIndex(row => row[0] === heading)
               if (rowIndex !== -1) {
@@ -383,3 +604,21 @@ export default defineEventHandler(async (event) => {
     })
   }
 })
+
+function getRemainingPillarsText(assessmentType: string, selectedCriteria: string[]): string {
+  if (assessmentType === 'materials') {
+    // For materials development, show all 5 categories as remaining if none selected
+    const allCategories = ['content', 'pedagogical', 'design', 'innovation', 'education']
+    const remaining = allCategories.filter(cat => !selectedCriteria.includes(cat))
+    return remaining.length > 0 ? remaining.join(' & ') : 'All Categories Selected'
+  } else if (assessmentType === 'ecd') {
+    // For ECD, show the remaining 2 research pillars
+    return 'Research & Innovation & Research & Industrialisation'
+  } else if (assessmentType === 'junior') {
+    // For Junior, show the remaining 2 research pillars
+    return 'Research & Innovation & Research & Industrialisation'
+  } else {
+    // For Secondary/ISEN, show the remaining 2 research pillars
+    return 'Research & Innovation & Research & Industrialisation'
+  }
+}

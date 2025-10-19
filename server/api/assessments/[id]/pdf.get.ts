@@ -400,34 +400,65 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
           <tbody>
             ${assessment.formType === 'materials' ? `
             <tr>
-              <td>Content</td>
-              <td>${assessment.preparationMark}</td>
+              <td><strong>Content Quality (20 marks)</strong><br/>
+                  <em style="font-size: 0.8em; color: #666;">
+                    • Relevance to curriculum (10 marks)<br/>
+                    • Organization and structure (10 marks)
+                  </em>
+              </td>
+              <td>${Math.min(assessment.preparationMark, 20)}</td>
               <td>20</td>
-              <td>${Math.round((assessment.preparationMark / 20) * 100)}%</td>
+              <td>${Math.round((Math.min(assessment.preparationMark, 20) / 20) * 100)}%</td>
             </tr>
             <tr>
-              <td>Pedagogical Value</td>
-              <td>${assessment.lessonPlanningMark}</td>
+              <td><strong>Pedagogical Value (20 marks)</strong><br/>
+                  <em style="font-size: 0.8em; color: #666;">
+                    • Alignment with learning objectives (5 marks)<br/>
+                    • Student engagement strategies (5 marks)<br/>
+                    • Connection to real-world applications (5 marks)<br/>
+                    • Inclusive learning approaches (5 marks)
+                  </em>
+              </td>
+              <td>${Math.min(assessment.lessonPlanningMark, 20)}</td>
               <td>20</td>
-              <td>${Math.round((assessment.lessonPlanningMark / 20) * 100)}%</td>
+              <td>${Math.round((Math.min(assessment.lessonPlanningMark, 20) / 20) * 100)}%</td>
             </tr>
             <tr>
-              <td>Design & Layout</td>
-              <td>${assessment.environmentMark}</td>
+              <td><strong>Design & Layout (20 marks)</strong><br/>
+                  <em style="font-size: 0.8em; color: #666;">
+                    • Visual appeal and clarity (5 marks)<br/>
+                    • Navigation and usability (5 marks)<br/>
+                    • Quality of presentation (5 marks)<br/>
+                    • Consistency in design (5 marks)
+                  </em>
+              </td>
+              <td>${Math.min(assessment.environmentMark, 20)}</td>
               <td>20</td>
-              <td>${Math.round((assessment.environmentMark / 20) * 100)}%</td>
+              <td>${Math.round((Math.min(assessment.environmentMark, 20) / 20) * 100)}%</td>
             </tr>
             <tr>
-              <td>Innovation & Creativity</td>
-              <td>${assessment.documentsMark}</td>
+              <td><strong>Innovation & Creativity (20 marks)</strong><br/>
+                  <em style="font-size: 0.8em; color: #666;">
+                    • Originality and creativity (10 marks)<br/>
+                    • Use of technology (10 marks)
+                  </em>
+              </td>
+              <td>${Math.min(assessment.documentsMark, 20)}</td>
               <td>20</td>
-              <td>${Math.round((assessment.documentsMark / 20) * 100)}%</td>
+              <td>${Math.round((Math.min(assessment.documentsMark, 20) / 20) * 100)}%</td>
             </tr>
             <tr>
-              <td>Education 5.0 Compliance</td>
-              <td>${assessment.introductionMark}</td>
+              <td><strong>Education 5.0 Compliance (20 marks)</strong><br/>
+                  <em style="font-size: 0.8em; color: #666;">
+                    • Local content integration (5 marks)<br/>
+                    • Cultural heritage preservation (5 marks)<br/>
+                    • Problem-solving focus (5 marks)<br/>
+                    • Commercial viability (5 marks)
+                  </em>
+              </td>
+              <td>${Math.min(assessment.introductionMark, 20)}</td>
               <td>20</td>
-              <td>${Math.round((assessment.introductionMark / 20) * 100)}%</td>
+              <td>${Math.round((Math.min(assessment.introductionMark, 20) / 20) * 100)}%</td>
             </tr>
             ` : assessment.formType === 'ecd' ? `
             <tr>
@@ -678,33 +709,64 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
 
       ${assessment.formType === 'materials' ? `
       <div class="comment-section">
-        <h3>Comments Breakdown (Materials)</h3>
+        <h3>Comments Breakdown (Materials Development)</h3>
         <table class="score-table">
           <thead>
             <tr>
-              <th>Category</th>
+              <th>Category & Aspects</th>
               <th>Comments</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Content</td>
+              <td><strong>Content Quality (20 marks)</strong><br/>
+                  <em style="font-size: 0.8em; color: #666;">
+                    • Relevance to curriculum (10 marks)<br/>
+                    • Organization and structure (10 marks)
+                  </em>
+              </td>
               <td>${assessment.preparationComment || ''}</td>
             </tr>
             <tr>
-              <td>Pedagogical Value</td>
+              <td><strong>Pedagogical Value (20 marks)</strong><br/>
+                  <em style="font-size: 0.8em; color: #666;">
+                    • Alignment with learning objectives (5 marks)<br/>
+                    • Student engagement strategies (5 marks)<br/>
+                    • Connection to real-world applications (5 marks)<br/>
+                    • Inclusive learning approaches (5 marks)
+                  </em>
+              </td>
               <td>${assessment.lessonPlanningComment || ''}</td>
             </tr>
             <tr>
-              <td>Design & Layout</td>
+              <td><strong>Design & Layout (20 marks)</strong><br/>
+                  <em style="font-size: 0.8em; color: #666;">
+                    • Visual appeal and clarity (5 marks)<br/>
+                    • Navigation and usability (5 marks)<br/>
+                    • Quality of presentation (5 marks)<br/>
+                    • Consistency in design (5 marks)
+                  </em>
+              </td>
               <td>${assessment.environmentComment || ''}</td>
             </tr>
             <tr>
-              <td>Innovation & Creativity</td>
+              <td><strong>Innovation & Creativity (20 marks)</strong><br/>
+                  <em style="font-size: 0.8em; color: #666;">
+                    • Originality and creativity (10 marks)<br/>
+                    • Use of technology (10 marks)
+                  </em>
+              </td>
               <td>${assessment.documentsComment || ''}</td>
             </tr>
             <tr>
-              <td>Education 5.0</td>
+              <td><strong>Education 5.0 Compliance (20 marks)</strong><br/>
+                  <em style="font-size: 0.8em; color: #666;">
+                    • Local content integration (5 marks)<br/>
+                    • Cultural heritage preservation (5 marks)<br/>
+                    • Problem-solving focus (5 marks)<br/>
+                    • Commercial viability (5 marks)
+                  </em>
+              </td>
               <td>${assessment.introductionComment || ''}</td>
             </tr>
           </tbody>

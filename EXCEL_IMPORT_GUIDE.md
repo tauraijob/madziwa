@@ -94,6 +94,17 @@ After upload, you'll see:
 - **Duplicate data**: Same student, subject, and date combination
 - **Student not found**: Candidate number doesn't exist in the database (will create new student with default values)
 
+### Mark Validation
+- **Maximum mark exceeded**: If you enter a mark above the maximum allowed, you'll see a detailed error message
+- **Negative marks**: Marks cannot be negative (minimum is 0)
+- **Decimal marks**: Only whole numbers are allowed (no decimals)
+- **Invalid data types**: Marks must be numeric values
+
+### Excel Data Validation
+- **Built-in validation**: The Excel template includes data validation rules that prevent invalid entries
+- **Error messages**: Excel will show specific error messages when you try to enter invalid marks
+- **Input guidance**: Hover over mark cells to see the valid range for each field
+
 ### Error Details
 - Each error shows the row number and specific issue
 - Errors are logged to the browser console for detailed debugging

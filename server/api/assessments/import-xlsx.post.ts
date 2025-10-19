@@ -69,6 +69,46 @@ function parseDate(input: any): Date | null {
   return isNaN(d.getTime()) ? null : d
 }
 
+function validateMark(value: any, fieldName: string, maxValue: number): { isValid: boolean; error?: string; correctedValue?: number } {
+  const num = Number(value)
+  
+  // Check if value is a valid number
+  if (isNaN(num)) {
+    return {
+      isValid: false,
+      error: `${fieldName}: "${value}" is not a valid number. Please enter a numeric value.`
+    }
+  }
+  
+  // Check if value is negative
+  if (num < 0) {
+    return {
+      isValid: false,
+      error: `${fieldName}: "${num}" is negative. Marks cannot be negative. Please enter a value between 0 and ${maxValue}.`
+    }
+  }
+  
+  // Check if value exceeds maximum
+  if (num > maxValue) {
+    return {
+      isValid: false,
+      error: `${fieldName}: "${num}" exceeds the maximum allowed value of ${maxValue}. Please enter a value between 0 and ${maxValue}.`,
+      correctedValue: maxValue
+    }
+  }
+  
+  // Check if value is a whole number (no decimals)
+  if (num % 1 !== 0) {
+    return {
+      isValid: false,
+      error: `${fieldName}: "${num}" contains decimals. Please enter a whole number between 0 and ${maxValue}.`,
+      correctedValue: Math.round(num)
+    }
+  }
+  
+  return { isValid: true }
+}
+
 function simplifyKey(key: string): string {
   return String(key || '').toLowerCase().replace(/[^a-z0-9]/g, '')
 }
@@ -78,6 +118,7 @@ function normalizeRow(row: ImportRow): ImportRow {
     fullname: 'fullName',
     sex: 'sex',
     candidateno: 'candidateNo',
+    studentcandidate: 'candidateNo', // Map STUDENT CANDIDATE to candidateNo
     email: 'email',
     schoolname: 'schoolName',
     classname: 'className',
@@ -89,6 +130,11 @@ function normalizeRow(row: ImportRow): ImportRow {
     subject: 'subject',
     topic: 'topic',
     formtype: 'formType',
+    // Additional mappings for template headers
+    'student candidate': 'candidateNo',
+    'assessment date': 'assessmentDate',
+    'selected category': 'selectedCategory',
+    'remaining 2 pillars': 'remainingPillars',
     // ECD/Junior/Secondary/ISEN fields
     preparationmark: 'preparationMark',
     preparationcomment: 'preparationComment',
@@ -169,6 +215,8 @@ function normalizeRow(row: ImportRow): ImportRow {
     supervisordesignation: 'supervisorDesignation',
     selectedresearchcategory: 'selectedResearchCategory',
     researchcategory: 'selectedResearchCategory',
+    selectedcategory: 'selectedCategory',
+    remainingpillars: 'remainingPillars',
     overallcomment: 'overallComment',
   }
 
@@ -234,9 +282,54 @@ async function upsertStudent(row: ImportRow) {
   return stu
 }
 
+function validateAllMarks(row: ImportRow): { errors: string[], correctedData: any } {
+  const errors: string[] = []
+  const correctedData: any = {}
+  
+  // Define all mark fields and their maximum values
+  const markFields = [
+    { field: 'preparationMark', max: MAX.preparationMark, name: 'Preparation Mark' },
+    { field: 'lessonPlanningMark', max: MAX.lessonPlanningMark, name: 'Lesson Planning Mark' },
+    { field: 'lessonFacilitationMark', max: MAX.lessonFacilitationMark, name: 'Lesson Facilitation Mark' },
+    { field: 'deportmentMark', max: MAX.deportmentMark, name: 'Deportment Mark' },
+    { field: 'recordsMark', max: MAX.recordsMark, name: 'Records Mark' },
+    { field: 'environmentMark', max: MAX.environmentMark, name: 'Environment Mark' },
+    { field: 'documentsMark', max: MAX.documentsMark, name: 'Documents Mark' },
+    { field: 'introductionMark', max: MAX.introductionMark, name: 'Introduction Mark' },
+    { field: 'developmentMark', max: MAX.developmentMark, name: 'Development Mark' },
+    { field: 'conclusionMark', max: MAX.conclusionMark, name: 'Conclusion Mark' },
+    { field: 'personalDimensionsMark', max: MAX.personalDimensionsMark, name: 'Personal Dimensions Mark' },
+    { field: 'communityMark', max: MAX.communityMark, name: 'Community Mark' },
+    { field: 'remainingPillarsMark', max: MAX.remainingPillarsMark, name: 'Remaining Pillars Mark' },
+  ]
+  
+  // Validate each mark field
+  markFields.forEach(({ field, max, name }) => {
+    if (row[field] !== undefined && row[field] !== null && row[field] !== '') {
+      const validation = validateMark(row[field], name, max)
+      if (!validation.isValid) {
+        errors.push(validation.error!)
+        if (validation.correctedValue !== undefined) {
+          correctedData[field] = validation.correctedValue
+        }
+      } else {
+        correctedData[field] = row[field]
+      }
+    }
+  })
+  
+  return { errors, correctedData }
+}
+
 function mapAssessmentData(row: ImportRow) {
   const assessmentDate = parseDate(row.assessmentDate)
   if (!assessmentDate) throw new Error('Invalid assessmentDate')
+
+  // Validate all marks first
+  const { errors, correctedData } = validateAllMarks(row)
+  if (errors.length > 0) {
+    throw new Error(`Validation errors:\n${errors.join('\n')}`)
+  }
 
   // Only include fields that actually exist in the database schema
   const base = {
@@ -245,24 +338,26 @@ function mapAssessmentData(row: ImportRow) {
     topic: String(row.topic || '').trim(),
     formType: String(row.formType || 'junior'),
     overallComment: String(row.overallComment || '').trim(),
-    // Only the fields that exist in the database
-    preparationMark: clampNumber(row.preparationMark, MAX.preparationMark),
+    selectedCategory: String(row.selectedCategory || '').trim(),
+    remainingPillars: String(row.remainingPillars || '').trim(),
+    // Use corrected data for marks (already validated)
+    preparationMark: clampNumber(correctedData.preparationMark || row.preparationMark, MAX.preparationMark),
     preparationComment: String(row.preparationComment || '').trim(),
-    lessonPlanningMark: clampNumber(row.lessonPlanningMark, MAX.lessonPlanningMark),
+    lessonPlanningMark: clampNumber(correctedData.lessonPlanningMark || row.lessonPlanningMark, MAX.lessonPlanningMark),
     lessonPlanningComment: String(row.lessonPlanningComment || '').trim(),
-    environmentMark: clampNumber(row.environmentMark, MAX.environmentMark),
+    environmentMark: clampNumber(correctedData.environmentMark || row.environmentMark, MAX.environmentMark),
     environmentComment: String(row.environmentComment || '').trim(),
-    documentsMark: clampNumber(row.documentsMark, MAX.documentsMark),
+    documentsMark: clampNumber(correctedData.documentsMark || row.documentsMark, MAX.documentsMark),
     documentsComment: String(row.documentsComment || '').trim(),
-    introductionMark: clampNumber(row.introductionMark, MAX.introductionMark),
+    introductionMark: clampNumber(correctedData.introductionMark || row.introductionMark, MAX.introductionMark),
     introductionComment: String(row.introductionComment || '').trim(),
-    developmentMark: clampNumber(row.developmentMark, MAX.developmentMark),
+    developmentMark: clampNumber(correctedData.developmentMark || row.developmentMark, MAX.developmentMark),
     developmentComment: String(row.developmentComment || '').trim(),
-    conclusionMark: clampNumber(row.conclusionMark, MAX.conclusionMark),
+    conclusionMark: clampNumber(correctedData.conclusionMark || row.conclusionMark, MAX.conclusionMark),
     conclusionComment: String(row.conclusionComment || '').trim(),
-    personalDimensionsMark: clampNumber(row.personalDimensionsMark, MAX.personalDimensionsMark),
+    personalDimensionsMark: clampNumber(correctedData.personalDimensionsMark || row.personalDimensionsMark, MAX.personalDimensionsMark),
     personalDimensionsComment: String(row.personalDimensionsComment || '').trim(),
-    communityMark: clampNumber(row.communityMark, MAX.communityMark),
+    communityMark: clampNumber(correctedData.communityMark || row.communityMark, MAX.communityMark),
     communityComment: String(row.communityComment || '').trim(),
     selectedResearchCategory: String(row.selectedResearchCategory || '').trim(),
   }
