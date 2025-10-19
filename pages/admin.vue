@@ -656,17 +656,15 @@ const loadDistricts = async () => {
 const loadAssignedDistrict = async () => {
   if (isSuperadmin.value) return
   try {
-    // Always show Bindura district data in the admin dashboard
-    const districtsRes = await $fetch('/api/districts')
-    const binduraDistrict = districtsRes.districts?.find(d => d.name.toLowerCase() === 'bindura')
-    
-    if (binduraDistrict) {
-      assignedDistrict.value = binduraDistrict
+    const adminDistrictId = useCookie('adminDistrictId')
+    if (adminDistrictId.value) {
+      const res = await $fetch(`/api/districts/${adminDistrictId.value}`)
+      assignedDistrict.value = res.district
       
-      // Load student and supervisor counts for Bindura district
+      // Load student and supervisor counts for this district
       const [studentsRes, supervisorsRes] = await Promise.all([
-        $fetch('/api/students', { params: { districtId: binduraDistrict.id } }),
-        $fetch('/api/supervisors', { params: { districtId: binduraDistrict.id } })
+        $fetch('/api/students', { params: { districtId: adminDistrictId.value } }),
+        $fetch('/api/supervisors', { params: { districtId: adminDistrictId.value } })
       ])
       
       districtStudentCount.value = studentsRes.students?.length || 0
