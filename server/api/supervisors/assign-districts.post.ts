@@ -24,9 +24,7 @@ export default defineEventHandler(async (event) => {
     const supervisor = await prisma.supervisor.findUnique({
       where: { id: parseInt(String(supervisorId)) },
       include: { 
-        districts: {
-          include: { district: true }
-        }
+        district: true
       }
     })
 

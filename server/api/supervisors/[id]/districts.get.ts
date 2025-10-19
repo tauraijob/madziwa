@@ -20,9 +20,6 @@ export default defineEventHandler(async (event) => {
     const supervisor = await prisma.supervisor.findUnique({
       where: { id: supervisorId },
       include: { 
-        districts: {
-          include: { district: true }
-        },
         district: true // Primary district
       }
     })
@@ -37,7 +34,7 @@ export default defineEventHandler(async (event) => {
         fullName: supervisor.fullName,
         email: supervisor.email,
         primaryDistrict: supervisor.district,
-        assignedDistricts: supervisor.districts.map(sd => sd.district)
+        assignedDistricts: supervisor.district ? [supervisor.district] : []
       }
     }
   } catch (error) {

@@ -24,21 +24,12 @@ export default defineEventHandler(async (event) => {
     const supervisors = await prisma.supervisor.findMany({ 
       where, 
       include: { 
-        district: true,
-        districts: {
-          include: { district: true }
-        }
+        district: true
       }, 
       orderBy: { fullName: 'asc' } 
     })
     
-    // Transform the data to include assigned districts
-    const transformedSupervisors = supervisors.map(supervisor => ({
-      ...supervisor,
-      assignedDistricts: supervisor.districts.map(sd => sd.district)
-    }))
-    
-    return { supervisors: transformedSupervisors }
+    return { supervisors }
   } catch (error) {
     if ((error as any)?.statusCode) throw error
     console.error('List/search supervisors failed:', error)
