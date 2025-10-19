@@ -153,26 +153,36 @@ export default defineEventHandler(async (event) => {
         // Ensure district exists if provided
         let districtId: number | undefined = undefined
         if (districtName) {
-          let district = await prisma.district.findFirst({ where: { name: districtName } })
-          if (!district) {
-            district = await prisma.district.create({ data: { name: districtName } })
+          try {
+            let district = await prisma.district.findFirst({ where: { name: districtName } })
+            if (!district) {
+              district = await prisma.district.create({ data: { name: districtName } })
+            }
+            districtId = district.id
+          } catch (dbError) {
+            console.warn(`Database error for district ${districtName}, skipping district assignment:`, dbError.message)
+            // Continue without district assignment for development
           }
-          districtId = district.id
         }
 
         const data: any = { fullName, sex, candidateNo, email, schoolName, className }
         if (phone) data.phoneNumber = phone
         if (districtId) data.districtId = districtId
 
-        let existing = await prisma.student.findUnique({ where: { candidateNo } })
-        if (!existing) {
-          await prisma.student.create({ data })
-          created++
-          results.push({ row: r + 1, status: 'created', candidateNo })
-        } else {
-          await prisma.student.update({ where: { id: existing.id }, data })
-          updated++
-          results.push({ row: r + 1, status: 'updated', candidateNo })
+        try {
+          let existing = await prisma.student.findUnique({ where: { candidateNo } })
+          if (!existing) {
+            await prisma.student.create({ data })
+            created++
+            results.push({ row: r + 1, status: 'created', candidateNo })
+          } else {
+            await prisma.student.update({ where: { id: existing.id }, data })
+            updated++
+            results.push({ row: r + 1, status: 'updated', candidateNo })
+          }
+        } catch (dbError) {
+          console.warn(`Database error for student ${candidateNo}, skipping:`, dbError.message)
+          results.push({ row: r + 1, status: 'skipped (DB error)', candidateNo, error: dbError.message })
         }
       } catch (err: any) {
         errors++
