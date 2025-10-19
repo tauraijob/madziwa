@@ -25,13 +25,13 @@
             class="inline-block bg-green-600 text-white text-lg font-semibold py-4 px-8 rounded-xl hover:bg-green-700 transition-all transform hover:scale-105 shadow-lg"
           >
             Start Assessment
-          </NuxtLink>
-          
+        </NuxtLink>
+
           <div class="mt-6 text-sm text-gray-500">
             <p>Choose your assessment type and criteria on the next page</p>
+            </div>
+            </div>
           </div>
-        </div>
-      </div>
 
     </div>
   </div>

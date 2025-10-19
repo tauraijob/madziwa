@@ -16,12 +16,10 @@ export default defineEventHandler(async (event) => {
 
     // Define headers based on assessment type and selected criteria
     let headers = [
-      'STUDENT NAME', 
-      'STUDENT NUMBER', 
+      'STUDENT CANDIDATE', 
       'SUBJECT', 
       'TOPIC', 
-      'ASSESSMENT DATE', 
-      'SUPERVISOR NAME'
+      'ASSESSMENT DATE'
     ]
 
     if (assessmentType === 'materials') {
@@ -244,12 +242,17 @@ export default defineEventHandler(async (event) => {
       ['OFFLINE ASSESSMENT TEMPLATE INSTRUCTIONS'],
       [''],
       ['GENERAL INSTRUCTIONS:'],
-      ['1. Fill in the basic information: Student Name, Student Number, Subject, Topic, Assessment Date, Supervisor Name'],
+      ['1. Fill in the basic information: Student Candidate (candidate number), Subject, Topic, Assessment Date'],
       ['2. For each selected criteria, enter the mark (0 to maximum) and add comments'],
       ['3. Marks should be entered as numbers only (no decimals unless specified)'],
       ['4. Comments should be descriptive and constructive'],
       ['5. All headings are in BOLD and clearly marked for easy identification'],
       ['6. Save the file and upload it back to the system when complete'],
+      [''],
+      ['STUDENT DETAILS:'],
+      ['- Only STUDENT CANDIDATE field needs to be filled (student candidate number)'],
+      ['- All other student details (name, sex, email, school, class) will be automatically populated from the database'],
+      ['- The system will match students using the candidate number provided'],
       [''],
       ['MARKING GUIDELINES:'],
       ['- Each criteria has a maximum mark indicated in parentheses'],
@@ -267,6 +270,7 @@ export default defineEventHandler(async (event) => {
       ['- This template is specifically designed for offline assessment'],
       ['- All headings and sections are clearly marked in BOLD'],
       ['- Follow the marking scheme exactly as specified'],
+      ['- Student details will be automatically updated from the database during import'],
       ['- Contact your supervisor if you have any questions']
     ]
 
@@ -301,7 +305,7 @@ export default defineEventHandler(async (event) => {
             }
 
             // Style all section headings and make them bold
-            const sectionHeadings = ['GENERAL INSTRUCTIONS:', 'MARKING GUIDELINES:', 'SELECTED CRITERIA:', 'ASSESSMENT TYPE:', 'IMPORTANT NOTES:']
+            const sectionHeadings = ['GENERAL INSTRUCTIONS:', 'STUDENT DETAILS:', 'MARKING GUIDELINES:', 'SELECTED CRITERIA:', 'ASSESSMENT TYPE:', 'IMPORTANT NOTES:']
             sectionHeadings.forEach(heading => {
               const rowIndex = instructions.findIndex(row => row[0] === heading)
               if (rowIndex !== -1) {

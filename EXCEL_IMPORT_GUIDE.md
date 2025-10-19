@@ -11,12 +11,11 @@ The system supports uploading completed Excel assessment templates to automatica
 ## Required Excel Columns
 
 ### Student Information (Required)
-- `STUDENT NAME` or `FULL NAME` - Student's full name
-- `CANDIDATE NUMBER` or `CANDIDATE NO` - Unique student identifier
-- `SEX` - Student's gender (M/F)
-- `EMAIL` - Student's email address
-- `SCHOOL NAME` - Name of the school
-- `CLASS NAME` - Student's class/grade
+- `STUDENT CANDIDATE` or `CANDIDATE NUMBER` or `CANDIDATE NO` - Unique student identifier
+
+### Student Information (Auto-populated from Database)
+- Student name, sex, email, school name, and class name are automatically retrieved from the database using the candidate number
+- These details are managed through the student management interface and will be automatically populated during import
 
 ### Assessment Information (Required)
 - `SUBJECT` - Subject being assessed
@@ -62,18 +61,21 @@ The system supports uploading completed Excel assessment templates to automatica
   - `PREPARATION MARK`, `Preparation Mark`, `preparation_mark`
 
 ### Data Validation
-- **Required fields**: Student name, candidate number, sex, email, school name, class name, subject, topic, assessment date
+- **Required fields**: Student candidate number, subject, topic, assessment date
 - **Date format**: Any valid date format (Excel will auto-detect)
 - **Marks**: Must be numeric values within specified ranges
 - **Comments**: Can be text of any length
+- **Student details**: Automatically populated from database using candidate number
 
 ## Import Process
 
 ### What Happens During Import
-1. **Student Creation/Update**: Students are created if they don't exist, or updated if they do
-2. **Assessment Creation**: New assessment records are created for each row
-3. **Duplicate Prevention**: If an assessment already exists for the same student, subject, and date, it will be updated instead of creating a duplicate
-4. **Validation**: All data is validated and errors are reported
+1. **Student Lookup**: Students are found using the candidate number from the database
+2. **Student Creation**: If a student doesn't exist, a new student record is created with default values
+3. **Assessment Creation**: New assessment records are created for each row
+4. **Duplicate Prevention**: If an assessment already exists for the same student, subject, and date, it will be updated instead of creating a duplicate
+5. **Validation**: All data is validated and errors are reported
+6. **Auto-population**: Student details (name, sex, email, school, class) are automatically populated from the database
 
 ### Import Results
 After upload, you'll see:
@@ -86,10 +88,11 @@ After upload, you'll see:
 ## Error Handling
 
 ### Common Errors
-- **Missing required fields**: Student name, candidate number, etc.
+- **Missing required fields**: Student candidate number, subject, topic, assessment date
 - **Invalid date format**: Assessment date must be a valid date
 - **Invalid marks**: Scores must be within the specified ranges
 - **Duplicate data**: Same student, subject, and date combination
+- **Student not found**: Candidate number doesn't exist in the database (will create new student with default values)
 
 ### Error Details
 - Each error shows the row number and specific issue

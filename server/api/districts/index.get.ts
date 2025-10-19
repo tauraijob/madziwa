@@ -4,6 +4,8 @@ const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
   try {
+    await prisma.$connect()
+    
     const role = getCookie(event, 'role')
     if (role !== 'admin' && role !== 'superadmin') {
       throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })

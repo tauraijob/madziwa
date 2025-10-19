@@ -50,17 +50,26 @@ export default defineEventHandler(async (event) => {
     try {
       // Generate PDF for each assessment
       for (const assessment of assessments) {
-        // Calculate total mark with proper clamping for consistency
+        // Calculate total mark with proper calculation for consistency
         let totalMark
-        if (assessment.formType === 'ecd' || assessment.formType === 'junior' || !assessment.formType) {
-          // For ECD/Junior, use clamped values to prevent exceeding maximums
-          totalMark = Math.min(assessment.preparationMark || 0, 15) + 
-                     Math.min(assessment.lessonPlanningMark || 0, 15) + 
-                     Math.min(assessment.environmentMark || 0, 10) + 
-                     Math.min(assessment.documentsMark || 0, 15) + 
-                     Math.min(assessment.introductionMark || 0, 5) + 
-                     Math.min(assessment.developmentMark || 0, 30) + 
-                     Math.min(assessment.conclusionMark || 0, 10)
+        if (assessment.formType === 'ecd') {
+          // ECD: preparation + lessonPlanning + personalDimensions + documents + environment + community + conclusion
+          totalMark = (assessment.preparationMark || 0) + 
+                     (assessment.lessonPlanningMark || 0) + 
+                     (assessment.personalDimensionsMark || 0) + 
+                     (assessment.documentsMark || 0) + 
+                     (assessment.environmentMark || 0) + 
+                     (assessment.communityMark || 0) + 
+                     (assessment.conclusionMark || 0)
+        } else if (assessment.formType === 'junior') {
+          // Junior: preparation + lessonPlanning + personalDimensions + documents + environment + community + conclusion
+          totalMark = (assessment.preparationMark || 0) + 
+                     (assessment.lessonPlanningMark || 0) + 
+                     (assessment.personalDimensionsMark || 0) + 
+                     (assessment.documentsMark || 0) + 
+                     (assessment.environmentMark || 0) + 
+                     (assessment.communityMark || 0) + 
+                     (assessment.conclusionMark || 0)
         } else {
           // For other assessment types, use standard calculation
           totalMark = (assessment.preparationMark || 0) + 
@@ -421,20 +430,151 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
         <div class="grade">${getGrade(totalMark)}</div>
       </div>
 
-      <div class="comment-section">
-        <h3>Comments Breakdown</h3>
-        <ul>
-          <li><strong>Research-Teaching & Learning - Preparation:</strong> ${assessment.preparationComment || ''}</li>
-          <li><strong>Research-Teaching & Learning - Lesson Facilitation:</strong> ${assessment.lessonPlanningComment || ''}</li>
-          <li><strong>Research-Teaching & Learning - Deportment:</strong> ${assessment.introductionComment || ''}</li>
-          <li><strong>Research-Teaching & Learning - Records Management:</strong> ${assessment.documentsComment || ''}</li>
-          <li><strong>Teaching and Learning Environment:</strong> ${assessment.environmentComment || ''}</li>
-          <li><strong>Research-based Community Service/Research & Innovation/Research & Industrialisation:</strong> ${assessment.developmentComment || ''}</li>
-          <li><strong>Remaining 2 Pillars:</strong> ${assessment.conclusionComment || ''}</li>
-        </ul>
-        <h3>Overall Comment</h3>
-        <p>${assessment.overallComment || ''}</p>
-      </div>
+      ${assessment.formType === 'ecd' ? `
+       <div class="comment-section">
+         <h3>Comments Breakdown</h3>
+         <table class="score-table">
+           <thead>
+             <tr>
+               <th>Category</th>
+               <th>Comments</th>
+             </tr>
+           </thead>
+           <tbody>
+             <tr>
+               <td><strong>Preparation</strong></td>
+               <td>${assessment.preparationComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Lesson Facilitation</strong></td>
+               <td>${assessment.lessonPlanningComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Deportment</strong></td>
+               <td>${assessment.personalDimensionsComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Records Management</strong><br/>
+                   <em style="font-size: 0.8em; color: #666;">
+                     • Register • Progress Record • Individual Social Record • Remedial • Extension work • Reading • Inventory Record • Test Record • WIL File • Anecdotal • Developmental Checklist • Health Record
+                   </em>
+               </td>
+               <td>${assessment.documentsComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Teaching and learning environment</strong><br/>
+                   <ul style="margin: 0; padding-left: 20px; font-size: 0.9em; color: #666;">
+                     <li>Classroom layout and conduciveness</li>
+                     <li>Management of learning centres</li>
+                   </ul>
+               </td>
+               <td>${assessment.environmentComment || ''}</td>
+             </tr>
+             ${assessment.selectedResearchCategory === 'community_service' ? `
+             <tr>
+               <td><strong>Research-based Child Study & Community Service</strong><br/>
+                   <em style="font-size: 0.8em; color: #666;">✓ Selected</em>
+               </td>
+               <td>${assessment.communityComment || ''}</td>
+             </tr>
+             ` : ''}
+             ${assessment.selectedResearchCategory === 'innovation' ? `
+             <tr>
+               <td><strong>Research & Innovation</strong><br/>
+                   <em style="font-size: 0.8em; color: #666;">✓ Selected</em>
+               </td>
+               <td>${assessment.communityComment || ''}</td>
+             </tr>
+             ` : ''}
+             ${assessment.selectedResearchCategory === 'industrialisation' ? `
+             <tr>
+               <td><strong>Research & Industrialisation</strong><br/>
+                   <em style="font-size: 0.8em; color: #666;">✓ Selected</em>
+               </td>
+               <td>${assessment.communityComment || ''}</td>
+             </tr>
+             ` : ''}
+             <tr>
+               <td><strong>Remaining 2 pillars</strong><br/>
+                   <em style="font-size: 0.8em; color: #666;">
+                     ${assessment.selectedResearchCategory === 'community_service' ? 'Research & Innovation, Research & Industrialisation' : 
+                      assessment.selectedResearchCategory === 'innovation' ? 'Research-based Child Study & Community Service, Research & Industrialisation' : 
+                      assessment.selectedResearchCategory === 'industrialisation' ? 'Research-based Child Study & Community Service, Research & Innovation' : 'All three categories'}
+                   </em>
+               </td>
+               <td>${assessment.conclusionComment || ''}</td>
+             </tr>
+           </tbody>
+         </table>
+         <h3>Overall Comment</h3>
+         <p>${assessment.overallComment || ''}</p>
+       </div>
+      ` : (assessment.formType === 'junior' || !assessment.formType) ? `
+       <div class="comment-section">
+         <h3>Comments Breakdown</h3>
+         <table class="score-table">
+           <thead>
+             <tr>
+               <th>Category</th>
+               <th>Comments</th>
+             </tr>
+           </thead>
+           <tbody>
+             <tr>
+               <td><strong>Research-Teaching & Learning</strong><br/>Preparation</td>
+               <td>${assessment.preparationComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Research-Teaching & Learning</strong><br/>Lesson Facilitation</td>
+               <td>${assessment.lessonPlanningComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Research-Teaching & Learning</strong><br/>Deportment</td>
+               <td>${assessment.personalDimensionsComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Research-Teaching & Learning</strong><br/>Records Management</td>
+               <td>${assessment.documentsComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Research-Teaching & Learning</strong><br/>Teaching and Learning Environment</td>
+               <td>${assessment.environmentComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>${assessment.selectedResearchCategory === 'community_service' ? 'Research-based Community Service' : 
+                               assessment.selectedResearchCategory === 'innovation' ? 'Research & Innovation' : 
+                               assessment.selectedResearchCategory === 'industrialisation' ? 'Research & Industrialisation' : 'Research Category'} (Selected Category)</strong></td>
+               <td>${assessment.communityComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Remaining 2 Pillars</strong><br/>
+                   <em>${assessment.selectedResearchCategory === 'community_service' ? 'Research & Innovation, Research & Industrialisation' : 
+                        assessment.selectedResearchCategory === 'innovation' ? 'Research-based Community Service, Research & Industrialisation' : 
+                        assessment.selectedResearchCategory === 'industrialisation' ? 'Research-based Community Service, Research & Innovation' : 'Not Selected'}</em>
+               </td>
+               <td>${assessment.conclusionComment || ''}</td>
+             </tr>
+           </tbody>
+         </table>
+         <h3>Overall Comment</h3>
+         <p>${assessment.overallComment || ''}</p>
+       </div>
+      ` : `
+       <div class="comment-section">
+         <h3>Comments Breakdown</h3>
+         <ul>
+           <li><strong>Research-Teaching & Learning - Preparation:</strong> ${assessment.preparationComment || ''}</li>
+           <li><strong>Research-Teaching & Learning - Lesson Facilitation:</strong> ${assessment.lessonPlanningComment || ''}</li>
+           <li><strong>Research-Teaching & Learning - Deportment:</strong> ${assessment.introductionComment || ''}</li>
+           <li><strong>Research-Teaching & Learning - Records Management:</strong> ${assessment.documentsComment || ''}</li>
+           <li><strong>Teaching and Learning Environment:</strong> ${assessment.environmentComment || ''}</li>
+           <li><strong>Research-based Community Service/Research & Innovation/Research & Industrialisation:</strong> ${assessment.developmentComment || ''}</li>
+           <li><strong>Remaining 2 Pillars:</strong> ${assessment.conclusionComment || ''}</li>
+         </ul>
+         <h3>Overall Comment</h3>
+         <p>${assessment.overallComment || ''}</p>
+       </div>
+      `}
 
       <div class="footer">
         <p>This report was generated by the Madziwa Teachers College WIL Assessment Platform</p>

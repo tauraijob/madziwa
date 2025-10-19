@@ -319,7 +319,131 @@
             </div>
           </div>
 
-          <!-- ECD / Other breakdown -->
+          <!-- ECD Level breakdown -->
+          <div v-else-if="assessment.formType === 'ecd'" class="divide-y divide-gray-200">
+            <!-- Research-Teaching & Learning - Preparation -->
+            <div class="px-6 py-4">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-medium text-gray-900">Research-Teaching & Learning - Preparation</h4>
+                <span class="text-lg font-semibold text-blue-600">{{ Math.min(assessment.preparationMark, 15) }}/15</span>
+              </div>
+              <div class="bg-gray-200 rounded-full h-2 mb-2">
+                <div 
+                  class="bg-blue-600 h-2 rounded-full"
+                  :style="{ width: (Math.min(assessment.preparationMark, 15) / 15 * 100) + '%' }"
+                ></div>
+              </div>
+              <p class="text-sm text-gray-600">{{ assessment.preparationComment }}</p>
+            </div>
+
+            <!-- Research-Teaching & Learning - Lesson Facilitation -->
+            <div class="px-6 py-4">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-medium text-gray-900">Research-Teaching & Learning - Lesson Facilitation</h4>
+                <span class="text-lg font-semibold text-blue-600">{{ Math.min(assessment.lessonPlanningMark, 15) }}/15</span>
+              </div>
+              <div class="bg-gray-200 rounded-full h-2 mb-2">
+                <div 
+                  class="bg-blue-600 h-2 rounded-full"
+                  :style="{ width: (Math.min(assessment.lessonPlanningMark, 15) / 15 * 100) + '%' }"
+                ></div>
+              </div>
+              <p class="text-sm text-gray-600">{{ assessment.lessonPlanningComment }}</p>
+            </div>
+
+            <!-- Research-Teaching & Learning - Deportment -->
+            <div class="px-6 py-4">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-medium text-gray-900">Research-Teaching & Learning - Deportment</h4>
+                <span class="text-lg font-semibold text-blue-600">{{ Math.min(assessment.personalDimensionsMark, 5) }}/5</span>
+              </div>
+              <div class="bg-gray-200 rounded-full h-2 mb-2">
+                <div 
+                  class="bg-blue-600 h-2 rounded-full"
+                  :style="{ width: (Math.min(assessment.personalDimensionsMark, 5) / 5 * 100) + '%' }"
+                ></div>
+              </div>
+              <p class="text-sm text-gray-600">{{ assessment.personalDimensionsComment }}</p>
+            </div>
+
+            <!-- Research-Teaching & Learning - Records Management -->
+            <div class="px-6 py-4">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-medium text-gray-900">Research-Teaching & Learning - Records Management</h4>
+                <span class="text-lg font-semibold text-blue-600">{{ Math.min(assessment.documentsMark, 15) }}/15</span>
+              </div>
+              <div class="bg-gray-200 rounded-full h-2 mb-2">
+                <div 
+                  class="bg-blue-600 h-2 rounded-full"
+                  :style="{ width: (Math.min(assessment.documentsMark, 15) / 15 * 100) + '%' }"
+                ></div>
+              </div>
+              <p class="text-sm text-gray-600">{{ assessment.documentsComment }}</p>
+            </div>
+
+            <!-- Research-Teaching & Learning - Teaching and Learning Environment -->
+            <div class="px-6 py-4">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-medium text-gray-900">Research-Teaching & Learning - Teaching and Learning Environment</h4>
+                <span class="text-lg font-semibold text-blue-600">{{ Math.min(assessment.environmentMark, 10) }}/10</span>
+              </div>
+              <div class="bg-gray-200 rounded-full h-2 mb-2">
+                <div 
+                  class="bg-blue-600 h-2 rounded-full"
+                  :style="{ width: (Math.min(assessment.environmentMark, 10) / 10 * 100) + '%' }"
+                ></div>
+              </div>
+              <p class="text-sm text-gray-600">{{ assessment.environmentComment }}</p>
+            </div>
+
+            <!-- Selected Research Category -->
+            <div class="px-6 py-4">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-medium text-gray-900">
+                  {{ getSelectedResearchCategoryName(assessment.selectedResearchCategory) }} (Selected Category)
+                </h4>
+                <span class="text-lg font-semibold text-blue-600">{{ Math.min(assessment.communityMark, 30) }}/30</span>
+              </div>
+              <div class="bg-gray-200 rounded-full h-2 mb-2">
+                <div 
+                  class="bg-blue-600 h-2 rounded-full"
+                  :style="{ width: (Math.min(assessment.communityMark, 30) / 30 * 100) + '%' }"
+                ></div>
+              </div>
+              <p class="text-sm text-gray-600">{{ assessment.communityComment }}</p>
+            </div>
+
+            <!-- Remaining 2 Pillars -->
+            <div class="px-6 py-4">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-medium text-gray-900">Remaining 2 Pillars</h4>
+                <span class="text-lg font-semibold text-blue-600">{{ Math.min(assessment.conclusionMark, 10) }}/10</span>
+              </div>
+              <div class="bg-gray-200 rounded-full h-2 mb-2">
+                <div 
+                  class="bg-blue-600 h-2 rounded-full"
+                  :style="{ width: (Math.min(assessment.conclusionMark, 10) / 10 * 100) + '%' }"
+                ></div>
+              </div>
+              <p class="text-sm text-gray-600">{{ assessment.conclusionComment }}</p>
+              <div class="mt-2 text-xs text-gray-500">
+                <div v-if="assessment.selectedResearchCategory === 'community_service'">
+                  <div>• Research & Innovation</div>
+                  <div>• Research & Industrialisation</div>
+                </div>
+                <div v-else-if="assessment.selectedResearchCategory === 'innovation'">
+                  <div>• Research-based Child Study & Community Service</div>
+                  <div>• Research & Industrialisation</div>
+                </div>
+                <div v-else-if="assessment.selectedResearchCategory === 'industrialisation'">
+                  <div>• Research-based Child Study & Community Service</div>
+                  <div>• Research & Innovation</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Other breakdown (for non-ECD, non-Junior, non-Materials) -->
           <div v-else class="divide-y divide-gray-200">
             <!-- Research-Teaching & Learning - Preparation -->
             <div class="px-6 py-4">
@@ -494,7 +618,7 @@ const props = defineProps({
 const getSelectedResearchCategoryName = (category) => {
   switch (category) {
     case 'community_service':
-      return 'Research-based Community Service'
+      return 'Research-based Child Study & Community Service'
     case 'innovation':
       return 'Research & Innovation'
     case 'industrialisation':

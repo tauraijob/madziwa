@@ -355,9 +355,9 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <!-- Research-Teaching & Learning -->
+                  <!-- Research-Teaching & Learning - Preparation -->
                   <tr>
-                    <td rowspan="3" class="border border-gray-300 px-4 py-2 align-top font-medium">Research-Teaching & Learning</td>
+                    <td rowspan="5" class="border border-gray-300 px-4 py-2 align-top font-medium">Research-Teaching & Learning</td>
                     <td class="border border-gray-300 px-4 py-2">
                       <div class="font-medium">Preparation</div>
                       <ul class="text-sm text-gray-600 mt-1">
@@ -414,8 +414,8 @@
                       <div class="text-xs text-gray-500 mt-1">5%</div>
                     </td>
                   </tr>
+                  <!-- Research-Teaching & Learning - Records Management -->
                   <tr>
-                    <td class="border border-gray-300 px-4 py-2 font-medium">Records Management</td>
                     <td class="border border-gray-300 px-4 py-2">
                       <div class="font-medium">Records management</div>
                       <ul class="text-sm text-gray-600 mt-1">
@@ -428,9 +428,9 @@
                         <li>• Inventory Record</li>
                         <li>• Test Record</li>
                         <li>• WIL File</li>
-                        <li v-if="assessmentType === 'ecd'">• Anecdotal</li>
-                        <li v-if="assessmentType === 'ecd'">• Developmental Checklist</li>
-                        <li v-if="assessmentType === 'ecd'">• Health Record</li>
+                        <li>• Anecdotal</li>
+                        <li>• Developmental Checklist</li>
+                        <li>• Health Record</li>
                       </ul>
                     </td>
                     <td class="border border-gray-300 px-4 py-2">
@@ -441,10 +441,11 @@
                       <div class="text-xs text-gray-500 mt-1">15%</div>
                     </td>
                   </tr>
+                  <!-- Research-Teaching & Learning - Teaching and learning environment -->
                   <tr>
-                    <td class="border border-gray-300 px-4 py-2 font-medium">Teaching and learning environment</td>
                     <td class="border border-gray-300 px-4 py-2">
-                      <ul class="text-sm text-gray-600">
+                      <div class="font-medium">Teaching and learning environment</div>
+                      <ul class="text-sm text-gray-600 mt-1">
                         <li>• Classroom layout and conduciveness</li>
                         <li>• Management of learning centres</li>
                       </ul>
@@ -1425,10 +1426,17 @@ const form = ref({
   // ECD & Junior Level fields
   preparationMark: 0,
   preparationComment: '',
-  lessonPlanningMark: 0,
-  lessonPlanningComment: '',
+  // ECD-specific fields
   lessonFacilitationMark: 0,
   lessonFacilitationComment: '',
+  recordsMark: 0,
+  recordsComment: '',
+  // Junior-specific fields
+  lessonPlanningMark: 0,
+  lessonPlanningComment: '',
+  documentsMark: 0,
+  documentsComment: '',
+  // Common fields
   introductionMark: 0,
   introductionComment: '',
   developmentMark: 0,
@@ -1439,10 +1447,6 @@ const form = ref({
   personalDimensionsComment: '',
   deportmentMark: 0,
   deportmentComment: '',
-  documentsMark: 0,
-  documentsComment: '',
-  recordsMark: 0,
-  recordsComment: '',
   environmentMark: 0,
   environmentComment: '',
   communityMark: 0,
@@ -1840,29 +1844,59 @@ const submitAssessment = async () => {
     // Get signature data
     const signatureData = getSignatureData()
 
+    // Prepare form data based on assessment type
+    let formData = { ...form.value }
+    
+    // For ECD assessments, only send ECD-specific fields
+    if (assessmentType.value === 'ecd') {
+      formData = {
+        ...formData,
+        // Remove Junior-specific fields for ECD
+        lessonPlanningMark: undefined,
+        lessonPlanningComment: undefined,
+        documentsMark: undefined,
+        documentsComment: undefined
+      }
+    }
+    // For Junior assessments, only send Junior-specific fields
+    else if (assessmentType.value === 'junior') {
+      formData = {
+        ...formData,
+        // Remove ECD-specific fields for Junior
+        lessonFacilitationMark: undefined,
+        lessonFacilitationComment: undefined,
+        recordsMark: undefined,
+        recordsComment: undefined
+      }
+    }
+
     // Debug: Log the form data being sent
     console.log('Form data being sent:', {
       assessmentType: assessmentType.value,
-      lessonFacilitationMark: form.value.lessonFacilitationMark,
-      lessonFacilitationComment: form.value.lessonFacilitationComment,
-      recordsMark: form.value.recordsMark,
-      recordsComment: form.value.recordsComment,
-      preparationMark: form.value.preparationMark,
-      preparationComment: form.value.preparationComment,
-      deportmentMark: form.value.deportmentMark,
-      deportmentComment: form.value.deportmentComment,
-      environmentMark: form.value.environmentMark,
-      environmentComment: form.value.environmentComment,
-      communityMark: form.value.communityMark,
-      communityComment: form.value.communityComment,
-      remainingPillarsMark: form.value.remainingPillarsMark,
-      remainingPillarsComment: form.value.remainingPillarsComment
+      lessonFacilitationMark: formData.lessonFacilitationMark,
+      lessonFacilitationComment: formData.lessonFacilitationComment,
+      recordsMark: formData.recordsMark,
+      recordsComment: formData.recordsComment,
+      lessonPlanningMark: formData.lessonPlanningMark,
+      lessonPlanningComment: formData.lessonPlanningComment,
+      documentsMark: formData.documentsMark,
+      documentsComment: formData.documentsComment,
+      preparationMark: formData.preparationMark,
+      preparationComment: formData.preparationComment,
+      deportmentMark: formData.deportmentMark,
+      deportmentComment: formData.deportmentComment,
+      environmentMark: formData.environmentMark,
+      environmentComment: formData.environmentComment,
+      communityMark: formData.communityMark,
+      communityComment: formData.communityComment,
+      remainingPillarsMark: formData.remainingPillarsMark,
+      remainingPillarsComment: formData.remainingPillarsComment
     })
 
     await $fetch('/api/assessments', {
       method: 'POST',
       body: { 
-        ...form.value, 
+        ...formData, 
         studentId, 
         formType: assessmentType.value,
         signatureData: signatureData

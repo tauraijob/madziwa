@@ -43,8 +43,8 @@
 // };
 
 module.exports = {
-apps: [
-  {
+  apps: [
+    {
     name: 'matcollegewil.co.zw',
     port: '3033',
     exec_mode: 'cluster',

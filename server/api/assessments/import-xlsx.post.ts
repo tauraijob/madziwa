@@ -210,20 +210,26 @@ async function upsertSupervisor(row: ImportRow) {
 
 async function upsertStudent(row: ImportRow) {
   const candidateNo = String(row.candidateNo || '').trim()
-  const data = {
-    fullName: String(row.fullName || '').trim(),
-    sex: String(row.sex || '').trim(),
-    candidateNo,
-    email: String(row.email || '').trim(),
-    schoolName: String(row.schoolName || '').trim(),
-    className: String(row.className || '').trim(),
-  }
-
+  
+  // Find existing student by candidate number
   let stu = await prisma.student.findUnique({ where: { candidateNo } })
+  
   if (!stu) {
+    // If student doesn't exist, create with minimal data (only candidate number)
+    // Other details will need to be added manually through the student management interface
+    const data = {
+      fullName: String(row.fullName || '').trim() || `Student ${candidateNo}`, // Default name if not provided
+      sex: String(row.sex || '').trim() || 'M', // Default to Male if not provided
+      candidateNo,
+      email: String(row.email || '').trim() || `${candidateNo}@example.com`, // Default email if not provided
+      schoolName: String(row.schoolName || '').trim() || 'Unknown School', // Default school if not provided
+      className: String(row.className || '').trim() || 'Unknown Class', // Default class if not provided
+    }
     stu = await prisma.student.create({ data })
   } else {
-    stu = await prisma.student.update({ where: { id: stu.id }, data })
+    // If student exists, keep existing data (don't update from Excel)
+    // The student details in the database are considered the source of truth
+    console.log(`Student ${candidateNo} already exists, using existing data from database`)
   }
   return stu
 }
@@ -271,16 +277,10 @@ function mapAssessmentData(row: ImportRow) {
 async function handleRow(row: ImportRow, currentSupervisorId: number) {
   const norm = normalizeRow(row)
   
-  // Required identifiers
-  if (!norm.fullName || !norm.candidateNo) {
-    throw new Error('Student fullName and candidateNo are required')
+  // Only candidate number is required from the Excel file
+  if (!norm.candidateNo) {
+    throw new Error('Student candidate number is required')
   }
-  
-  // Validate student data
-  if (!norm.sex) throw new Error('Student sex is required')
-  if (!norm.email) throw new Error('Student email is required')
-  if (!norm.schoolName) throw new Error('Student schoolName is required')
-  if (!norm.className) throw new Error('Student className is required')
   
   // Supervisor fields in the sheet are ignored; we attach to the logged-in supervisor
   const student = await upsertStudent(norm)

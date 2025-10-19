@@ -50,15 +50,24 @@ export default defineEventHandler(async (event) => {
 
     // Calculate total mark with clamping for ECD/Junior assessments
     let totalMark
-    if (assessment.formType === 'ecd' || assessment.formType === 'junior' || !assessment.formType) {
-      // For ECD/Junior, use clamped values to prevent exceeding maximums
-      totalMark = Math.min(assessment.preparationMark || 0, 15) + 
-                 Math.min(assessment.lessonPlanningMark || 0, 15) + 
-                 Math.min(assessment.environmentMark || 0, 10) + 
-                 Math.min(assessment.documentsMark || 0, 15) + 
-                 Math.min(assessment.introductionMark || 0, 5) + 
-                 Math.min(assessment.developmentMark || 0, 30) + 
-                 Math.min(assessment.conclusionMark || 0, 10)
+    if (assessment.formType === 'ecd') {
+      // ECD: preparation + lessonPlanning + personalDimensions + documents + environment + community + conclusion
+      totalMark = (assessment.preparationMark || 0) + 
+                 (assessment.lessonPlanningMark || 0) + 
+                 (assessment.personalDimensionsMark || 0) + 
+                 (assessment.documentsMark || 0) + 
+                 (assessment.environmentMark || 0) + 
+                 (assessment.communityMark || 0) + 
+                 (assessment.conclusionMark || 0)
+    } else if (assessment.formType === 'junior') {
+      // Junior: preparation + lessonPlanning + personalDimensions + documents + environment + community + conclusion
+      totalMark = (assessment.preparationMark || 0) + 
+                 (assessment.lessonPlanningMark || 0) + 
+                 (assessment.personalDimensionsMark || 0) + 
+                 (assessment.documentsMark || 0) + 
+                 (assessment.environmentMark || 0) + 
+                 (assessment.communityMark || 0) + 
+                 (assessment.conclusionMark || 0)
     } else {
       // For other assessment types, use original calculation
       totalMark = (assessment.preparationMark || 0) + 
@@ -420,6 +429,88 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
               <td>20</td>
               <td>${Math.round((assessment.introductionMark / 20) * 100)}%</td>
             </tr>
+            ` : assessment.formType === 'ecd' ? `
+            <tr>
+              <td><strong>Preparation</strong></td>
+              <td>${Math.min(assessment.preparationMark, 15)}</td>
+              <td>15</td>
+              <td>${Math.round(Math.min(assessment.preparationMark, 15) / 15 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Lesson Facilitation</strong></td>
+              <td>${Math.min(assessment.lessonPlanningMark, 15)}</td>
+              <td>15</td>
+              <td>${Math.round(Math.min(assessment.lessonPlanningMark, 15) / 15 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Deportment</strong></td>
+              <td>${Math.min(assessment.personalDimensionsMark, 5)}</td>
+              <td>5</td>
+              <td>${Math.round(Math.min(assessment.personalDimensionsMark, 5) / 5 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Records Management</strong><br/>
+                  <em style="font-size: 0.8em; color: #666;">
+                    • Register • Progress Record • Individual Social Record • Remedial • Extension work • Reading • Inventory Record • Test Record • WIL File • Anecdotal • Developmental Checklist • Health Record
+                  </em>
+              </td>
+              <td>${Math.min(assessment.documentsMark, 15)}</td>
+              <td>15</td>
+              <td>${Math.round(Math.min(assessment.documentsMark, 15) / 15 * 100)}%</td>
+            </tr>
+            <tr>
+              <td><strong>Teaching and learning environment</strong><br/>
+                  <ul style="margin: 0; padding-left: 20px; font-size: 0.9em; color: #666;">
+                    <li>Classroom layout and conduciveness</li>
+                    <li>Management of learning centres</li>
+                  </ul>
+              </td>
+              <td>${Math.min(assessment.environmentMark, 10)}</td>
+              <td>10</td>
+              <td>${Math.round(Math.min(assessment.environmentMark, 10) / 10 * 100)}%</td>
+            </tr>
+            ${assessment.selectedResearchCategory === 'community_service' ? `
+            <tr>
+              <td><strong>Research-based Child Study & Community Service</strong><br/>
+                  <em style="font-size: 0.8em; color: #666;">✓ Selected</em>
+              </td>
+              <td>${Math.min(assessment.communityMark, 30)}</td>
+              <td>30</td>
+              <td>${Math.round(Math.min(assessment.communityMark, 30) / 30 * 100)}%</td>
+            </tr>
+            ` : ''}
+            ${assessment.selectedResearchCategory === 'innovation' ? `
+            <tr>
+              <td><strong>Research & Innovation</strong><br/>
+                  <em style="font-size: 0.8em; color: #666;">✓ Selected</em>
+              </td>
+              <td>${Math.min(assessment.communityMark, 30)}</td>
+              <td>30</td>
+              <td>${Math.round(Math.min(assessment.communityMark, 30) / 30 * 100)}%</td>
+            </tr>
+            ` : ''}
+            ${assessment.selectedResearchCategory === 'industrialisation' ? `
+            <tr>
+              <td><strong>Research & Industrialisation</strong><br/>
+                  <em style="font-size: 0.8em; color: #666;">✓ Selected</em>
+              </td>
+              <td>${Math.min(assessment.communityMark, 30)}</td>
+              <td>30</td>
+              <td>${Math.round(Math.min(assessment.communityMark, 30) / 30 * 100)}%</td>
+            </tr>
+            ` : ''}
+            <tr>
+              <td><strong>Remaining 2 pillars</strong><br/>
+                  <em style="font-size: 0.8em; color: #666;">
+                    ${assessment.selectedResearchCategory === 'community_service' ? 'Research & Innovation, Research & Industrialisation' : 
+                     assessment.selectedResearchCategory === 'innovation' ? 'Research-based Child Study & Community Service, Research & Industrialisation' : 
+                     assessment.selectedResearchCategory === 'industrialisation' ? 'Research-based Child Study & Community Service, Research & Innovation' : 'All three categories'}
+                  </em>
+              </td>
+              <td>${Math.min(assessment.conclusionMark, 10)}</td>
+              <td>10</td>
+              <td>${Math.round(Math.min(assessment.conclusionMark, 10) / 10 * 100)}%</td>
+            </tr>
             ` : assessment.formType === 'junior' ? `
             <tr>
               <td><strong>Research-Teaching & Learning</strong><br/>Preparation</td>
@@ -485,9 +576,9 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
             </tr>
             <tr>
               <td><strong>Research-Teaching & Learning</strong><br/>Deportment</td>
-              <td>${Math.min(assessment.introductionMark, 5)}</td>
+              <td>${Math.min(assessment.personalDimensionsMark, 5)}</td>
               <td>5</td>
-              <td>${Math.round(Math.min(assessment.introductionMark, 5) / 5 * 100)}%</td>
+              <td>${Math.round(Math.min(assessment.personalDimensionsMark, 5) / 5 * 100)}%</td>
             </tr>
             <tr>
               <td><strong>Research-Teaching & Learning</strong><br/>Records Management</td>
@@ -502,14 +593,14 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
               <td>${Math.round(Math.min(assessment.environmentMark, 10) / 10 * 100)}%</td>
             </tr>
             <tr>
-              <td><strong>Research-based Community Service/Research & Innovation/Research & Industrialisation</strong><br/>
-                  <em>Selected: ${assessment.selectedResearchCategory === 'community_service' ? 'Research-based Community Service' : 
+              <td><strong>Research-based Child Study & Community Service/Research & Innovation/Research & Industrialisation</strong><br/>
+                  <em>Selected: ${assessment.selectedResearchCategory === 'community_service' ? 'Research-based Child Study & Community Service' : 
                                   assessment.selectedResearchCategory === 'innovation' ? 'Research & Innovation' : 
                                   assessment.selectedResearchCategory === 'industrialisation' ? 'Research & Industrialisation' : 'Not Selected'}</em>
               </td>
-              <td>${Math.min(assessment.developmentMark, 30)}</td>
+              <td>${Math.min(assessment.communityMark, 30)}</td>
               <td>30</td>
-              <td>${Math.round(Math.min(assessment.developmentMark, 30) / 30 * 100)}%</td>
+              <td>${Math.round(Math.min(assessment.communityMark, 30) / 30 * 100)}%</td>
             </tr>
             <tr>
               <td><strong>${remainingPillarsText}</strong><br/>
@@ -621,7 +712,86 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
         <h3>Overall Comment</h3>
         <p>${assessment.overallComment || ''}</p>
       </div>
-      ` : (assessment.formType === 'ecd' || assessment.formType === 'junior' || !assessment.formType) ? `
+      ` : assessment.formType === 'ecd' ? `
+       <div class="comment-section">
+         <h3>Comments Breakdown</h3>
+         <table class="score-table">
+           <thead>
+             <tr>
+               <th>Category</th>
+               <th>Comments</th>
+             </tr>
+           </thead>
+           <tbody>
+             <tr>
+               <td><strong>Preparation</strong></td>
+               <td>${assessment.preparationComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Lesson Facilitation</strong></td>
+               <td>${assessment.lessonPlanningComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Deportment</strong></td>
+               <td>${assessment.personalDimensionsComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Records Management</strong><br/>
+                   <em style="font-size: 0.8em; color: #666;">
+                     • Register • Progress Record • Individual Social Record • Remedial • Extension work • Reading • Inventory Record • Test Record • WIL File • Anecdotal • Developmental Checklist • Health Record
+                   </em>
+               </td>
+               <td>${assessment.documentsComment || ''}</td>
+             </tr>
+             <tr>
+               <td><strong>Teaching and learning environment</strong><br/>
+                   <ul style="margin: 0; padding-left: 20px; font-size: 0.9em; color: #666;">
+                     <li>Classroom layout and conduciveness</li>
+                     <li>Management of learning centres</li>
+                   </ul>
+               </td>
+               <td>${assessment.environmentComment || ''}</td>
+             </tr>
+             ${assessment.selectedResearchCategory === 'community_service' ? `
+             <tr>
+               <td><strong>Research-based Child Study & Community Service</strong><br/>
+                   <em style="font-size: 0.8em; color: #666;">✓ Selected</em>
+               </td>
+               <td>${assessment.communityComment || ''}</td>
+             </tr>
+             ` : ''}
+             ${assessment.selectedResearchCategory === 'innovation' ? `
+             <tr>
+               <td><strong>Research & Innovation</strong><br/>
+                   <em style="font-size: 0.8em; color: #666;">✓ Selected</em>
+               </td>
+               <td>${assessment.communityComment || ''}</td>
+             </tr>
+             ` : ''}
+             ${assessment.selectedResearchCategory === 'industrialisation' ? `
+             <tr>
+               <td><strong>Research & Industrialisation</strong><br/>
+                   <em style="font-size: 0.8em; color: #666;">✓ Selected</em>
+               </td>
+               <td>${assessment.communityComment || ''}</td>
+             </tr>
+             ` : ''}
+             <tr>
+               <td><strong>Remaining 2 pillars</strong><br/>
+                   <em style="font-size: 0.8em; color: #666;">
+                     ${assessment.selectedResearchCategory === 'community_service' ? 'Research & Innovation, Research & Industrialisation' : 
+                      assessment.selectedResearchCategory === 'innovation' ? 'Research-based Child Study & Community Service, Research & Industrialisation' : 
+                      assessment.selectedResearchCategory === 'industrialisation' ? 'Research-based Child Study & Community Service, Research & Innovation' : 'All three categories'}
+                   </em>
+               </td>
+               <td>${assessment.conclusionComment || ''}</td>
+             </tr>
+           </tbody>
+         </table>
+         <h3>Overall Comment</h3>
+         <p>${assessment.overallComment || ''}</p>
+       </div>
+      ` : (assessment.formType === 'junior' || !assessment.formType) ? `
        <div class="comment-section">
          <h3>Comments Breakdown</h3>
          <table class="score-table">
@@ -642,22 +812,28 @@ function generateAssessmentHTML(assessment: any, totalMark: number) {
              </tr>
              <tr>
                <td><strong>Research-Teaching & Learning</strong><br/>Deportment</td>
-               <td>${assessment.introductionComment || ''}</td>
+               <td>${assessment.personalDimensionsComment || ''}</td>
              </tr>
              <tr>
                <td><strong>Research-Teaching & Learning</strong><br/>Records Management</td>
                <td>${assessment.documentsComment || ''}</td>
              </tr>
              <tr>
-               <td><strong>Teaching and Learning Environment</strong></td>
+               <td><strong>Research-Teaching & Learning</strong><br/>Teaching and Learning Environment</td>
                <td>${assessment.environmentComment || ''}</td>
              </tr>
              <tr>
-               <td><strong>Research-based Community Service/Research & Innovation/Research & Industrialisation</strong></td>
-               <td>${assessment.developmentComment || ''}</td>
+               <td><strong>${assessment.selectedResearchCategory === 'community_service' ? 'Research-based Community Service' : 
+                               assessment.selectedResearchCategory === 'innovation' ? 'Research & Innovation' : 
+                               assessment.selectedResearchCategory === 'industrialisation' ? 'Research & Industrialisation' : 'Research Category'} (Selected Category)</strong></td>
+               <td>${assessment.communityComment || ''}</td>
              </tr>
              <tr>
-               <td><strong>Remaining 2 Pillars</strong></td>
+               <td><strong>Remaining 2 Pillars</strong><br/>
+                   <em>${assessment.selectedResearchCategory === 'community_service' ? 'Research & Innovation, Research & Industrialisation' : 
+                        assessment.selectedResearchCategory === 'innovation' ? 'Research-based Community Service, Research & Industrialisation' : 
+                        assessment.selectedResearchCategory === 'industrialisation' ? 'Research-based Community Service, Research & Innovation' : 'Not Selected'}</em>
+               </td>
                <td>${assessment.conclusionComment || ''}</td>
              </tr>
            </tbody>
